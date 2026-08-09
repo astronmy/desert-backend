@@ -1,0 +1,134 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../../vendor/livewire/livewire/dist/**/*.blade.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+:root {
+    --desert-bg: #182828;
+    --desert-bg-elevated: #273C3B;
+    --desert-accent: #C0B39B;
+    --desert-gold: #DCA15B;
+    --desert-gold-dark: #B58543;
+    --desert-surface: #EAE4D8;
+    --desert-sand: #E3DCD1;
+    --desert-muted: #919496;
+    --desert-border: #2f4a48;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+.admin-force-light .admin-content-light,
+.admin-force-light .admin-content-light * {
+    color-scheme: light;
+}
+
+.admin-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.admin-sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.admin-sidebar-link .admin-sidebar-icon {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--desert-accent);
+}
+
+.admin-sidebar-link-active {
+    background-color: var(--desert-accent);
+    color: var(--desert-bg);
+}
+
+.admin-sidebar-link-active .admin-sidebar-icon {
+    color: var(--desert-bg) !important;
+}
+
+.admin-sidebar-link-active:hover {
+    background-color: var(--desert-gold);
+    color: var(--desert-bg);
+}
+
+.admin-sidebar-link-active:hover .admin-sidebar-icon {
+    color: var(--desert-bg) !important;
+}
+
+.admin-content-light input[type='checkbox'] {
+    accent-color: var(--desert-bg-elevated);
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='search'],
+input[type='tel'],
+input[type='url'],
+input[type='date'],
+input[type='datetime-local'],
+input[type='time'],
+select,
+textarea {
+    min-height: 2.75rem;
+    padding: 0.75rem 1rem;
+    line-height: 1.5;
+    box-sizing: border-box;
+    border-color: #d1d5db;
+    border-radius: 0.375rem;
+    background-color: #fff;
+    color: #111827;
+    font-size: 0.875rem;
+}
+
+input[type='date'] {
+    display: block;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+    margin-left: 0.5rem;
+}
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23273C3B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+select:focus,
+input[type='date']:focus,
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='password']:focus {
+    outline: none;
+    border-color: var(--desert-bg-elevated);
+    box-shadow: 0 0 0 1px var(--desert-bg-elevated);
+}
