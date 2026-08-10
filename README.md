@@ -23,19 +23,25 @@ Panel de administración y API para **[Desert Eventos](https://deserteventos.com
 - **Usuarios** — CRUD de administradores
 - **Eventos** — CRUD con filtros (nombre, tipo, fechas)
 - **Invitaciones** (por evento)
-  - Alta manual
+  - Alta manual, ver detalle (con selfie) y editar
   - Importación Excel/CSV (`Nombre`, `Apellido`, `DNI`)
   - Código único + estados: `pending` → `confirmed` / `cancelled`
-- **API mobile** — consulta y confirmación de invitación (datos + selfie)
+- **Accesos** — registro de ingreso por QR (un solo acceso por invitación)
+- **API mobile / scanner**
+  - Consulta y confirmación de invitación (datos + selfie)
+  - Check-in de acceso por código
 
 ### Modelo de dominio
 
 ```
 Event ──< Invitation >── Guest
+              │
+           Access (0..1)
 ```
 
 - Un **Guest** es una persona (documento único).
 - Una **Invitation** vincula guest + evento, con código, estado y selfie de confirmación.
+- Un **Access** registra el ingreso (QR) de una invitación confirmada; máximo uno por invitación.
 - El mismo guest puede estar invitado a varios eventos.
 
 Tipos de evento: `wedding`, `birthday`, `graduation`, `corporate`, `private`.
@@ -113,20 +119,33 @@ Rutas principales:
 | `/admin/users` | Usuarios |
 | `/admin/events` | Eventos |
 | `/admin/events/{event}/invitations` | Invitaciones del evento |
+| `/admin/events/{event}/invitations/{invitation}` | Ver detalle (selfie) |
 | `/admin/events/{event}/invitations/import` | Importar Excel |
+| `/admin/events/{event}/accesses` | Accesos / ingresos del evento |
 
 ---
 
-## API (mobile)
+## API
 
 Base: `/api`  
-Rate limit: 30 req/min
+Sin autenticación por token (acceso por código de invitación).
 
-### Obtener invitación
+| Endpoint | Throttle |
+|----------|----------|
+| Invitaciones | 30 req/min |
+| Accesos | 60 req/min |
+
+### 1. Obtener invitación
 
 ```http
 GET /api/invitations/{code}
 ```
+
+| Status | Significado |
+|--------|-------------|
+| `200` | OK |
+| `404` | Código inexistente |
+| `410` | Invitación cancelada |
 
 Respuesta (ejemplo):
 
@@ -152,7 +171,9 @@ Respuesta (ejemplo):
 }
 ```
 
-### Confirmar invitación
+### 2. Confirmar invitación
+
+Usado por la app mobile: el invitado carga/confirma datos y selfie.
 
 ```http
 POST /api/invitations/{code}/confirm
@@ -167,7 +188,79 @@ Content-Type: multipart/form-data
 | `id_type` | `dni` \| `passport` |
 | `selfie` | image (max 5 MB) |
 
+| Status | Significado |
+|--------|-------------|
+| `200` | Confirmada |
+| `404` | Código inexistente |
+| `409` | Ya estaba confirmada |
+| `410` | Cancelada |
+| `422` | Validación / documento no coincide |
+
 El documento debe coincidir con el de la invitación. Al confirmar se actualiza el guest, se guarda la selfie y el estado pasa a `confirmed`.
+
+### 3. Registrar acceso (check-in QR)
+
+Usado por el scanner en puerta: lee el QR (código) y notifica el ingreso.
+
+```http
+POST /api/accesses
+Content-Type: application/json
+```
+
+```json
+{
+  "code": "L6QXJO5F"
+}
+```
+
+**Reglas**
+
+- Solo invitaciones `confirmed`
+- Un solo acceso por invitación (unique en DB)
+- `pending` → rechazado; `cancelled` → rechazado
+
+| Status | Significado |
+|--------|-------------|
+| `201` | Acceso registrado |
+| `404` | Invitación no encontrada |
+| `409` | Ya ingresó (`accessed_at` del primer acceso) |
+| `410` | Invitación cancelada |
+| `422` | Aún no confirmada |
+
+Respuesta OK (ejemplo):
+
+```json
+{
+  "message": "Acceso registrado correctamente.",
+  "access": {
+    "id": 1,
+    "invitation_code": "L6QXJO5F",
+    "accessed_at": "2026-08-09T21:00:00+00:00",
+    "event": {
+      "id": 1,
+      "name": "Casamiento Pérez"
+    },
+    "guest": {
+      "first_name": "Juan",
+      "last_name": "Pérez",
+      "document_number": "30111222",
+      "id_type": "dni"
+    }
+  }
+}
+```
+
+Flujo típico app + puerta:
+
+```
+App mobile          Backend              Scanner puerta
+   |                   |                      |
+   |-- GET invitation->|                      |
+   |-- POST confirm -->|  (selfie + datos)     |
+   |                   |                      |
+   |                   |<-- POST /accesses ---|
+   |                   |   (código del QR)    |
+```
 
 ---
 
@@ -195,13 +288,15 @@ Comportamiento:
 ```
 app/
   Enums/           EventType, DocumentType, InvitationStatus
-  Models/          User, Event, Guest, Invitation
+  Models/          User, Event, Guest, Invitation, Access
   Http/Controllers/
-    Admin/         Users, Events, EventInvitations
-    Api/           Invitation confirm
-  Services/Invitations/
+    Admin/         Users, Events, EventInvitations, EventAccesses
+    Api/           InvitationController, AccessController
+  Services/
+    Invitations/   códigos + import Excel
+    Accesses/      registro de ingreso QR
 resources/views/
-  admin/           dashboard, users, events, invitations
+  admin/           dashboard, users, events, invitations, accesses
   layouts/         admin + guest (login)
 routes/
   web.php, auth.php, admin.php, api.php
@@ -225,7 +320,7 @@ php artisan test                   # tests
 
 - Las selfies se guardan en `storage/app/public/invitations/...` (vía `storage:link`).
 - Branding alineado a [deserteventos.com.ar](https://deserteventos.com.ar/) (teal / arena / dorado).
-- Fuera de scope actual: auth Sanctum para la app, envío de códigos por WhatsApp/email, check-in en puerta.
+- Fuera de scope actual: auth Sanctum para la app, envío de códigos por WhatsApp/email.
 
 ---
 
