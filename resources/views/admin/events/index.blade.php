@@ -105,6 +105,10 @@
                                    class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-gold)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
                                     {{ __('invitation.index.title') }}
                                 </a>
+                                <a href="{{ route('admin.events.accesses.index', $event) }}" wire:navigate
+                                   class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-white px-2.5 py-1.5 text-xs font-medium text-[var(--desert-bg-elevated)] shadow-sm ring-1 ring-[var(--desert-bg-elevated)] hover:bg-[var(--desert-sand)]">
+                                    {{ __('access.index.title') }}
+                                </a>
                                 <a href="{{ route('admin.events.edit', $event) }}" wire:navigate
                                    class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-bg-elevated)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-bg)]">
                                     <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

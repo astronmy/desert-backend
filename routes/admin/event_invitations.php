@@ -8,5 +8,5 @@ Route::prefix('events/{event}')->name('events.')->group(function () {
     Route::get('invitations/import/template', [EventInvitationController::class, 'importTemplate'])->name('invitations.import.template');
     Route::post('invitations/import', [EventInvitationController::class, 'import'])->name('invitations.import.store');
 
-    Route::resource('invitations', EventInvitationController::class)->except(['show']);
+    Route::resource('invitations', EventInvitationController::class);
 });

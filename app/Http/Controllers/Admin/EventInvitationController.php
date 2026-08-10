@@ -92,6 +92,15 @@ class EventInvitationController extends Controller
             ->with('status', __('invitation.messages.created'));
     }
 
+    public function show(Event $event, Invitation $invitation): View
+    {
+        $this->ensureInvitationBelongsToEvent($event, $invitation);
+
+        $invitation->load('guest');
+
+        return view('admin.events.invitations.show', compact('event', 'invitation'));
+    }
+
     public function edit(Event $event, Invitation $invitation): View
     {
         $this->ensureInvitationBelongsToEvent($event, $invitation);

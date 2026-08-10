@@ -16,6 +16,7 @@ return [
         'filter' => 'Filtrar',
         'clear' => 'Limpiar',
         'edit' => 'Editar',
+        'view' => 'Ver',
         'delete' => 'Eliminar',
         'save' => 'Guardar',
         'save_changes' => 'Guardar cambios',

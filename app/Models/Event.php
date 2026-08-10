@@ -33,6 +33,11 @@ class Event extends Model
         return $this->hasMany(Invitation::class);
     }
 
+    public function accesses(): HasMany
+    {
+        return $this->hasMany(Access::class);
+    }
+
     public function guests(): BelongsToMany
     {
         return $this->belongsToMany(Guest::class, 'invitations')

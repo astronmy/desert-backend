@@ -34,6 +34,13 @@ return [
         'select_id_type' => 'Seleccionar tipo',
     ],
 
+    'show' => [
+        'title' => 'Detalle de invitación',
+        'no_selfie' => 'Sin selfie cargada',
+        'guest_data' => 'Datos del invitado',
+        'invitation_data' => 'Datos de la invitación',
+    ],
+
     'import' => [
         'title' => 'Importar invitaciones',
         'help' => 'Subí un archivo .xlsx o .csv con las columnas requeridas.',

@@ -6,6 +6,10 @@
                 <p class="text-sm text-[var(--desert-sand)]">{{ __('invitation.index.subtitle', ['name' => $event->name]) }}</p>
             </div>
             <div class="flex flex-wrap gap-2">
+                <a href="{{ route('admin.events.accesses.index', $event) }}" wire:navigate
+                   class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-bg-elevated)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
+                    {{ __('access.index.title') }}
+                </a>
                 <a href="{{ route('admin.events.invitations.import', $event) }}" wire:navigate
                    class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-[var(--desert-accent)] hover:bg-[var(--desert-bg)]">
                     {{ __('invitation.index.import') }}
@@ -115,6 +119,10 @@
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-2">
+                                <a href="{{ route('admin.events.invitations.show', [$event, $invitation]) }}" wire:navigate
+                                   class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-gold)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
+                                    {{ __('admin.actions.view') }}
+                                </a>
                                 <a href="{{ route('admin.events.invitations.edit', [$event, $invitation]) }}" wire:navigate
                                    class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-bg-elevated)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-bg)]">
                                     {{ __('admin.actions.edit') }}
