@@ -10,5 +10,6 @@ Route::middleware('throttle:30,1')->group(function () {
 });
 
 Route::middleware('throttle:60,1')->group(function () {
+    Route::get('invitations/{code}/entry', [InvitationController::class, 'entry']);
     Route::post('accesses', [AccessController::class, 'store']);
 });

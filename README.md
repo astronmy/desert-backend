@@ -29,7 +29,8 @@ Panel de administración y API para **[Desert Eventos](https://deserteventos.com
 - **Accesos** — registro de ingreso por QR (un solo acceso por invitación)
 - **API mobile / scanner**
   - Consulta y confirmación de invitación (datos + selfie)
-  - Check-in de acceso por código
+  - Consulta de entrada (`/entry`): foto + si ingresó y cuándo
+  - Check-in de acceso por código (`POST /accesses`)
 
 ### Modelo de dominio
 
@@ -130,10 +131,12 @@ Rutas principales:
 Base: `/api`  
 Sin autenticación por token (acceso por código de invitación).
 
-| Endpoint | Throttle |
-|----------|----------|
-| Invitaciones | 30 req/min |
-| Accesos | 60 req/min |
+| Método | Endpoint | Uso | Throttle |
+|--------|----------|-----|----------|
+| `GET` | `/api/invitations/{code}` | App: datos básicos de la invitación | 30/min |
+| `POST` | `/api/invitations/{code}/confirm` | App: confirmar + selfie | 30/min |
+| `GET` | `/api/invitations/{code}/entry` | Scanner: datos + foto + si ingresó | 60/min |
+| `POST` | `/api/accesses` | Scanner: registrar ingreso (QR) | 60/min |
 
 ### 1. Obtener invitación
 
@@ -198,7 +201,51 @@ Content-Type: multipart/form-data
 
 El documento debe coincidir con el de la invitación. Al confirmar se actualiza el guest, se guarda la selfie y el estado pasa a `confirmed`.
 
-### 3. Registrar acceso (check-in QR)
+### 3. Consultar invitación + acceso (scanner)
+
+Para la puerta/scanner: datos del invitado, selfie y si ya ingresó (y cuándo).
+
+```http
+GET /api/invitations/{code}/entry
+```
+
+| Status | Significado |
+|--------|-------------|
+| `200` | OK |
+| `404` | Código inexistente |
+| `410` | Invitación cancelada |
+
+Respuesta (ejemplo):
+
+```json
+{
+  "code": "L6QXJO5F",
+  "status": "confirmed",
+  "event": {
+    "id": 1,
+    "name": "Casamiento Pérez",
+    "init_date": "2026-09-12",
+    "end_date": "2026-09-12",
+    "type": "wedding"
+  },
+  "guest": {
+    "first_name": "Juan",
+    "last_name": "Pérez",
+    "document_number": "30111222",
+    "id_type": "dni"
+  },
+  "confirmed_at": "2026-08-09T18:00:00+00:00",
+  "selfie_url": "http://localhost/storage/invitations/1/selfie.jpg",
+  "access": {
+    "has_entered": true,
+    "accessed_at": "2026-08-09T21:00:00+00:00"
+  }
+}
+```
+
+Si aún no ingresó: `"has_entered": false` y `"accessed_at": null`.
+
+### 4. Registrar acceso (check-in QR)
 
 Usado por el scanner en puerta: lee el QR (código) y notifica el ingreso.
 
@@ -258,6 +305,8 @@ App mobile          Backend              Scanner puerta
    |-- GET invitation->|                      |
    |-- POST confirm -->|  (selfie + datos)     |
    |                   |                      |
+   |                   |<-- GET .../entry ----|
+   |                   |   (foto + ¿ingresó?) |
    |                   |<-- POST /accesses ---|
    |                   |   (código del QR)    |
 ```

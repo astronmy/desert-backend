@@ -12,6 +12,7 @@ class EventAccessController extends Controller
     public function index(Request $request, Event $event): View
     {
         $accesses = $event->accesses()
+            ->with('invitation')
             ->when($request->filled('name'), function ($q) use ($request) {
                 $name = '%'.$request->string('name').'%';
                 $q->where(function ($inner) use ($name) {

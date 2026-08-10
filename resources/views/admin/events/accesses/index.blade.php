@@ -69,6 +69,7 @@
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access.attributes.document_number') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access.attributes.invitation_code') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access.attributes.accessed_at') }}</th>
+                    <th class="px-4 py-3 text-right text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('admin.table.actions') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
@@ -78,10 +79,19 @@
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ strtoupper($access->guest_id_type) }} {{ $access->guest_document_number }}</td>
                         <td class="whitespace-nowrap px-4 py-3 font-mono text-sm text-gray-900">{{ $access->invitation_code }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $access->accessed_at->format('d/m/Y H:i:s') }}</td>
+                        <td class="px-4 py-3 text-right">
+                            @if($access->invitation)
+                                <a href="{{ route('admin.events.invitations.show', [$event, $access->invitation]) }}?from=accesses"
+                                   wire:navigate
+                                   class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-gold)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
+                                    {{ __('admin.actions.view') }}
+                                </a>
+                            @endif
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">{{ __('access.index.empty') }}</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-gray-500">{{ __('access.index.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>

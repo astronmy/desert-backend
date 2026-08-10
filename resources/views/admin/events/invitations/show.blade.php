@@ -1,17 +1,28 @@
+@php
+    $fromAccesses = request('from') === 'accesses';
+    $backUrl = $fromAccesses
+        ? route('admin.events.accesses.index', $event)
+        : route('admin.events.invitations.index', $event);
+    $backLabel = $fromAccesses
+        ? __('access.index.title')
+        : __('invitation.index.title');
+@endphp
 <x-admin-layout>
     <x-slot name="header">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-2">
-                <a href="{{ route('admin.events.invitations.index', $event) }}" wire:navigate class="text-[var(--desert-sand)] hover:text-white">{{ __('invitation.index.title') }}</a>
+                <a href="{{ $backUrl }}" wire:navigate class="text-[var(--desert-sand)] hover:text-white">{{ $backLabel }}</a>
                 <span class="text-[var(--desert-muted)]">/</span>
                 <h1 class="text-xl font-semibold text-white">{{ __('invitation.show.title') }}</h1>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('admin.events.invitations.edit', [$event, $invitation]) }}" wire:navigate
-                   class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
-                    {{ __('admin.actions.edit') }}
-                </a>
-                <a href="{{ route('admin.events.invitations.index', $event) }}" wire:navigate
+                @unless($fromAccesses)
+                    <a href="{{ route('admin.events.invitations.edit', [$event, $invitation]) }}" wire:navigate
+                       class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
+                        {{ __('admin.actions.edit') }}
+                    </a>
+                @endunless
+                <a href="{{ $backUrl }}" wire:navigate
                    class="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/15">
                     {{ __('admin.actions.back') }}
                 </a>

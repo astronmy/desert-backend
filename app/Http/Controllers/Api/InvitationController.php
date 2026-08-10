@@ -50,6 +50,51 @@ class InvitationController extends Controller
         ]);
     }
 
+    /**
+     * Consulta para scanner/puerta: datos + selfie + si ingresó y cuándo.
+     */
+    public function entry(string $code): JsonResponse
+    {
+        $invitation = Invitation::query()
+            ->with(['event', 'guest', 'access'])
+            ->where('code', Str::upper(trim($code)))
+            ->first();
+
+        if (! $invitation) {
+            return response()->json(['message' => 'Invitación no encontrada.'], 404);
+        }
+
+        if ($invitation->status === InvitationStatus::Cancelled) {
+            return response()->json(['message' => 'La invitación está cancelada.'], 410);
+        }
+
+        $hasEntered = $invitation->access !== null;
+
+        return response()->json([
+            'code' => $invitation->code,
+            'status' => $invitation->status->value,
+            'event' => [
+                'id' => $invitation->event->id,
+                'name' => $invitation->event->name,
+                'init_date' => $invitation->event->init_date->toDateString(),
+                'end_date' => $invitation->event->end_date->toDateString(),
+                'type' => $invitation->event->type->value,
+            ],
+            'guest' => [
+                'first_name' => $invitation->guest->first_name,
+                'last_name' => $invitation->guest->last_name,
+                'document_number' => $invitation->guest->document_number,
+                'id_type' => $invitation->guest->id_type->value,
+            ],
+            'confirmed_at' => $invitation->confirmed_at?->toIso8601String(),
+            'selfie_url' => $invitation->selfieUrl(),
+            'access' => [
+                'has_entered' => $hasEntered,
+                'accessed_at' => $invitation->access?->accessed_at?->toIso8601String(),
+            ],
+        ]);
+    }
+
     public function confirm(Request $request, string $code): JsonResponse
     {
         $invitation = Invitation::query()
