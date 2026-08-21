@@ -9,8 +9,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'init_date', 'end_date', 'type'])]
+#[Fillable([
+    'name',
+    'init_date',
+    'end_date',
+    'type',
+    'description',
+    'short_description',
+    'host',
+    'image_path',
+    'mobile_image_path',
+])]
 class Event extends Model
 {
     /** @use HasFactory<EventFactory> */
@@ -38,11 +49,67 @@ class Event extends Model
         return $this->hasMany(Access::class);
     }
 
+    public function images(): HasMany
+    {
+        return $this->hasMany(EventImage::class)->orderBy('sort_order');
+    }
+
     public function guests(): BelongsToMany
     {
         return $this->belongsToMany(Guest::class, 'invitations')
             ->withPivot(['id', 'code', 'status', 'selfie_path', 'confirmed_at'])
             ->withTimestamps();
     }
-}
 
+    public function imageUrl(): ?string
+    {
+        if (! $this->image_path) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->image_path);
+    }
+
+    public function mobileImageUrl(): ?string
+    {
+        if (! $this->mobile_image_path) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->mobile_image_path);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function galleryUrls(): array
+    {
+        return $this->images
+            ->map(fn (EventImage $image) => $image->url())
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    public function deleteStoredFiles(): void
+    {
+        $disk = Storage::disk('public');
+
+        foreach ([$this->image_path, $this->mobile_image_path] as $path) {
+            if ($path && $disk->exists($path)) {
+                $disk->delete($path);
+            }
+        }
+
+        foreach ($this->images as $image) {
+            if ($image->path && $disk->exists($image->path)) {
+                $disk->delete($image->path);
+            }
+        }
+
+        $directory = 'events/'.$this->id;
+        if ($disk->exists($directory)) {
+            $disk->deleteDirectory($directory);
+        }
+    }
+}

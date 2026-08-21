@@ -7,12 +7,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Event\StoreEventRequest;
 use App\Http\Requests\Admin\Event\UpdateEventRequest;
 use App\Models\Event;
+use App\Services\Events\PersistEventMediaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class EventController extends Controller
 {
+    public function __construct(
+        private readonly PersistEventMediaService $persistEventMedia
+    ) {}
+
     public function index(Request $request): View
     {
         $events = Event::query()
@@ -38,7 +43,21 @@ class EventController extends Controller
 
     public function store(StoreEventRequest $request): RedirectResponse
     {
-        Event::create($request->validated());
+        $data = $request->safe()->only([
+            'name',
+            'init_date',
+            'end_date',
+            'type',
+            'description',
+            'short_description',
+            'host',
+        ]);
+
+        $this->persistEventMedia->create($data, [
+            'image' => $request->file('image'),
+            'mobile_image' => $request->file('mobile_image'),
+            'gallery' => $request->file('gallery', []),
+        ]);
 
         return redirect()->route('admin.events.index')
             ->with('status', __('event.messages.created'));
@@ -46,6 +65,7 @@ class EventController extends Controller
 
     public function edit(Event $event): View
     {
+        $event->load('images');
         $types = EventType::options();
 
         return view('admin.events.edit', compact('event', 'types'));
@@ -53,7 +73,24 @@ class EventController extends Controller
 
     public function update(UpdateEventRequest $request, Event $event): RedirectResponse
     {
-        $event->update($request->validated());
+        $data = $request->safe()->only([
+            'name',
+            'init_date',
+            'end_date',
+            'type',
+            'description',
+            'short_description',
+            'host',
+        ]);
+
+        $this->persistEventMedia->update($event, $data, [
+            'image' => $request->file('image'),
+            'mobile_image' => $request->file('mobile_image'),
+            'gallery' => $request->file('gallery', []),
+            'remove_image' => $request->boolean('remove_image'),
+            'remove_mobile_image' => $request->boolean('remove_mobile_image'),
+            'delete_gallery' => $request->input('delete_gallery', []),
+        ]);
 
         return redirect()->route('admin.events.index')
             ->with('status', __('event.messages.updated'));
@@ -61,7 +98,7 @@ class EventController extends Controller
 
     public function destroy(Event $event): RedirectResponse
     {
-        $event->delete();
+        $this->persistEventMedia->delete($event);
 
         return redirect()->route('admin.events.index')
             ->with('status', __('event.messages.deleted'));

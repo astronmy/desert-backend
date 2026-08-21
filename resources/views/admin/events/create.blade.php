@@ -9,13 +9,34 @@
 
     <div class="rounded-lg bg-[var(--desert-surface)] p-4 sm:p-6">
         <div class="bg-white overflow-hidden rounded-lg shadow-sm">
-            <form action="{{ route('admin.events.store') }}" method="POST" class="p-6 space-y-6">
+            <form action="{{ route('admin.events.store') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
                 @csrf
 
                 <div>
                     <x-input-label for="name" :value="__('event.attributes.name')" />
                     <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name')" required autofocus />
                     <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                </div>
+
+                <div>
+                    <x-input-label for="host" :value="__('event.attributes.host')" />
+                    <x-text-input id="host" name="host" type="text" class="mt-1 block w-full" :value="old('host')" />
+                    <x-input-error :messages="$errors->get('host')" class="mt-2" />
+                </div>
+
+                <div>
+                    <x-input-label for="short_description" :value="__('event.attributes.short_description')" />
+                    <textarea id="short_description" name="short_description" rows="2" maxlength="500"
+                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]">{{ old('short_description') }}</textarea>
+                    <p class="mt-1 text-xs text-gray-500">{{ __('event.form.short_description_hint') }}</p>
+                    <x-input-error :messages="$errors->get('short_description')" class="mt-2" />
+                </div>
+
+                <div>
+                    <x-input-label for="description" :value="__('event.attributes.description')" />
+                    <textarea id="description" name="description" rows="5"
+                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]">{{ old('description') }}</textarea>
+                    <x-input-error :messages="$errors->get('description')" class="mt-2" />
                 </div>
 
                 <div class="grid gap-6 sm:grid-cols-2">
@@ -40,6 +61,36 @@
                         @endforeach
                     </x-select-input>
                     <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                </div>
+
+                <div class="border-t border-gray-200 pt-6 space-y-6">
+                    <h2 class="text-sm font-semibold text-gray-900">{{ __('event.form.media_section') }}</h2>
+
+                    <div class="grid gap-6 sm:grid-cols-2">
+                        <div>
+                            <x-input-label for="image" :value="__('event.attributes.image')" />
+                            <input id="image" name="image" type="file" accept="image/*"
+                                   class="mt-1 block w-full text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-[var(--desert-bg-elevated)] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[var(--desert-bg)]" />
+                            <p class="mt-1 text-xs text-gray-500">{{ __('event.form.image_hint') }}</p>
+                            <x-input-error :messages="$errors->get('image')" class="mt-2" />
+                        </div>
+                        <div>
+                            <x-input-label for="mobile_image" :value="__('event.attributes.mobile_image')" />
+                            <input id="mobile_image" name="mobile_image" type="file" accept="image/*"
+                                   class="mt-1 block w-full text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-[var(--desert-bg-elevated)] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[var(--desert-bg)]" />
+                            <p class="mt-1 text-xs text-gray-500">{{ __('event.form.mobile_image_hint') }}</p>
+                            <x-input-error :messages="$errors->get('mobile_image')" class="mt-2" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <x-input-label for="gallery" :value="__('event.attributes.gallery')" />
+                        <input id="gallery" name="gallery[]" type="file" accept="image/*" multiple
+                               class="mt-1 block w-full text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-[var(--desert-bg-elevated)] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[var(--desert-bg)]" />
+                        <p class="mt-1 text-xs text-gray-500">{{ __('event.form.gallery_hint') }}</p>
+                        <x-input-error :messages="$errors->get('gallery')" class="mt-2" />
+                        <x-input-error :messages="$errors->get('gallery.*')" class="mt-2" />
+                    </div>
                 </div>
 
                 <div class="flex gap-3">

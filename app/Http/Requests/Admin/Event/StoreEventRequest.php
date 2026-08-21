@@ -23,6 +23,13 @@ class StoreEventRequest extends FormRequest
             'init_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:init_date'],
             'type' => ['required', Rule::enum(EventType::class)],
+            'description' => ['nullable', 'string'],
+            'short_description' => ['nullable', 'string', 'max:500'],
+            'host' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'image', 'max:5120'],
+            'mobile_image' => ['nullable', 'image', 'max:5120'],
+            'gallery' => ['nullable', 'array', 'max:12'],
+            'gallery.*' => ['image', 'max:5120'],
         ];
     }
 }

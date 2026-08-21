@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\DocumentType;
 use App\Enums\InvitationStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Event;
 use App\Models\Invitation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class InvitationController extends Controller
     public function show(string $code): JsonResponse
     {
         $invitation = Invitation::query()
-            ->with(['event', 'guest'])
+            ->with(['event.images', 'guest'])
             ->where('code', Str::upper(trim($code)))
             ->first();
 
@@ -32,13 +33,7 @@ class InvitationController extends Controller
         return response()->json([
             'code' => $invitation->code,
             'status' => $invitation->status->value,
-            'event' => [
-                'id' => $invitation->event->id,
-                'name' => $invitation->event->name,
-                'init_date' => $invitation->event->init_date->toDateString(),
-                'end_date' => $invitation->event->end_date->toDateString(),
-                'type' => $invitation->event->type->value,
-            ],
+            'event' => $this->eventPayload($invitation->event),
             'guest' => [
                 'first_name' => $invitation->guest->first_name,
                 'last_name' => $invitation->guest->last_name,
@@ -56,7 +51,7 @@ class InvitationController extends Controller
     public function entry(string $code): JsonResponse
     {
         $invitation = Invitation::query()
-            ->with(['event', 'guest', 'access'])
+            ->with(['event.images', 'guest', 'access'])
             ->where('code', Str::upper(trim($code)))
             ->first();
 
@@ -73,13 +68,7 @@ class InvitationController extends Controller
         return response()->json([
             'code' => $invitation->code,
             'status' => $invitation->status->value,
-            'event' => [
-                'id' => $invitation->event->id,
-                'name' => $invitation->event->name,
-                'init_date' => $invitation->event->init_date->toDateString(),
-                'end_date' => $invitation->event->end_date->toDateString(),
-                'type' => $invitation->event->type->value,
-            ],
+            'event' => $this->eventPayload($invitation->event),
             'guest' => [
                 'first_name' => $invitation->guest->first_name,
                 'last_name' => $invitation->guest->last_name,
@@ -162,5 +151,29 @@ class InvitationController extends Controller
             'confirmed_at' => $invitation->confirmed_at?->toIso8601String(),
             'selfie_url' => $invitation->selfieUrl(),
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function eventPayload(Event $event): array
+    {
+        if (! $event->relationLoaded('images')) {
+            $event->load('images');
+        }
+
+        return [
+            'id' => $event->id,
+            'name' => $event->name,
+            'init_date' => $event->init_date->toDateString(),
+            'end_date' => $event->end_date->toDateString(),
+            'type' => $event->type->value,
+            'description' => $event->description,
+            'short_description' => $event->short_description,
+            'host' => $event->host,
+            'image_url' => $event->imageUrl(),
+            'mobile_image_url' => $event->mobileImageUrl(),
+            'gallery' => $event->galleryUrls(),
+        ];
     }
 }

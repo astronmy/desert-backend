@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Manual de Usuario — Desert Eventos Backend</title>
+  <style>
+    @font-face {
+      font-family: "Cormorant Garamond";
+      src: url("fonts/CormorantGaramond-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Cormorant Garamond";
+      src: url("fonts/CormorantGaramond-Medium.ttf") format("truetype");
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Cormorant Garamond";
+      src: url("fonts/CormorantGaramond-SemiBold.ttf") format("truetype");
+      font-weight: 600;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Cormorant Garamond";
+      src: url("fonts/CormorantGaramond-Italic.ttf") format("truetype");
+      font-weight: 400;
+      font-style: italic;
+    }
+    @font-face {
+      font-family: "Outfit";
+      src: url("fonts/Outfit-Light.ttf") format("truetype");
+      font-weight: 300;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Outfit";
+      src: url("fonts/Outfit-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Outfit";
+      src: url("fonts/Outfit-Medium.ttf") format("truetype");
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Outfit";
+      src: url("fonts/Outfit-SemiBold.ttf") format("truetype");
+      font-weight: 600;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Outfit";
+      src: url("fonts/Outfit-Bold.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    :root {
+      --bg: #182828;
+      --bg-elevated: #273C3B;
+      --accent: #C0B39B;
+      --gold: #DCA15B;
+      --gold-dark: #B58543;
+      --surface: #EAE4D8;
+      --sand: #E3DCD1;
+      --muted: #919496;
+      --border: #2f4a48;
+      --ink: #1a2424;
+      --ink-soft: #3a4a4a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    @page :first {
+      margin: 0;
+    }
+
+    html, body {
+      font-family: "Outfit", system-ui, sans-serif;
+      font-weight: 400;
+      color: var(--ink);
+      background: #fff;
+      font-size: 10.5pt;
+      line-height: 1.55;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ——— Cover ——— */
+    .cover {
+      page-break-after: always;
+      height: 297mm;
+      width: 210mm;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(220, 161, 91, 0.12), transparent 55%),
+        linear-gradient(165deg, #1c3231 0%, #182828 45%, #122020 100%);
+      color: var(--surface);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      inset: 18mm;
+      border: 1px solid rgba(192, 179, 155, 0.28);
+      pointer-events: none;
+    }
+
+    .cover::after {
+      content: "";
+      position: absolute;
+      inset: 20mm;
+      border: 1px solid rgba(220, 161, 91, 0.12);
+      pointer-events: none;
+    }
+
+    .cover-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40mm 28mm 28mm;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-logo {
+      width: 118px;
+      height: 118px;
+      object-fit: contain;
+      margin-bottom: 22mm;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.35));
+    }
+
+    .cover-eyebrow {
+      font-size: 9pt;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 400;
+      margin-bottom: 8mm;
+    }
+
+    .cover h1 {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-weight: 500;
+      font-size: 42pt;
+      line-height: 1.05;
+      color: var(--surface);
+      letter-spacing: 0.02em;
+      margin-bottom: 6mm;
+    }
+
+    .cover h1 em {
+      font-style: italic;
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .cover-rule {
+      width: 48mm;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 7mm;
+    }
+
+    .cover-sub {
+      font-size: 11.5pt;
+      font-weight: 300;
+      color: var(--accent);
+      max-width: 120mm;
+      line-height: 1.5;
+    }
+
+    .cover-footer {
+      padding: 0 28mm 22mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      position: relative;
+      z-index: 1;
+      font-size: 8pt;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .cover-footer span:last-child {
+      color: var(--gold);
+      letter-spacing: 0.22em;
+    }
+
+    /* ——— Page chrome ——— */
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 18mm 18mm 20mm;
+      page-break-after: always;
+      position: relative;
+      background: #fff;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e0d8cc;
+      padding-bottom: 4mm;
+      margin-bottom: 8mm;
+    }
+
+    .page-header .brand {
+      font-size: 8pt;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      font-weight: 500;
+    }
+
+    .page-header .section-label {
+      font-size: 8pt;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .page-footer {
+      position: absolute;
+      left: 18mm;
+      right: 18mm;
+      bottom: 10mm;
+      display: flex;
+      justify-content: space-between;
+      font-size: 7.5pt;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      border-top: 1px solid #ebe4d8;
+      padding-top: 3mm;
+    }
+
+    /* ——— Typography ——— */
+    h2 {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 22pt;
+      font-weight: 600;
+      color: var(--bg);
+      line-height: 1.15;
+      margin-bottom: 3mm;
+    }
+
+    h2 .num {
+      display: inline-block;
+      font-family: "Outfit", sans-serif;
+      font-size: 9pt;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--gold-dark);
+      vertical-align: middle;
+      margin-right: 3mm;
+      margin-top: -2px;
+    }
+
+    .lead {
+      color: var(--ink-soft);
+      font-size: 10.5pt;
+      margin-bottom: 7mm;
+      max-width: 155mm;
+    }
+
+    h3 {
+      font-family: "Outfit", sans-serif;
+      font-size: 11pt;
+      font-weight: 600;
+      color: var(--bg);
+      margin: 7mm 0 2.5mm;
+      letter-spacing: 0.01em;
+    }
+
+    h4 {
+      font-size: 9.5pt;
+      font-weight: 600;
+      color: var(--bg-elevated);
+      margin: 4mm 0 2mm;
+      letter-spacing: 0.02em;
+    }
+
+    p { margin-bottom: 3mm; }
+
+    ul, ol {
+      margin: 0 0 3.5mm 4.5mm;
+    }
+
+    li { margin-bottom: 1.2mm; }
+
+    strong { font-weight: 600; color: var(--bg); }
+
+    /* ——— Cards / boxes ——— */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4mm;
+      margin: 4mm 0 5mm;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 3.5mm;
+      margin: 4mm 0 5mm;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid #ddd4c6;
+      padding: 4mm 4.5mm;
+      border-radius: 2px;
+    }
+
+    .card.dark {
+      background: var(--bg);
+      border-color: var(--border);
+      color: var(--sand);
+    }
+
+    .card.dark strong { color: var(--gold); }
+
+    .card .label {
+      font-size: 7.5pt;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      font-weight: 600;
+      margin-bottom: 1.5mm;
+    }
+
+    .card.dark .label { color: var(--gold); }
+
+    .card p:last-child { margin-bottom: 0; }
+
+    .callout {
+      background: linear-gradient(135deg, #f6f1e8, var(--surface));
+      border-left: 3px solid var(--gold);
+      padding: 3.5mm 4.5mm;
+      margin: 4mm 0 5mm;
+      border-radius: 0 2px 2px 0;
+    }
+
+    .callout p { margin: 0; color: var(--ink-soft); font-size: 9.5pt; }
+
+    /* ——— Flow ——— */
+    .flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin: 5mm 0 6mm;
+    }
+
+    .flow-step {
+      flex: 1;
+      background: var(--bg);
+      color: var(--sand);
+      padding: 4mm 3.5mm;
+      text-align: center;
+      position: relative;
+    }
+
+    .flow-step:nth-child(2) { background: var(--bg-elevated); }
+    .flow-step:nth-child(3) { background: #324948; }
+    .flow-step:nth-child(4) { background: #3d5654; }
+
+    .flow-step .n {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 16pt;
+      color: var(--gold);
+      display: block;
+      line-height: 1;
+      margin-bottom: 1.5mm;
+    }
+
+    .flow-step .t {
+      font-size: 8pt;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      line-height: 1.35;
+    }
+
+    .flow-arrow {
+      width: 5mm;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-dark);
+      font-size: 10pt;
+      flex-shrink: 0;
+    }
+
+    /* ——— Tables ——— */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 3mm 0 5mm;
+      font-size: 9pt;
+    }
+
+    thead th {
+      background: var(--bg);
+      color: var(--surface);
+      font-weight: 500;
+      text-align: left;
+      padding: 2.4mm 3mm;
+      letter-spacing: 0.04em;
+      font-size: 8pt;
+      text-transform: uppercase;
+    }
+
+    tbody td {
+      padding: 2.2mm 3mm;
+      border-bottom: 1px solid #ebe4d8;
+      vertical-align: top;
+      color: var(--ink-soft);
+    }
+
+    tbody tr:nth-child(even) td {
+      background: #faf7f2;
+    }
+
+    tbody td:first-child {
+      font-weight: 500;
+      color: var(--bg);
+      font-family: "Outfit", monospace;
+      font-size: 8.5pt;
+    }
+
+    code, .mono {
+      font-family: "SF Mono", "Menlo", "Consolas", monospace;
+      font-size: 8.2pt;
+      background: #f3eee5;
+      padding: 0.3mm 1.4mm;
+      border-radius: 2px;
+      color: #2a3f3e;
+    }
+
+    pre {
+      background: var(--bg);
+      color: #d8d0c2;
+      padding: 4mm 4.5mm;
+      border-radius: 2px;
+      font-family: "SF Mono", "Menlo", "Consolas", monospace;
+      font-size: 7.8pt;
+      line-height: 1.5;
+      margin: 2.5mm 0 4mm;
+      overflow: hidden;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    pre .k { color: var(--gold); }
+    pre .s { color: #9ec9b8; }
+    pre .c { color: #6e817e; }
+
+    /* ——— Status pills ——— */
+    .pill {
+      display: inline-block;
+      padding: 0.6mm 2.2mm;
+      border-radius: 2px;
+      font-size: 7.5pt;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .pill-pending { background: #f0e6d0; color: #8a6a2e; }
+    .pill-confirmed { background: #d5e8df; color: #1f5c45; }
+    .pill-cancelled { background: #ecdada; color: #7a3030; }
+
+    /* ——— Endpoint block ——— */
+    .endpoint {
+      border: 1px solid #ddd4c6;
+      margin: 3mm 0 5mm;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .endpoint-head {
+      display: flex;
+      align-items: center;
+      gap: 3mm;
+      padding: 2.8mm 3.5mm;
+      background: var(--surface);
+      border-bottom: 1px solid #ddd4c6;
+    }
+
+    .method {
+      font-size: 7.5pt;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 1mm 2.2mm;
+      border-radius: 2px;
+      color: #fff;
+    }
+
+    .method.get { background: #2a6b5a; }
+    .method.post { background: #B58543; }
+
+    .endpoint-path {
+      font-family: "SF Mono", Menlo, monospace;
+      font-size: 9pt;
+      font-weight: 500;
+      color: var(--bg);
+    }
+
+    .endpoint-meta {
+      margin-left: auto;
+      font-size: 7.5pt;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .endpoint-body {
+      padding: 3.5mm 4mm 2mm;
+    }
+
+    .endpoint-body p { font-size: 9.5pt; color: var(--ink-soft); }
+
+    /* ——— TOC ——— */
+    .toc-list {
+      list-style: none;
+      margin: 6mm 0 0;
+      padding: 0;
+    }
+
+    .toc-list li {
+      display: flex;
+      align-items: baseline;
+      gap: 3mm;
+      padding: 3.2mm 0;
+      border-bottom: 1px solid #ebe4d8;
+      margin: 0;
+    }
+
+    .toc-list .n {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 14pt;
+      color: var(--gold-dark);
+      width: 10mm;
+      flex-shrink: 0;
+    }
+
+    .toc-list .t {
+      font-size: 11pt;
+      font-weight: 500;
+      color: var(--bg);
+      flex: 1;
+    }
+
+    .toc-list .d {
+      font-size: 8.5pt;
+      color: var(--muted);
+      max-width: 70mm;
+      text-align: right;
+    }
+
+    /* ——— Glossary ——— */
+    .glossary-row {
+      display: grid;
+      grid-template-columns: 38mm 1fr;
+      gap: 3mm;
+      padding: 2.5mm 0;
+      border-bottom: 1px solid #ebe4d8;
+    }
+
+    .glossary-row .term {
+      font-weight: 600;
+      color: var(--bg);
+      font-size: 9.5pt;
+    }
+
+    .glossary-row .def {
+      color: var(--ink-soft);
+      font-size: 9.5pt;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 2.5mm;
+      flex-wrap: wrap;
+      margin: 2mm 0 4mm;
+    }
+
+    .http {
+      display: inline-block;
+      min-width: 9mm;
+      text-align: center;
+      font-family: monospace;
+      font-size: 8pt;
+      font-weight: 700;
+      padding: 0.5mm 1.5mm;
+      border-radius: 2px;
+      background: #eef2f1;
+      color: var(--bg);
+    }
+
+    .http.ok { background: #d5e8df; color: #1f5c45; }
+    .http.warn { background: #f0e6d0; color: #8a6a2e; }
+    .http.err { background: #ecdada; color: #7a3030; }
+    .http.info { background: #dce6ef; color: #2a4a6b; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6mm;
+    }
+
+    .small { font-size: 8.5pt; color: var(--ink-soft); }
+
+    .section-rule {
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent 70%);
+      margin: 0 0 5mm;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== COVER ===================== -->
+  <section class="cover">
+    <div class="cover-inner">
+      <img class="cover-logo" src="data:image/png;base64,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vLDwG/eE8/s3BCkeAAAACXBIWXMAAC4jAAAuIwF4pT92AAADamlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSfvu78nIGlkPSdXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQnPz4NCjx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iPjxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9InV1aWQ6ZmFmNWJkZDUtYmEzZC0xMWRhLWFkMzEtZDMzZDc1MTgyZjFiIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iPjxkYzpjcmVhdG9yPjxyZGY6U2VxIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpsaT5ndWF5bWFsbGVuPC9yZGY6bGk+PC9yZGY6U2VxPg0KCQkJPC9kYzpjcmVhdG9yPjwvcmRmOkRlc2NyaXB0aW9uPjxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSJ1dWlkOmZhZjViZGQ1LWJhM2QtMTFkYS1hZDMxLWQzM2Q3NTE4MmYxYiIgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iPjxleGlmOkRhdGVUaW1lT3JpZ2luYWw+MjAyNS0xMS0xN1QwODowODowNS43NzY8L2V4aWY6RGF0ZVRpbWVPcmlnaW5hbD48L3JkZjpEZXNjcmlwdGlvbj48cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0idXVpZDpmYWY1YmRkNS1iYTNkLTExZGEtYWQzMS1kMzNkNzUxODJmMWIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyI+PHhtcDpDcmVhdGVEYXRlPjIwMjUtMTEtMTdUMDg6MDg6MDUuNzc2PC94bXA6Q3JlYXRlRGF0ZT48L3JkZjpEZXNjcmlwdGlvbj48L3JkZjpSREY+PC94OnhtcG1ldGE+DQo8P3hw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" alt="Desert" />
+      <div class="cover-eyebrow">Documentación oficial</div>
+      <h1>Manual de<br /><em>Usuario</em></h1>
+      <div class="cover-rule"></div>
+      <p class="cover-sub">
+        Guía completa del panel de administración y la API de invitaciones,
+        confirmaciones y accesos de Desert Eventos.
+      </p>
+    </div>
+    <div class="cover-footer">
+      <span>deserteventos.com.ar</span>
+      <span>Backend · 2026</span>
+    </div>
+  </section>
+
+  <!-- ===================== TOC ===================== -->
+  <section class="page">
+    <div class="page-header">
+      <span class="brand">Desert Eventos</span>
+      <span class="section-label">Índice</span>
+    </div>
+
+    <h2>Contenidos</h2>
+    <hr class="section-rule" />
+    <p class="lead">
+      Este manual está pensado para el equipo de Desert y para quienes integran
+      la app mobile o el scanner de puerta con el backend.
+    </p>
+
+    <ol class="toc-list">
+      <li>
+        <span class="n">01</span>
+        <span class="t">Introducción y visión general</span>
+        <span class="d">Qué es el sistema y cómo fluye</span>
+      </li>
+      <li>
+        <span class="n">02</span>
+        <span class="t">Acceso al panel admin</span>
+        <span class="d">Login, sesión y dashboard</span>
+      </li>
+      <li>
+        <span class="n">03</span>
+        <span class="t">Usuarios administradores</span>
+        <span class="d">Alta, edición y baja</span>
+      </li>
+      <li>
+        <span class="n">04</span>
+        <span class="t">Eventos</span>
+        <span class="d">Crear, filtrar y tipificar</span>
+      </li>
+      <li>
+        <span class="n">05</span>
+        <span class="t">Invitaciones</span>
+        <span class="d">Manual, Excel, estados y selfie</span>
+      </li>
+      <li>
+        <span class="n">06</span>
+        <span class="t">Accesos en puerta</span>
+        <span class="d">Consulta y registro QR</span>
+      </li>
+      <li>
+        <span class="n">07</span>
+        <span class="t">API — App mobile</span>
+        <span class="d">Consulta y confirmación</span>
+      </li>
+      <li>
+        <span class="n">08</span>
+        <span class="t">API — Scanner</span>
+        <span class="d">Entry y check-in</span>
+      </li>
+      <li>
+        <span class="n">09</span>
+        <span class="t">Glosario y códigos HTTP</span>
+        <span class="d">Referencia rápida</span>
+      </li>
+    </ol>
+
+    <div class="callout" style="margin-top: 10mm;">
+      <p>
+        <strong>Audiencias.</strong>
+        Capítulos 02–06 → staff Desert (panel web).
+        Capítulos 07–08 → integradores de app y scanner.
+        Capítulo 09 → consulta rápida para ambos.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <span>Manual de Usuario · Desert Backend</span>
+      <span>deserteventos.com.ar</span>
+    </div>
+  </section>
+
+  <!-- ===================== 01 ===================== -->
+  <section class="page">
+    <div class="page-header">
+      <span class="brand">Desert Eventos</span>
+      <span class="section-label">Capítulo 01</span>
+    </div>
+
+    <h2><span class="num">01</span>Introducción</h2>
+    <hr class="section-rule" />
+    <p class="lead">
+      Desert Backend centraliza la gestión de eventos, invitados e invitaciones,
+      y conecta la confirmación desde la app con el control de acceso en puerta.
+    </p>
+
+    <div class="grid-2">
+      <div class="card dark">
+        <div class="label">Panel Admin</div>
+        <p>
+          Interfaz web para el equipo Desert: usuarios, eventos, invitaciones
+          (alta manual e importación Excel) y listado de ingresos.
+        </p>
+      </div>
+      <div class="card dark">
+        <div class="label">API</div>
+        <p>
+          Endpoints para la app mobile (consulta + confirmación con selfie)
+          y para el scanner de puerta (datos del invitado + check-in QR).
+        </p>
+      </div>
+    </div>
+
+    <h3>Flujo de negocio</h3>
+    <div class="flow">
+      <div class="flow-step">
+        <span class="n">1</span>
+        <span class="t">Admin crea<br />evento e invitaciones</span>
+      </div>
+      <div class="flow-arrow">›</div>
+      <div class="flow-step">
+        <span class="n">2</span>
+        <span class="t">Invitado confirma<br />en la app + selfie</span>
+      </div>
+      <div class="flow-arrow">›</div>
+      <div class="flow-step">
+        <span class="n">3</span>
+        <span class="t">Scanner lee QR<br />y muestra datos</span>
+      </div>
+      <div class="flow-arrow">›</div>
+      <div class="flow-step">
+        <span class="n">4</span>
+        <span class="t">Se registra<br />el ingreso</span>
+      </div>
+    </div>
+
+    <h3>Modelo de dominio</h3>
+    <div class="grid-3">
+      <div class="card">
+        <div class="label">Evento</div>
+        <p class="small">Casamiento, cumpleaños, graduación, corporativo o privado. Tiene fechas y muchas invitaciones.</p>
+      </div>
+      <div class="card">
+        <div class="label">Invitado</div>
+        <p class="small">Persona identificada por documento (DNI o pasaporte). Puede tener varias invitaciones a distintos eventos.</p>
+      </div>
+      <div class="card">
+        <div class="label">Invitación + Acceso</div>
+        <p class="small">Une invitado y evento con un código único. El acceso registra un único ingreso por invitación.</p>
+      </div>
+    </div>
+
+    <h3>Estados de una invitación</h3>
+    <div class="badge-row">
+      <span class="pill pill-pending">Pending · Pendiente</span>
+      <span class="pill pill-confirmed">Confirmed · Confirmada</span>
+      <span class="pill pill-cancelled">Cancelled · Cancelada</span>
+    </div>
+    <ul>
+      <li><strong>Pendiente</strong> — creada, aún no confirmada por el invitado.</li>
+      <li><strong>Confirmada</strong> — el invitado validó datos y envió selfie; lista para ingresar.</li>
+      <li><strong>Cancelada</strong> — no puede usarse en app ni en puerta.</li>
+    </ul>
+
+    <div class="page-footer">
+      <span>Manual de Usuario · Desert Backend</span>
+      <span>01 · Introducción</span>
+    </div>
+  </section>
+
+  <!-- ===================== 02 ===================== -->
+  <section class="page">
+    <div class="page-header">
+      <span class="brand">Desert Eventos</span>
+      <span class="section-label">Capítulo 02</span>
+    </div>
+
+    <h2><span class="num">02</span>Acceso al panel</h2>
+    <hr class="section-rule" />
+    <p class="lead">
+      El panel se usa con sesión web (email y contraseña). No hay registro público:
+      los usuarios los crea otro administrador.
+    </p>
+
+    <h3>Iniciar sesión</h3>
+    <ol>
+      <li>Abrí la URL del sistema (por ejemplo <code>https://tu-dominio/login</code>).</li>
+      <li>Ingresá <strong>email</strong> y <strong>contraseña</strong>.</li>
+      <li>Opcional: marcá “recordarme” para mantener la sesión en ese navegador.</li>
+      <li>Al entrar correctamente vas al <strong>Dashboard</strong> (<code>/admin/dashboard</code>).</li>
+    </ol>
+
+    <div class="callout">
+      <p>
+        <strong>Entorno de demostración.</strong>
+        Tras el seed inicial: email <code>admin@deserteventos.com.ar</code> /
+        contraseña <code>password</code>. Cambiá la contraseña en producción.
+      </p>
+    </div>
+
+    <h3>Cerrar sesión</h3>
+    <p>
+      Desde el menú del panel usá la opción de salir. La ruta es
+      <code>POST /logout</code> y requiere estar autenticado.
+    </p>
+
+    <h3>Mapa rápido del menú</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Sección</th>
+          <th>Ruta</th>
+          <th>Para qué sirve</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Dashboard</td>
+          <td>/admin/dashboard</td>
+          <td>Inicio tras el login</td>
+        </tr>
+        <tr>
+          <td>Eventos</td>
+          <td>/admin/events</td>
+          <td>CRUD de eventos e invitaciones</td>
+        </tr>
+        <tr>
+          <td>Usuarios</td>
+          <td>/admin/users</td>
+          <td>Administradores del sistema</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="page-footer">
+      <span>Manual de Usuario · Desert Backend</span>
+      <span>02 · Acceso al panel</span>
+    </div>
+  </section>
+
+  <!-- ===================== 03 ===================== -->
+  <section class="page">
+    <div class="page-header">
+      <span class="brand">Desert Eventos</span>
+      <span class="section-label">Capítulo 03</span>
+    </div>
+
+    <h2><span class="num">03</span>Usuarios administradores</h2>
+    <hr class="section-rule" />
+    <p class="lead">
+      Los usuarios del panel tienen acceso completo a la administración.
+      No hay roles granulares: cualquier cuenta autenticada opera todo el admin.
+    </p>
+
+    <h3>Crear un usuario</h3>
+    <ol>
+      <li>Andá a <strong>Usuarios</strong> → <strong>Crear</strong>.</li>
+      <li>Completá nombre, email y contraseña (con confirmación).</li>
+      <li>Guardá. El email debe ser único en el sistema.</li>
+    </ol>
+
+    <h3>Editar o eliminar</h3>
+    <ul>
+      <li><strong>Editar</strong> — podés actualizar nombre, email y, si querés, una nueva contraseña.</li>
+      <li><strong>Eliminar</strong> — borrá cuentas que ya no se usen. No podés eliminar tu propia sesión activa.</li>
+    </ul>
+
+    <div class="card" style="margin-top: 5mm;">
+      <div class="label">Buenas prácticas</div>
+      <ul style="margin-bottom: 0;">
+        <li>Usá contraseñas fuertes y distintas por persona.</li>
+        <li>No compartas la cuenta genérica de demo en producción.</li>
+        <li>Revisá periódicamente el listado y eliminá accesos obsoletos.</li>
+      </ul>
+    </div>
+
+    <div class="page-footer">
+      <span>Manual de Usuario · Desert Backend</span>
+      <span>03 · Usuarios</span>
+    </div>
+  </section>
+
+  <!-- ===================== 04 ===================== -->
+  <section class="page">
+    <div class="page-header">
+      <span class="brand">Desert Eventos</span>
+      <span class="section-label">Capítulo 04</span>
+    </div>
+
+    <h2><span class="num">04</span>Eventos</h2>
+    <hr class="section-rule" />
+    <p class="lead">
+      Un evento es el contenedor principal: tiene nombre, fechas, tipo,
+      e invita a un conjunto de personas.
+    </p>
+
+    <h3>Crear un evento</h3>
+    <ol>
+      <li>Menú <strong>Eventos</strong> → <strong>Crear</strong>.</li>
+      <li>Completá:
+        <ul>
+          <li><strong>Nombre</strong> — ej. “Casamiento Pérez”.</li>
+          <li><strong>Fecha inicio</strong> y <strong>fecha fin</strong> (la fin no puede ser anterior a la inicio).</li>
+          <li><strong>Tipo</strong> — ver tabla abajo.</li>
+        </ul>
+      </li>
+      <li>Guardá. Desde el listado podés entrar a invitaciones y accesos de ese evento.</li>
+    </ol>
+
+    <h3>Tipos de evento</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Valor</th>
+          <th>Etiqueta</th>
+          <th>Uso típico</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>wedding</td>
+          <td>Casamiento</td>
+          <td>Bodas y celebraciones nupciales</td>
+        </tr>
+        <tr>
+          <td>birthday</td>
+          <td>Cumpleaños</td>
+          <td>Fiestas de cumpleaños</td>
+        </tr>
+        <tr>
+          <td>graduation</td>
+          <td>Graduación</td>
+          <td>Egresos y actos académicos</td>
+        </tr>
+        <tr>
+          <td>corporate</td>
+          <td>Corporativo</td>
+          <td>Eventos de empresa</td>
+        </tr>
+        <tr>
+          <td>private</td>
+          <td>Privado</td>
+          <td>Otros eventos privados</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Filtros del listado</h3>
+    <p>Podés filtrar eventos por <strong>nombre</strong>, <strong>tipo</strong> y rango de fechas sobre la fecha de inicio.</p>
+
+    <div class="page-footer">
+      <span>Manual de Usuario · Desert Backend</span>
+      <span>04 · Eventos</span>
+    </div>
+  </section>
+
+  <!-- ===================== 05 ===================== -->
+  <section class="page">
+    <div class="page-header">
+      <span class="brand">Desert Eventos</span>
+      <span class="section-label">Capítulo 05</span>
+    </div>
+
+    <h2><span class="num">05</span>Invitaciones</h2>
+    <hr class="section-rule" />
+    <p class="lead">
+      Cada invitación vincula un invitado a un evento, genera un código único
+      (base del QR) y atraviesa los estados pendiente → confirmada / cancelada.
+    </p>
+
+    <h3>Alta manual</h3>
+    <ol>
+      <li>Abrí el evento → <strong>Invitaciones</strong> → <strong>Crear</strong>.</li>
+      <li>Completá nombre, apellido, número de documento y tipo (<code>dni</code> o <code>passport</code>).</li>
+      <li>Al guardar:
+        <ul>
+          <li>Si el documento es nuevo, se crea el invitado.</li>
+          <li>Si ya existe, se reutiliza (y se actualizan nombre/apellido si cambian).</li>
+          <li>Se genera un <strong>código de 8 caracteres</strong> (A–Z y 0–9).</li>
+          <li>Estado inicial: <span class="pill pill-pending">Pendiente</span>.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="callout">
+      <p>
+        Un mismo invitado no puede tener dos invitaciones en el mismo evento.
+        Sí puede estar invitado a varios eventos distintos.
+      </p>
+    </div>
+
+    <h3>Importación Excel / CSV</h3>
+    <p>
+      Ideal para listas largas. Desde el evento: <strong>Importar</strong>.
+      Podés descargar la plantilla CSV de ejemplo.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Columna</th>
+          <th>Aliases aceptados</th>
+          <th>Ejemplo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Nombre</td>
+          <td>Nombre, first_name, name</td>
+          <td>Juan</td>
+        </tr>
+        <tr>
+          <td>Apellido</td>
+          <td>Apellido, last_name</td>
+          <td>Pérez</td>
+        </tr>
+        <tr>
+          <td>DNI</td>
+          <td>DNI, documento, document_number</td>
+          <td>30111222</td>
+        </tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Formatos: <code>.xlsx</code>, <code>.xls</code>, <code>.csv</code> (máx. 10&nbsp;MB).</li>
+      <li>La importación usa siempre tipo de documento <strong>DNI</strong>.</li>
+      <li>DNI nuevo → crea invitado + invitación. DNI existente → reutiliza. Ya invitado al evento → omite.</li>
+    </ul>
+
+    <h3>Detalle, edición y selfie</h3>
+    <ul>
+      <li><strong>Ver detalle</strong> — datos del invitado, código, estado y selfie (si confirmó).</li>
+      <li><strong>Editar</strong> — podés corregir datos del guest y cambiar el estado.
+        Si pasás a confirmada se mantiene/asigna <code>confirmed_at</code>; si no, se limpia.</li>
+      <li><strong>Filtros</strong> — nombre, documento, código y estado.</li>
+    </ul>
+
+    <div class="page-footer">
+      <span>Manual de Usuario · Desert Backend</span>
+      <span>05 · Invitaciones</span>
+    </div>
+  </section>
+
+  <!-- ===================== 06 ===================== -->
+  <section class="page">
+    <div class="page-header">
+      <span class="brand">Desert Eventos</span>
+      <span class="section-label">Capítulo 06</span>
+    </div>
+
+    <h2><span class="num">06</span>Accesos en puerta</h2>
+    <hr class="section-rule" />
+    <p class="lead">
+      El listado de accesos del admin muestra quién ya ingresó a un evento.
+      El registro en vivo lo hace el scanner vía API (capítulo 08).
+    </p>
+
+    <h3>Consultar ingresos desde el admin</h3>
+    <ol>
+      <li>Abrí el evento → <strong>Accesos</strong>.</li>
+      <li>Vas a ver cada ingreso con snapshot de nombre, documento, código y hora.</li>
+      <li>Filtrá por nombre, documento, código o rango de fechas de ingreso.</li>
+    </ol>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">Regla clave</div>
+        <p class="small">Solo hay <strong>un acceso por invitación</strong>. Un segundo intento desde el scanner se rechaza.</p>
+      </div>
+      <div class="card">
+        <div class="label">Requisito</div>
+        <p class="small">La invitación debe estar <span class="pill pill-confirmed">Confirmada</span> antes de poder registrar el ingreso.</p>
+      </div>
+    </div>
+
+    <h3>Qué ve el personal de puerta (vía scanner)</h3>
+    <ul>
+      <li>Datos del invitado y del evento.</li>
+      <li>Selfie de confirmación (si existe).</li>
+      <li>Si ya ingresó y la hora del primer acceso.</li>
+    </ul>
+
+    <div class="page-footer">
+      <span>Manual de Usuario · Desert Backend</span>
+      <span>06 · Accesos</span>
+    </div>
+  </section>
+
+  <!-- ===================== 07 ===================== -->
+  <section class="page">
+    <div class="page-header">
+      <span class="brand">Desert Eventos</span>
+      <span class="section-label">Capítulo 07</span>
+    </div>
+
+    <h2><span class="num">07</span>API — App mobile</h2>
+    <hr class="section-rule" />
+    <p class="lead">
+      Base: <code>{APP_URL}/api</code>. Sin token: el acceso se autoriza con el
+      <strong>código de invitación</strong>. Límite: 30 solicitudes/minuto.
+    </p>
+
+    <!-- GET show -->
+    <div class="endpoint">
+      <div class="endpoint-head">
+        <span class="method get">GET</span>
+        <span class="endpoint-path">/api/invitations/{code}</span>
+        <span class="endpoint-meta">Datos básicos</span>
+      </div>
+      <div class="endpoint-body">
+        <p>Devuelve evento, invitado y estado. El código se normaliza a mayúsculas.</p>
+        <table>
+          <thead><tr><th>HTTP</th><th>Significado</th></tr></thead>
+          <tbody>
+            <tr><td><span class="http ok">200</span></td><td>Invitación encontrada</td></tr>
+            <tr><td><span class="http err">404</span></td><td>Código inexistente</td></tr>
+            <tr><td><span class="http warn">410</span></td><td>Invitación cancelada</td></tr>
+          </tbody>
+        </table>
+        <pre>{
+  <span class="k">"code"</span>: <span class="s">"L6QXJO5F"</span>,
+  <span class="k">"status"</span>: <span class="s">"pending"</span>,
+  <span class="k">"event"</span>: { <span class="k">"id"</span>: 1, <span class="k">"name"</span>: <span class="s">"Casamiento Pérez"</span>, … },
+  <span class="k">"guest"</span>: { <span class="k">"first_name"</span>: <span class="s">"Juan"</span>, <span class="k">"document_number"</span>: <span class="s">"30111222"</span>, … },
+  <span class="k">"confirmed_at"</span>: null,
+  <span class="k">"selfie_url"</span>: null
+}</pre>
+      </div>
+    </div>
+
+    <!-- POST confirm -->
+    <div class="endpoint">
+      <div class="endpoint-head">
+        <span class="method post">POST</span>
+        <span class="endpoint-path">/api/invitations/{code}/confirm</span>
+        <span class="endpoint-meta">multipart/form-data</span>
+      </div>
+      <div class="endpoint-body">
+        <p>El invitado confirma asistencia, actualiza nombre y envía selfie. Solo si está <em>pending</em>.</p>
+        <table>
+          <thead><tr><th>Campo</th><th>Reglas</th></tr></thead>
+          <tbody>
+            <tr><td>first_name</td><td>Requerido, máx. 255</td></tr>
+            <tr><td>last_name</td><td>Requerido, máx. 255</td></tr>
+            <tr><td>document_number</td><td>Requerido; debe coincidir con la invitación</td></tr>
+            <tr><td>id_type</td><td><code>dni</code> o <code>passport</code></td></tr>
+            <tr><td>selfie</td><td>Imagen requerida, máx. 5&nbsp;MB</td></tr>
+          </tbody>
+        </table>
+        <table>
+          <thead><tr><th>HTTP</th><th>Significado</th></tr></thead>
+          <tbody>
+            <tr><td><span class="http ok">200</span></td><td>Confirmada correctamente</td></tr>
+            <tr><td><span class="http err">404</span></td><td>No encontrada</td></tr>
+            <tr><td><span class="http warn">409</span></td><td>Ya estaba confirmada</td></tr>
+            <tr><td><span class="http warn">410</span></td><td>Cancelada</td></tr>
+            <tr><td><span class="http info">422</span></td><td>Validación o documento no coincide</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>Manual de Usuario · Desert Backend</span>
+      <span>07 · API App</span>
+    </div>
+  </section>
+
+  <!-- ===================== 08 ===================== -->
+  <section class="page">
+    <div class="page-header">
+      <span class="brand">Desert Eventos</span>
+      <span class="section-label">Capítulo 08</span>
+    </div>
+
+    <h2><span class="num">08</span>API — Scanner</h2>
+    <hr class="section-rule" />
+    <p class="lead">
+      Endpoints para la puerta. Límite: 60 solicitudes/minuto.
+      Flujo recomendado: consultar <code>/entry</code> y luego registrar con <code>POST /accesses</code>.
+    </p>
+
+    <div class="endpoint">
+      <div class="endpoint-head">
+        <span class="method get">GET</span>
+        <span class="endpoint-path">/api/invitations/{code}/entry</span>
+        <span class="endpoint-meta">Puerta · consulta</span>
+      </div>
+      <div class="endpoint-body">
+        <p>
+          Igual que la consulta de app, más el bloque <code>access</code>
+          (<span class="small">(has_entered / accessed_at)</span>.
+          Permite invitaciones pendientes; bloquea solo las canceladas.
+        </p>
+        <pre>{
+  …
+  <span class="k">"selfie_url"</span>: <span class="s">"https://…/storage/invitations/1/selfie.jpg"</span>,
+  <span class="k">"access"</span>: {
+    <span class="k">"has_entered"</span>: false,
+    <span class="k">"accessed_at"</span>: null
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-head">
+        <span class="method post">POST</span>
+        <span class="endpoint-path">/api/accesses</span>
+        <span class="endpoint-meta">application/json</span>
+      </div>
+      <div class="endpoint-body">
+        <p>Registra el check-in. Body: <code>{ "code": "L6QXJO5F" }</code></p>
+        <table>
+          <thead><tr><th>HTTP</th><th>Significado</th></tr></thead>
+          <tbody>
+            <tr><td><span class="http ok">201</span></td><td>Acceso registrado</td></tr>
+            <tr><td><span class="http err">404</span></td><td>Invitación no encontrada</td></tr>
+            <tr><td><span class="http warn">409</span></td><td>Ya ingresó (incluye accessed_at)</td></tr>
+            <tr><td><span class="http warn">410</span></td><td>Invitación cancelada</td></tr>
+            <tr><td><span class="http info">422</span></td><td>Aún no confirmada</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>Secuencia típica</h3>
+    <pre><span class="c">App mobile                         Backend                      Scanner</span>
+   |                                  |                            |
+   |-- GET /invitations/{code} ------>|                            |
+   |-- POST …/confirm (selfie) ------>|                            |
+   |                                  |                            |
+   |                                  |&lt;-- GET …/entry ------------|
+   |                                  |    (foto + ¿ingresó?)      |
+   |                                  |&lt;-- POST /accesses ---------|
+   |                                  |    { "code": "…" }         |</pre>
+
+    <div class="page-footer">
+      <span>Manual de Usuario · Desert Backend</span>
+      <span>08 · API Scanner</span>
+    </div>
+  </section>
+
+  <!-- ===================== 09 ===================== -->
+  <section class="page">
+    <div class="page-header">
+      <span class="brand">Desert Eventos</span>
+      <span class="section-label">Capítulo 09</span>
+    </div>
+
+    <h2><span class="num">09</span>Glosario y referencia</h2>
+    <hr class="section-rule" />
+
+    <h3>Glosario</h3>
+    <div class="glossary-row">
+      <div class="term">Código / QR</div>
+      <div class="def">Identificador único de 8 caracteres de la invitación. Se lee en la app y en la puerta.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="term">Invitado (Guest)</div>
+      <div class="def">Persona con documento único (DNI o pasaporte). Puede tener varias invitaciones.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="term">Invitación</div>
+      <div class="def">Vínculo guest + evento, con código, estado y selfie opcional.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="term">Selfie</div>
+      <div class="def">Foto enviada al confirmar; se muestra en puerta para validar identidad.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="term">Acceso</div>
+      <div class="def">Registro de ingreso (check-in). Máximo uno por invitación.</div>
+    </div>
+    <div class="glossary-row">
+      <div class="term">has_entered</div>
+      <div class="def">Indicador booleano de si el invitado ya pasó por la puerta.</div>
+    </div>
+
+    <h3 style="margin-top: 7mm;">Códigos HTTP frecuentes</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Cuándo aparece</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="http ok">200 / 201</span></td>
+          <td>Operación exitosa (consulta / acceso creado)</td>
+        </tr>
+        <tr>
+          <td><span class="http err">404</span></td>
+          <td>Código de invitación inexistente</td>
+        </tr>
+        <tr>
+          <td><span class="http warn">409</span></td>
+          <td>Conflicto: ya confirmada o ya ingresó</td>
+        </tr>
+        <tr>
+          <td><span class="http warn">410</span></td>
+          <td>Invitación cancelada (Gone)</td>
+        </tr>
+        <tr>
+          <td><span class="http info">422</span></td>
+          <td>Validación fallida o invitación aún pendiente</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Notas operativas</h3>
+    <ul>
+      <li>Las selfies viven en almacenamiento público; hace falta <code>php artisan storage:link</code>.</li>
+      <li><code>APP_URL</code> define la base de las URLs de selfie.</li>
+      <li>Los mensajes de la API están en español.</li>
+      <li>Fuera de alcance actual: auth por token (Sanctum) y envío automático de códigos por WhatsApp/email.</li>
+    </ul>
+
+    <div class="card dark" style="margin-top: 8mm;">
+      <div class="label">Desert Eventos</div>
+      <p style="margin: 0; font-size: 10pt;">
+        Cada evento, una experiencia única.<br />
+        <span style="color: var(--accent); font-size: 8.5pt;">
+          Manual interno · Backend · deserteventos.com.ar
+        </span>
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <span>Manual de Usuario · Desert Backend</span>
+      <span>09 · Glosario</span>
+    </div>
+  </section>
+
+</body>
+</html>
