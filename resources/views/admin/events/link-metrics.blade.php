@@ -8,11 +8,11 @@
             <div class="flex flex-wrap gap-2" x-data="registrationLinkModalState()">
                 <button type="button"
                         @click="openLinkModal({{ $event->id }}, @js($event->name))"
-                        class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-gold)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
+                        class="inline-flex items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20">
                     {{ __('event.deeplink.open_modal') }}
                 </button>
                 <a href="{{ route('admin.events.invitations.index', $event) }}" wire:navigate
-                   class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-bg)]">
+                   class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
                     {{ __('invitation.index.title') }}
                 </a>
                 <x-registration-link-modal />

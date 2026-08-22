@@ -9,29 +9,29 @@
                 @can('permission', 'deeplink.ver')
                     <button type="button"
                             @click="openLinkModal({{ $event->id }}, @js($event->name))"
-                            class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-gold)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
+                            class="inline-flex items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20">
                         {{ __('event.deeplink.open_modal') }}
                     </button>
                     <a href="{{ route('admin.events.link-metrics', $event) }}" wire:navigate
-                       class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-bg-elevated)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
+                       class="inline-flex items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20">
                         {{ __('event.deeplink.metrics') }}
                     </a>
                 @endcan
                 @can('permission', 'accesos.ver')
                     <a href="{{ route('admin.events.accesses.index', $event) }}" wire:navigate
-                       class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-bg-elevated)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
+                       class="inline-flex items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20">
                         {{ __('access.index.title') }}
                     </a>
                 @endcan
                 @can('permission', 'invitaciones.exportar')
                     <a href="{{ route('admin.events.invitations.export', $event) }}"
-                       class="inline-flex items-center gap-2 rounded-md border border-emerald-700 bg-white px-3 py-2 text-sm font-semibold text-emerald-800 shadow-sm hover:bg-emerald-50">
+                       class="inline-flex items-center gap-2 rounded-md border border-emerald-300/80 bg-emerald-500/20 px-3 py-2 text-sm font-semibold text-emerald-100 shadow-sm hover:bg-emerald-500/30">
                         {{ __('invitation.index.export') }}
                     </a>
                 @endcan
                 @can('permission', 'invitaciones.importar')
                     <a href="{{ route('admin.events.invitations.import', $event) }}" wire:navigate
-                       class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-[var(--desert-accent)] hover:bg-[var(--desert-bg)]">
+                       class="inline-flex items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20">
                         {{ __('invitation.index.import') }}
                     </a>
                 @endcan

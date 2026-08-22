@@ -143,7 +143,7 @@
                     </svg>
                 </button>
                 @isset($header)
-                    <div class="min-w-0 flex-1 [&_*]:!text-white">
+                    <div class="min-w-0 flex-1 text-white">
                         {{ $header }}
                     </div>
                 @else
