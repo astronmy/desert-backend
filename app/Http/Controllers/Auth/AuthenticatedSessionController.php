@@ -31,6 +31,29 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = $request->user();
+        $user?->loadMissing('role.permissions');
+
+        if (! $user?->role || ! $user->role->is_active) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => __('role.messages.inactive_role'),
+            ]);
+        }
+
+        if ($user->requiresEvent() && ! $user->event_id) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => __('role.messages.client_needs_event'),
+            ]);
+        }
+
         return redirect()->intended(route('admin.dashboard'));
     }
 

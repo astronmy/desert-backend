@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\DocumentType;
 use App\Enums\InvitationStatus;
+use App\Exports\InvitationsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Invitation\BulkUpdateInvitationsRequest;
 use App\Http\Requests\Admin\Invitation\ImportInvitationsRequest;
@@ -18,6 +19,8 @@ use App\Services\Invitations\ModerateInvitationsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EventInvitationController extends Controller
@@ -240,6 +243,13 @@ class EventInvitationController extends Controller
         return redirect()
             ->route('admin.events.invitations.index', $event)
             ->with('status', __('invitation.import.summary', $summary));
+    }
+
+    public function export(Event $event): BinaryFileResponse
+    {
+        $filename = 'invitaciones-evento-'.$event->id.'-'.now()->format('Ymd-His').'.xlsx';
+
+        return Excel::download(new InvitationsExport($event), $filename);
     }
 
     private function ensureInvitationBelongsToEvent(Event $event, Invitation $invitation): void

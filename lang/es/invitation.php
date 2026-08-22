@@ -19,6 +19,7 @@ return [
         'subtitle' => 'Evento: :name',
         'new' => 'Nueva invitación',
         'import' => 'Importar Excel',
+        'export' => 'Exportar Excel',
         'search_name_placeholder' => 'Buscar por nombre',
         'search_document_placeholder' => 'Buscar por documento',
         'search_code_placeholder' => 'Buscar por código',

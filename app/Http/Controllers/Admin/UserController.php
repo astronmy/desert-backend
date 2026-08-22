@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\StoreUserRequest;
 use App\Http\Requests\Admin\User\UpdateUserRequest;
+use App\Models\Event;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,6 +17,7 @@ class UserController extends Controller
     public function index(Request $request): View
     {
         $users = User::query()
+            ->with(['role', 'event'])
             ->when($request->filled('name'), fn ($q) => $q->where('name', 'like', '%'.$request->string('name').'%'))
             ->when($request->filled('email'), fn ($q) => $q->where('email', 'like', '%'.$request->string('email').'%'))
             ->orderBy('name')
@@ -26,7 +29,7 @@ class UserController extends Controller
 
     public function create(): View
     {
-        return view('admin.users.create');
+        return view('admin.users.create', $this->formData());
     }
 
     public function store(StoreUserRequest $request): RedirectResponse
@@ -39,15 +42,15 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
-        return view('admin.users.edit', compact('user'));
+        return view('admin.users.edit', array_merge($this->formData(), compact('user')));
     }
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $data = $request->safe()->only(['name', 'email']);
+        $data = $request->validated();
 
-        if ($request->filled('password')) {
-            $data['password'] = $request->validated('password');
+        if (empty($data['password'])) {
+            unset($data['password']);
         }
 
         $user->update($data);
@@ -67,5 +70,20 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('status', __('user.messages.deleted'));
+    }
+
+    /**
+     * @return array{roles: \Illuminate\Database\Eloquent\Collection<int, Role>, events: \Illuminate\Database\Eloquent\Collection<int, Event>, rolesMeta: array<int, array{requires_event: bool}>}
+     */
+    private function formData(): array
+    {
+        $roles = Role::query()->where('is_active', true)->orderBy('name')->get();
+        $events = Event::query()->orderByDesc('init_date')->get(['id', 'name']);
+
+        $rolesMeta = $roles->mapWithKeys(fn (Role $role) => [
+            $role->id => ['requires_event' => $role->requires_event],
+        ])->all();
+
+        return compact('roles', 'events', 'rolesMeta');
     }
 }

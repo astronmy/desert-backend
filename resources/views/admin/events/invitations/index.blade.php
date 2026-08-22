@@ -6,31 +6,47 @@
                 <p class="text-sm text-[var(--desert-sand)]">{{ __('invitation.index.subtitle', ['name' => $event->name]) }}</p>
             </div>
             <div class="flex flex-wrap gap-2" x-data="registrationLinkModalState()">
-                <button type="button"
-                        @click="openLinkModal({{ $event->id }}, @js($event->name))"
-                        class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-gold)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
-                    {{ __('event.deeplink.open_modal') }}
-                </button>
-                <a href="{{ route('admin.events.link-metrics', $event) }}" wire:navigate
-                   class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-bg-elevated)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
-                    {{ __('event.deeplink.metrics') }}
-                </a>
-                <a href="{{ route('admin.events.accesses.index', $event) }}" wire:navigate
-                   class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-bg-elevated)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
-                    {{ __('access.index.title') }}
-                </a>
-                <a href="{{ route('admin.events.invitations.import', $event) }}" wire:navigate
-                   class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-[var(--desert-accent)] hover:bg-[var(--desert-bg)]">
-                    {{ __('invitation.index.import') }}
-                </a>
-                <a href="{{ route('admin.events.invitations.create', $event) }}" wire:navigate
-                   class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    {{ __('invitation.index.new') }}
-                </a>
-                <x-registration-link-modal />
+                @can('permission', 'deeplink.ver')
+                    <button type="button"
+                            @click="openLinkModal({{ $event->id }}, @js($event->name))"
+                            class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-gold)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
+                        {{ __('event.deeplink.open_modal') }}
+                    </button>
+                    <a href="{{ route('admin.events.link-metrics', $event) }}" wire:navigate
+                       class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-bg-elevated)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
+                        {{ __('event.deeplink.metrics') }}
+                    </a>
+                @endcan
+                @can('permission', 'accesos.ver')
+                    <a href="{{ route('admin.events.accesses.index', $event) }}" wire:navigate
+                       class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-bg-elevated)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
+                        {{ __('access.index.title') }}
+                    </a>
+                @endcan
+                @can('permission', 'invitaciones.exportar')
+                    <a href="{{ route('admin.events.invitations.export', $event) }}"
+                       class="inline-flex items-center gap-2 rounded-md border border-emerald-700 bg-white px-3 py-2 text-sm font-semibold text-emerald-800 shadow-sm hover:bg-emerald-50">
+                        {{ __('invitation.index.export') }}
+                    </a>
+                @endcan
+                @can('permission', 'invitaciones.importar')
+                    <a href="{{ route('admin.events.invitations.import', $event) }}" wire:navigate
+                       class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-[var(--desert-accent)] hover:bg-[var(--desert-bg)]">
+                        {{ __('invitation.index.import') }}
+                    </a>
+                @endcan
+                @can('permission', 'invitaciones.crear')
+                    <a href="{{ route('admin.events.invitations.create', $event) }}" wire:navigate
+                       class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        {{ __('invitation.index.new') }}
+                    </a>
+                @endcan
+                @can('permission', 'deeplink.ver')
+                    <x-registration-link-modal />
+                @endcan
             </div>
         </div>
     </x-slot>
@@ -43,10 +59,17 @@
     @endif
 
     <div class="mb-4">
-        <a href="{{ route('admin.events.index') }}" wire:navigate class="inline-flex items-center gap-2 text-sm font-medium text-[var(--desert-bg-elevated)] hover:underline">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-            {{ __('admin.actions.back') }}
-        </a>
+        @can('permission', 'eventos.ver')
+            <a href="{{ route('admin.events.index') }}" wire:navigate class="inline-flex items-center gap-2 text-sm font-medium text-[var(--desert-bg-elevated)] hover:underline">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                {{ __('admin.actions.back') }}
+            </a>
+        @else
+            <a href="{{ route('admin.dashboard') }}" wire:navigate class="inline-flex items-center gap-2 text-sm font-medium text-[var(--desert-bg-elevated)] hover:underline">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                {{ __('dashboard.title') }}
+            </a>
+        @endcan
     </div>
 
     <div x-data="{
@@ -101,6 +124,7 @@
         </form>
     </div>
 
+    @can('permission', 'invitaciones.moderar')
     <form method="POST" action="{{ route('admin.events.invitations.bulk', $event) }}" class="mb-3 flex flex-wrap items-center gap-2"
           x-show="selected.length > 0" x-cloak>
         @csrf
@@ -118,17 +142,20 @@
             {{ __('invitation.moderation.reject_selected') }}
         </button>
     </form>
+    @endcan
 
-    @php $pageIds = $invitations->pluck('id')->values(); @endphp
+    @php $pageIds = $invitations->pluck('id')->values(); $canModerate = auth()->user()->canPermission('invitaciones.moderar'); @endphp
     <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-[var(--desert-bg-elevated)]">
                 <tr>
+                    @if ($canModerate)
                     <th class="px-4 py-3">
                         <input type="checkbox"
                                class="rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]"
                                @change="toggleAll($event.target.checked, {{ $pageIds }})" />
                     </th>
+                    @endif
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('guest.attributes.full_name') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('guest.attributes.document_number') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.code') }}</th>
@@ -140,11 +167,13 @@
             <tbody class="divide-y divide-gray-200 bg-white">
                 @forelse($invitations as $invitation)
                     <tr>
+                        @if ($canModerate)
                         <td class="px-4 py-3">
                             <input type="checkbox" value="{{ $invitation->id }}"
                                    class="rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]"
                                    x-model.number="selected" />
                         </td>
+                        @endif
                         <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">{{ $invitation->guest->fullName() }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
                             {{ $invitation->guest->id_type->label() }} {{ $invitation->guest->document_number }}
@@ -169,29 +198,33 @@
                                    class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-gold)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
                                     {{ __('admin.actions.view') }}
                                 </a>
-                                <a href="{{ route('admin.events.invitations.edit', [$event, $invitation]) }}" wire:navigate
-                                   class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-bg-elevated)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-bg)]">
-                                    {{ __('admin.actions.edit') }}
-                                </a>
-                                <form id="form-delete-invitation-{{ $invitation->id }}"
-                                      action="{{ route('admin.events.invitations.destroy', [$event, $invitation]) }}"
-                                      method="POST" class="inline shrink-0">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button"
-                                            data-confirm-label="{{ e($invitation->guest->fullName()) }}"
-                                            data-form-id="form-delete-invitation-{{ $invitation->id }}"
-                                            @click="openModal($event.currentTarget.getAttribute('data-confirm-label'), $event.currentTarget.getAttribute('data-form-id'))"
-                                            class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-red-500">
-                                        {{ __('admin.actions.delete') }}
-                                    </button>
-                                </form>
+                                @can('permission', 'invitaciones.editar')
+                                    <a href="{{ route('admin.events.invitations.edit', [$event, $invitation]) }}" wire:navigate
+                                       class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-bg-elevated)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-bg)]">
+                                        {{ __('admin.actions.edit') }}
+                                    </a>
+                                @endcan
+                                @can('permission', 'invitaciones.eliminar')
+                                    <form id="form-delete-invitation-{{ $invitation->id }}"
+                                          action="{{ route('admin.events.invitations.destroy', [$event, $invitation]) }}"
+                                          method="POST" class="inline shrink-0">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button"
+                                                data-confirm-label="{{ e($invitation->guest->fullName()) }}"
+                                                data-form-id="form-delete-invitation-{{ $invitation->id }}"
+                                                @click="openModal($event.currentTarget.getAttribute('data-confirm-label'), $event.currentTarget.getAttribute('data-form-id'))"
+                                                class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-red-500">
+                                            {{ __('admin.actions.delete') }}
+                                        </button>
+                                    </form>
+                                @endcan
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
+                        <td colspan="{{ $canModerate ? 7 : 6 }}" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>

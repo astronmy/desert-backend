@@ -7,6 +7,7 @@ return [
         'dashboard' => 'Dashboard',
         'events' => 'Eventos',
         'users' => 'Usuarios',
+        'roles' => 'Roles',
     ],
 
     'actions' => [

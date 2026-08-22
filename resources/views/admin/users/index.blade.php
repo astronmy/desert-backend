@@ -2,6 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h1 class="text-xl font-semibold text-white">{{ __('user.index.title') }}</h1>
+            @can('permission', 'usuarios.crear')
             <a href="{{ route('admin.users.create') }}" wire:navigate
                class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -9,6 +10,7 @@
                 </svg>
                 {{ __('user.index.new') }}
             </a>
+            @endcan
         </div>
     </x-slot>
 
@@ -70,6 +72,8 @@
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('user.attributes.name') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('user.attributes.email') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('user.index.role') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('user.index.event') }}</th>
                     <th class="px-4 py-3 text-right text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('admin.table.actions') }}</th>
                 </tr>
             </thead>
@@ -78,8 +82,11 @@
                     <tr>
                         <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">{{ $user->name }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $user->email }}</td>
+                        <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $user->role?->name ?? '—' }}</td>
+                        <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $user->event?->name ?? '—' }}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-2">
+                                @can('permission', 'usuarios.editar')
                                 <a href="{{ route('admin.users.edit', $user) }}" wire:navigate
                                    class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-bg-elevated)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-bg)]">
                                     <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,6 +94,8 @@
                                     </svg>
                                     {{ __('admin.actions.edit') }}
                                 </a>
+                                @endcan
+                                @can('permission', 'usuarios.eliminar')
                                 @if($user->id !== auth()->id())
                                     <form id="form-delete-user-{{ $user->id }}" action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline shrink-0">
                                         @csrf
@@ -103,12 +112,13 @@
                                         </button>
                                     </form>
                                 @endif
+                                @endcan
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="px-4 py-8 text-center text-gray-500">{{ __('user.index.empty') }}</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-gray-500">{{ __('user.index.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>

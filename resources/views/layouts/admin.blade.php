@@ -61,26 +61,41 @@
             <nav class="flex-1 overflow-y-auto py-4 px-3">
                 <ul class="space-y-1">
                     @php
-                        $menuItems = [
+                        $user = auth()->user();
+                        $menuItems = collect([
                             [
                                 'label' => __('admin.menu.dashboard'),
                                 'route' => 'admin.dashboard',
                                 'active' => request()->routeIs('admin.dashboard'),
                                 'icon' => 'dashboard',
+                                'permission' => 'dashboard.ver',
                             ],
                             [
                                 'label' => __('admin.menu.events'),
                                 'route' => 'admin.events.index',
-                                'active' => request()->routeIs('admin.events.*'),
+                                'active' => request()->routeIs('admin.events.index')
+                                    || request()->routeIs('admin.events.create')
+                                    || request()->routeIs('admin.events.edit')
+                                    || request()->routeIs('admin.events.store')
+                                    || request()->routeIs('admin.events.update'),
                                 'icon' => 'events',
+                                'permission' => 'eventos.ver',
                             ],
                             [
                                 'label' => __('admin.menu.users'),
                                 'route' => 'admin.users.index',
                                 'active' => request()->routeIs('admin.users.*'),
                                 'icon' => 'users',
+                                'permission' => 'usuarios.ver',
                             ],
-                        ];
+                            [
+                                'label' => __('admin.menu.roles'),
+                                'route' => 'admin.roles.index',
+                                'active' => request()->routeIs('admin.roles.*'),
+                                'icon' => 'roles',
+                                'permission' => 'roles.ver',
+                            ],
+                        ])->filter(fn ($item) => $user && $user->canPermission($item['permission']))->values();
                     @endphp
                     @foreach($menuItems as $item)
                         <li>
@@ -94,6 +109,10 @@
                                     @elseif($item['icon'] === 'events')
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    @elseif($item['icon'] === 'roles')
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                         </svg>
                                     @else
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

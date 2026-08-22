@@ -13,17 +13,7 @@
                 @csrf
                 @method('PUT')
 
-                <div>
-                    <x-input-label for="name" :value="__('user.attributes.name')" />
-                    <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus />
-                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                </div>
-
-                <div>
-                    <x-input-label for="email" :value="__('user.attributes.email')" />
-                    <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                </div>
+                @include('admin.users._role_fields', ['user' => $user])
 
                 <div>
                     <x-input-label for="password" :value="__('user.attributes.new_password')" />

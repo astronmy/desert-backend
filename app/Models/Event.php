@@ -39,6 +39,11 @@ class Event extends Model
         ];
     }
 
+    public function clients(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
     public function invitations(): HasMany
     {
         return $this->hasMany(Invitation::class);
