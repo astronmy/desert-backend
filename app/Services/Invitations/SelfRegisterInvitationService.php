@@ -50,6 +50,8 @@ class SelfRegisterInvitationService
                 ->where('guest_id', $guest->id)
                 ->first();
 
+            Log::info('existing', [$event->id, $guest->id, $existing]);
+
             if ($existing) {
                 if ($existing->status === InvitationStatus::Cancelled) {
                     throw ValidationException::withMessages([
