@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Admin\Invitation;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class GenerateDeeplinkRequest extends FormRequest
+class BulkUpdateInvitationsRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -17,7 +18,9 @@ class GenerateDeeplinkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'days' => ['nullable', 'integer', 'min:1', 'max:365'],
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+            'action' => ['required', Rule::in(['approve', 'reject'])],
         ];
     }
 }

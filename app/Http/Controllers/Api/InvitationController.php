@@ -63,6 +63,10 @@ class InvitationController extends Controller
             return response()->json(['message' => 'La invitación está cancelada.'], 410);
         }
 
+        if ($invitation->status !== InvitationStatus::Confirmed) {
+            return response()->json(['message' => 'La invitación aún no está aprobada.'], 422);
+        }
+
         $hasEntered = $invitation->access !== null;
 
         return response()->json([

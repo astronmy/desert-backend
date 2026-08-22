@@ -1,41 +1,28 @@
 # Deep links — Desert Backend
 
-Hosting y canje de links de registro de invitaciones para la app Desert Eventos (`desert.rxstudio.dev`).
+Registro abierto por **evento** (caso feliz) + código manual como Plan B.
 
-## Qué hace
+## Flujo feliz
 
-1. Sirve App Links / Universal Links (`.well-known`).
-2. Landing pública en `/activar` (sin redirect a la store).
-3. `POST /api/deeplink/redeem` valida el token HMAC y lo ata a un `Invitation.code`.
-4. El admin genera el link desde la ficha de la invitación.
+1. Admin genera el link en **Editar evento**.
+2. El invitado abre `https://desert.rxstudio.dev/activar?feature=event_register&token=...`
+3. App: `POST /api/deeplink/redeem` → recibe `event_id`
+4. App: `POST /api/events/{id}/register` (datos + selfie) → invitación `pending`
+5. Admin aprueba (1 a 1 o lote) → `confirmed` + stub OneSignal
+6. Puerta: solo `confirmed` puede ingresar (`GET …/entry` y `POST /accesses`)
 
-## Configuración
-
-En `.env`:
-
-```
-DEEPLINK_HMAC_SECRET=...   # obligatorio, secreto solo en servidor
-DEEPLINK_BASE_URL=https://desert.rxstudio.dev
-DEEPLINK_PLAY_STORE_URL=...
-DEEPLINK_APP_STORE_URL=...
-```
-
-## Contrato del token
+## Token
 
 ```
 v1.<base64url(payload)>.<base64url(hmac_sha256(payload_b64, secret))>
 ```
 
-Payload:
-
 ```json
-{ "f": "invite", "c": "L6QXJO5F", "exp": 1767225600, "jti": "<uuid>" }
+{ "f": "event_register", "e": 1, "exp": 1767225600, "jti": "<uuid>" }
 ```
 
-- `f` — feature (`invite`)
-- `c` — código de invitación
-- `exp` — vencimiento unix
-- `jti` — id único (single-use; mismo `device_id` puede re-canjear)
+- `exp` = fin del día de `event.end_date`
+- El link es **reutilizable** (muchas personas); redeem no quema el `jti`
 
 ### Redeem
 
@@ -49,59 +36,42 @@ POST /api/deeplink/redeem
 ```json
 {
   "valid": true,
-  "feature": "invite",
-  "invitation_code": "L6QXJO5F",
+  "feature": "event_register",
+  "event_id": 1,
   "jti": "...",
-  "expires_at": "2026-12-31T23:59:59+00:00"
+  "expires_at": "..."
 }
 ```
 
-422 `reason`: `expired` | `already_used` | `invalid_signature` | `unknown_feature`
+### Auto-registro
 
-## Probar en local (app no publicada)
-
-1. Este Laravel debe servir `https://desert.rxstudio.dev` (o tunnel/DNS apuntando acá).
-2. Verificar archivos:
-
-```bash
-curl -I https://desert.rxstudio.dev/.well-known/assetlinks.json
-curl -I https://desert.rxstudio.dev/.well-known/apple-app-site-association
-curl -I "https://desert.rxstudio.dev/activar?feature=invite&token=test"
+```
+POST /api/events/{event}/register
+multipart: first_name, last_name, document_number, id_type, selfie
 ```
 
-Deben ser **HTTP 200**, HTTPS válido, **sin redirects**, `Content-Type: application/json` en los well-known.
+201 → invitación `pending` con `code` y `selfie_url`.
 
-3. Generar link:
+## Config `.env`
 
-```bash
-php artisan deeplink:generate CODIGO --days=30
+```
+DEEPLINK_HMAC_SECRET=
+DEEPLINK_BASE_URL=https://desert.rxstudio.dev
+DEEPLINK_PLAY_STORE_URL=...
+DEEPLINK_APP_STORE_URL=...
+ONESIGNAL_APP_ID=
+ONESIGNAL_API_KEY=
 ```
 
-O desde Admin → Evento → Invitación → Detalle → **Generar link**.
+CLI: `php artisan deeplink:generate {eventId}`
 
-4. Mientras App Links no verifique, usá el custom scheme:
+## Plan B
 
-```bash
-adb shell am start -a android.intent.action.VIEW \
-  -d "deserteventos://activar?feature=invite&token=TOKEN"
-```
+`GET/POST /api/invitations/{code}` y `…/confirm` siguen disponibles (código manual).
 
-O forzá verificación:
+## App (cambio mínimo)
 
-```bash
-adb shell pm set-app-links --package ar.com.deserteventos.app 1 all
-```
-
-5. Cuando publiquen en Play, agregá el SHA-256 de **Play App Signing** a `public/.well-known/assetlinks.json`.
-
-6. iOS: reemplazá `REEMPLAZAR_TEAM_ID` en `resources/well-known/apple-app-site-association` cuando exista Cap iOS.
-
-## Cambio mínimo en la app (desert-eventos-app)
-
-Hoy la app solo conoce `feature: "premium"` y no abre el onboarding. Para cerrar el flujo:
-
-1. En `FeatureKey` / `KNOWN_FEATURES`, agregar `'invite'`.
-2. En `RedeemResponse` / `DeepLinkValidation`, leer `invitation_code`.
-3. Tras redeem OK: misma lógica que `EnterCodePage.continue` — `validateCode(invitation_code)` y navegar a `/onboarding/datos`.
-
-Sin ese cambio, el backend ya responde bien pero la app marcará `unknown_feature`.
+1. `FeatureKey` / `KNOWN_FEATURES`: `event_register`
+2. Tras redeem: leer `event_id` → onboarding self-register (sin código)
+3. Guardar invitación local como `pending` hasta que admin apruebe
+4. Refrescar status con `GET /invitations/{code}`

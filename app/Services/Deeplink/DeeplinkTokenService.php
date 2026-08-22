@@ -2,14 +2,15 @@
 
 namespace App\Services\Deeplink;
 
-use App\Models\Invitation;
+use App\Models\Event;
+use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
 use RuntimeException;
 
 class DeeplinkTokenService
 {
-    public const FEATURE_INVITE = 'invite';
+    public const FEATURE_EVENT_REGISTER = 'event_register';
 
     public function secret(): string
     {
@@ -27,17 +28,32 @@ class DeeplinkTokenService
         return rtrim((string) config('services.deeplink.base_url', 'https://desert.rxstudio.dev'), '/');
     }
 
+    public function feature(): string
+    {
+        return (string) config('services.deeplink.feature', self::FEATURE_EVENT_REGISTER);
+    }
+
     /**
-     * @return array{token: string, url: string, jti: string, feature: string, invitation_code: string, expires_at: CarbonInterface}
+     * Expiración del link = fin del día de end_date del evento (timezone de la app).
      */
-    public function issue(Invitation $invitation, CarbonInterface $expiresAt): array
+    public function expiresAtForEvent(Event $event): CarbonInterface
+    {
+        return Carbon::parse($event->end_date->format('Y-m-d'), config('app.timezone'))
+            ->endOfDay();
+    }
+
+    /**
+     * @return array{token: string, url: string, jti: string, feature: string, event_id: int, expires_at: CarbonInterface}
+     */
+    public function issue(Event $event): array
     {
         $jti = (string) Str::uuid();
-        $feature = (string) config('services.deeplink.feature', self::FEATURE_INVITE);
+        $feature = $this->feature();
+        $expiresAt = $this->expiresAtForEvent($event);
 
         $payloadJson = json_encode([
             'f' => $feature,
-            'c' => $invitation->code,
+            'e' => $event->id,
             'exp' => $expiresAt->getTimestamp(),
             'jti' => $jti,
         ], JSON_THROW_ON_ERROR);
@@ -53,13 +69,13 @@ class DeeplinkTokenService
             'url' => $url,
             'jti' => $jti,
             'feature' => $feature,
-            'invitation_code' => $invitation->code,
+            'event_id' => $event->id,
             'expires_at' => $expiresAt,
         ];
     }
 
     /**
-     * @return array{f: string, c: string, exp: int, jti: string}|null
+     * @return array{f: string, e: int, exp: int, jti: string}|null
      */
     public function verify(string $token): ?array
     {
@@ -96,14 +112,14 @@ class DeeplinkTokenService
         }
 
         $feature = $payload['f'] ?? null;
-        $code = $payload['c'] ?? null;
+        $eventId = $payload['e'] ?? null;
         $jti = $payload['jti'] ?? null;
         $exp = $payload['exp'] ?? null;
 
         if (! is_string($feature) || $feature === '') {
             return null;
         }
-        if (! is_string($code) || $code === '') {
+        if (! is_numeric($eventId)) {
             return null;
         }
         if (! is_string($jti) || $jti === '') {
@@ -115,7 +131,7 @@ class DeeplinkTokenService
 
         return [
             'f' => $feature,
-            'c' => Str::upper(trim($code)),
+            'e' => (int) $eventId,
             'exp' => (int) $exp,
             'jti' => $jti,
         ];

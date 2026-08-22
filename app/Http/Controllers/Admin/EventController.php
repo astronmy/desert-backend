@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Event\StoreEventRequest;
 use App\Http\Requests\Admin\Event\UpdateEventRequest;
 use App\Models\Event;
+use App\Services\Deeplink\DeeplinkTokenService;
 use App\Services\Events\PersistEventMediaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -102,5 +103,16 @@ class EventController extends Controller
 
         return redirect()->route('admin.events.index')
             ->with('status', __('event.messages.deleted'));
+    }
+
+    public function generateDeeplink(Event $event, DeeplinkTokenService $tokens): RedirectResponse
+    {
+        $issued = $tokens->issue($event);
+
+        return redirect()
+            ->route('admin.events.edit', $event)
+            ->with('status', __('event.deeplink.generated'))
+            ->with('deeplink_url', $issued['url'])
+            ->with('deeplink_expires_at', $issued['expires_at']->timezone(config('app.timezone'))->format('d/m/Y H:i'));
     }
 }

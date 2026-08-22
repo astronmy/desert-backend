@@ -29,7 +29,7 @@ class DeeplinkController extends Controller
         return response()->json([
             'valid' => true,
             'feature' => $result['feature'],
-            'invitation_code' => $result['invitation_code'],
+            'event_id' => $result['event_id'],
             'jti' => $result['jti'],
             'expires_at' => $result['expires_at'],
         ]);

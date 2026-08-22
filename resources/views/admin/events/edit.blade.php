@@ -8,6 +8,42 @@
     </x-slot>
 
     <div class="rounded-lg bg-[var(--desert-surface)] p-4 sm:p-6">
+        @if (session('status'))
+            <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">{{ session('status') }}</div>
+        @endif
+
+        <div class="mb-6 overflow-hidden rounded-lg bg-white shadow-sm">
+            <div class="border-b border-gray-200 bg-[var(--desert-bg)] px-5 py-3">
+                <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--desert-sand)]">{{ __('event.deeplink.title') }}</h2>
+            </div>
+            <div class="space-y-3 p-5">
+                <p class="text-sm text-gray-600">{{ __('event.deeplink.help') }}</p>
+                <form method="POST" action="{{ route('admin.events.deeplink', $event) }}">
+                    @csrf
+                    <button type="submit" class="rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-[var(--desert-bg)] hover:bg-[var(--desert-gold-dark)] hover:text-white">
+                        {{ __('event.deeplink.generate') }}
+                    </button>
+                </form>
+                @if (session('deeplink_url'))
+                    <div>
+                        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">{{ __('event.deeplink.url') }}</p>
+                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <input id="deeplink-url" type="text" readonly value="{{ session('deeplink_url') }}"
+                                   class="w-full rounded-md border-gray-300 bg-gray-50 font-mono text-xs text-gray-800 shadow-sm" />
+                            <button type="button"
+                                    onclick="navigator.clipboard.writeText(document.getElementById('deeplink-url').value)"
+                                    class="shrink-0 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--desert-bg)]">
+                                {{ __('event.deeplink.copy') }}
+                            </button>
+                        </div>
+                        @if (session('deeplink_expires_at'))
+                            <p class="mt-2 text-xs text-gray-500">{{ __('event.deeplink.expires_at', ['date' => session('deeplink_expires_at')]) }}</p>
+                        @endif
+                    </div>
+                @endif
+            </div>
+        </div>
+
         <div class="bg-white overflow-hidden rounded-lg shadow-sm">
             <form action="{{ route('admin.events.update', $event) }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
                 @csrf

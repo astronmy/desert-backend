@@ -44,6 +44,8 @@
         confirmLabel: '',
         confirmValue: '',
         formId: '',
+        selected: [],
+        toggleAll(checked, ids) { this.selected = checked ? ids : []; },
         openModal(label, fid) { this.confirmLabel = label; this.formId = fid; this.confirmValue = ''; this.open = true; },
         close() { this.open = false; this.confirmValue = ''; },
         submit() { if (this.confirmValue === this.confirmLabel && this.formId) { var f = document.getElementById(this.formId); if (f) f.submit(); } this.close(); }
@@ -89,10 +91,34 @@
         </form>
     </div>
 
+    <form method="POST" action="{{ route('admin.events.invitations.bulk', $event) }}" class="mb-3 flex flex-wrap items-center gap-2"
+          x-show="selected.length > 0" x-cloak>
+        @csrf
+        <template x-for="id in selected" :key="id">
+            <input type="hidden" name="ids[]" :value="id" />
+        </template>
+        <span class="text-sm text-gray-700" x-text="selected.length + ' {{ __('invitation.moderation.selected') }}'"></span>
+        <button type="submit" name="action" value="approve"
+                class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
+            {{ __('invitation.moderation.approve_selected') }}
+        </button>
+        <button type="submit" name="action" value="reject"
+                class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500"
+                onclick="return confirm(@js(__('invitation.moderation.confirm_reject')))">
+            {{ __('invitation.moderation.reject_selected') }}
+        </button>
+    </form>
+
+    @php $pageIds = $invitations->pluck('id')->values(); @endphp
     <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-[var(--desert-bg-elevated)]">
                 <tr>
+                    <th class="px-4 py-3">
+                        <input type="checkbox"
+                               class="rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]"
+                               @change="toggleAll($event.target.checked, {{ $pageIds }})" />
+                    </th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('guest.attributes.full_name') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('guest.attributes.document_number') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.code') }}</th>
@@ -104,13 +130,23 @@
             <tbody class="divide-y divide-gray-200 bg-white">
                 @forelse($invitations as $invitation)
                     <tr>
+                        <td class="px-4 py-3">
+                            <input type="checkbox" value="{{ $invitation->id }}"
+                                   class="rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]"
+                                   x-model.number="selected" />
+                        </td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">{{ $invitation->guest->fullName() }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
                             {{ $invitation->guest->id_type->label() }} {{ $invitation->guest->document_number }}
                         </td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm font-mono text-gray-900">{{ $invitation->code }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm">
-                            <span class="inline-flex rounded-full bg-[var(--desert-sand)] px-2.5 py-0.5 text-xs font-medium text-[var(--desert-bg)]">
+                            <span @class([
+                                'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium',
+                                'bg-amber-100 text-amber-800' => $invitation->status->value === 'pending',
+                                'bg-emerald-100 text-emerald-800' => $invitation->status->value === 'confirmed',
+                                'bg-red-100 text-red-800' => $invitation->status->value === 'cancelled',
+                            ])>
                                 {{ $invitation->status->label() }}
                             </span>
                         </td>
@@ -145,7 +181,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>

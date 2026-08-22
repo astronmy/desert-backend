@@ -2,11 +2,8 @@
 
 namespace App\Services\Deeplink;
 
-use App\Enums\InvitationStatus;
-use App\Models\DeeplinkRedemption;
-use App\Models\Invitation;
+use App\Models\Event;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class RedeemDeeplinkService
 {
@@ -15,7 +12,9 @@ class RedeemDeeplinkService
     ) {}
 
     /**
-     * @return array{ok: true, feature: string, invitation_code: string, jti: string, expires_at: string}|array{ok: false, reason: string, message: string}
+     * Token de evento reutilizable: valida firma/exp/evento, no quema jti.
+     *
+     * @return array{ok: true, feature: string, event_id: int, jti: string, expires_at: string}|array{ok: false, reason: string, message: string}
      */
     public function redeem(string $token, string $deviceId): array
     {
@@ -29,7 +28,7 @@ class RedeemDeeplinkService
             ];
         }
 
-        $allowedFeature = (string) config('services.deeplink.feature', DeeplinkTokenService::FEATURE_INVITE);
+        $allowedFeature = $this->tokens->feature();
         if ($payload['f'] !== $allowedFeature) {
             return [
                 'ok' => false,
@@ -48,49 +47,21 @@ class RedeemDeeplinkService
             ];
         }
 
-        $invitation = Invitation::query()
-            ->where('code', $payload['c'])
-            ->first();
-
-        if (! $invitation || $invitation->status === InvitationStatus::Cancelled) {
+        $event = Event::query()->find($payload['e']);
+        if (! $event) {
             return [
                 'ok' => false,
                 'reason' => 'invalid_signature',
-                'message' => 'La invitación no es válida o está cancelada.',
+                'message' => 'El evento del link no existe.',
             ];
         }
 
-        return DB::transaction(function () use ($payload, $deviceId, $invitation) {
-            $existing = DeeplinkRedemption::query()
-                ->where('jti', $payload['jti'])
-                ->lockForUpdate()
-                ->first();
-
-            if ($existing && $existing->device_id !== $deviceId) {
-                return [
-                    'ok' => false,
-                    'reason' => 'already_used',
-                    'message' => 'Este link ya se activó en otro dispositivo.',
-                ];
-            }
-
-            if (! $existing) {
-                DeeplinkRedemption::create([
-                    'jti' => $payload['jti'],
-                    'device_id' => $deviceId,
-                    'feature' => $payload['f'],
-                    'invitation_code' => $invitation->code,
-                    'redeemed_at' => now(),
-                ]);
-            }
-
-            return [
-                'ok' => true,
-                'feature' => $payload['f'],
-                'invitation_code' => $invitation->code,
-                'jti' => $payload['jti'],
-                'expires_at' => Carbon::createFromTimestamp($payload['exp'])->utc()->toIso8601String(),
-            ];
-        });
+        return [
+            'ok' => true,
+            'feature' => $payload['f'],
+            'event_id' => $event->id,
+            'jti' => $payload['jti'],
+            'expires_at' => Carbon::createFromTimestamp($payload['exp'])->utc()->toIso8601String(),
+        ];
     }
 }

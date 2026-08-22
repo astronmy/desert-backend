@@ -40,8 +40,12 @@ return [
         'base_url' => env('DEEPLINK_BASE_URL', 'https://desert.rxstudio.dev'),
         'play_store_url' => env('DEEPLINK_PLAY_STORE_URL', 'https://play.google.com/store/apps/details?id=ar.com.deserteventos.app'),
         'app_store_url' => env('DEEPLINK_APP_STORE_URL', 'https://apps.apple.com/app/id000000000'),
-        'feature' => 'invite',
-        'default_ttl_days' => 30,
+        'feature' => 'event_register',
+    ],
+
+    'onesignal' => [
+        'app_id' => env('ONESIGNAL_APP_ID'),
+        'api_key' => env('ONESIGNAL_API_KEY'),
     ],
 
 ];

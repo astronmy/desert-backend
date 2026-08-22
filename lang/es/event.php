@@ -52,4 +52,14 @@ return [
         'updated' => 'Evento actualizado correctamente.',
         'deleted' => 'Evento eliminado.',
     ],
+
+    'deeplink' => [
+        'title' => 'Link de registro (app)',
+        'help' => 'Un único link compartible. Vence el día de fin del evento. Quien lo abre se registra con selfie y queda pendiente de aprobación.',
+        'generate' => 'Generar / renovar link',
+        'url' => 'URL para enviar',
+        'copy' => 'Copiar',
+        'expires_at' => 'Vence: :date',
+        'generated' => 'Link de registro del evento generado.',
+    ],
 ];
