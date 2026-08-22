@@ -49,6 +49,21 @@ class Event extends Model
         return $this->hasMany(Access::class);
     }
 
+    public function registrationLinks(): HasMany
+    {
+        return $this->hasMany(EventRegistrationLink::class);
+    }
+
+    public function registrationLinkHits(): HasMany
+    {
+        return $this->hasMany(RegistrationLinkHit::class);
+    }
+
+    public function activeRegistrationLink(): ?EventRegistrationLink
+    {
+        return $this->registrationLinks()->active()->latest('id')->first();
+    }
+
     public function images(): HasMany
     {
         return $this->hasMany(EventImage::class)->orderBy('sort_order');

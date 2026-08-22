@@ -4,12 +4,27 @@ Registro abierto por **evento** (caso feliz) + código manual como Plan B.
 
 ## Flujo feliz
 
-1. Admin genera el link en **Editar evento**.
-2. El invitado abre `https://desert.rxstudio.dev/activar?feature=event_register&token=...`
-3. App: `POST /api/deeplink/redeem` → recibe `event_id`
-4. App: `POST /api/events/{id}/register` (datos + selfie) → invitación `pending`
-5. Admin aprueba (1 a 1 o lote) → `confirmed` + stub OneSignal
-6. Puerta: solo `confirmed` puede ingresar (`GET …/entry` y `POST /accesses`)
+1. Admin genera el **short link** (grilla de eventos, editar evento, o invitaciones → “Link de registro”).
+2. Se comparte `https://desert.rxstudio.dev/r/{code}` (8 chars `A-Z0-9`).
+3. `GET /r/{code}` registra una visita y hace **302** a `/activar?feature=event_register&token=...`
+4. App: `POST /api/deeplink/redeem` → recibe `event_id`
+5. App: `POST /api/events/{id}/register` (datos + selfie) → invitación `pending`
+6. Admin aprueba (1 a 1 o lote) → `confirmed` + stub OneSignal
+7. Puerta: solo `confirmed` puede ingresar (`GET …/entry` y `POST /accesses`)
+
+## Short links
+
+| Campo | Detalle |
+|-------|---------|
+| URL pública | `/r/{code}` |
+| Persistencia | `event_registration_links` (token HMAC + `short_code` + `expires_at`) |
+| Activo | **1 link activo por evento**; regenerar pone `revoked_at` al anterior |
+| Admin | `GET/POST /admin/events/{event}/registration-link` (JSON para el modal) |
+| Métricas | `GET /admin/events/{event}/link-metrics` (desde invitaciones del evento) |
+
+Hits en `registration_link_hits` (vistas + clicks a stores). IP solo como `ip_hash`.
+
+Landing `/activar`: botones de tienda disparan `POST /activar/store-click` (`token` o `code` + `store`: `play` \| `app_store`).
 
 ## Token
 
@@ -63,7 +78,7 @@ ONESIGNAL_APP_ID=
 ONESIGNAL_API_KEY=
 ```
 
-CLI: `php artisan deeplink:generate {eventId}`
+CLI: `php artisan deeplink:generate {eventId}` → imprime el **short URL** (y regenera el activo).
 
 ## Plan B
 
@@ -75,3 +90,5 @@ CLI: `php artisan deeplink:generate {eventId}`
 2. Tras redeem: leer `event_id` → onboarding self-register (sin código)
 3. Guardar invitación local como `pending` hasta que admin apruebe
 4. Refrescar status con `GET /invitations/{code}`
+
+La app **no cambia** por los short links: sigue abriendo `/activar?token=...` después del 302.

@@ -30,7 +30,8 @@
         formId: '',
         openModal(label, fid) { this.confirmLabel = label; this.formId = fid; this.confirmValue = ''; this.open = true; },
         close() { this.open = false; this.confirmValue = ''; },
-        submit() { if (this.confirmValue === this.confirmLabel && this.formId) { var f = document.getElementById(this.formId); if (f) f.submit(); } this.close(); }
+        submit() { if (this.confirmValue === this.confirmLabel && this.formId) { var f = document.getElementById(this.formId); if (f) f.submit(); } this.close(); },
+        ...registrationLinkModalState()
     }">
     <div class="mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
         <form method="GET" action="{{ route('admin.events.index') }}" class="flex flex-wrap items-end gap-4">
@@ -100,7 +101,12 @@
                             </span>
                         </td>
                         <td class="px-4 py-3">
-                            <div class="flex items-center justify-end gap-2">
+                            <div class="flex flex-wrap items-center justify-end gap-2">
+                                <button type="button"
+                                        @click="openLinkModal({{ $event->id }}, @js($event->name))"
+                                        class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-white px-2.5 py-1.5 text-xs font-medium text-[var(--desert-bg-elevated)] shadow-sm ring-1 ring-[var(--desert-gold)] hover:bg-[var(--desert-sand)]">
+                                    {{ __('event.deeplink.open_modal') }}
+                                </button>
                                 <a href="{{ route('admin.events.invitations.index', $event) }}" wire:navigate
                                    class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-gold)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
                                     {{ __('invitation.index.title') }}
@@ -155,5 +161,6 @@
         </div>
     </div>
     <x-delete-confirm-modal />
+    <x-registration-link-modal />
     </div>
 </x-admin-layout>

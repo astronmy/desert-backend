@@ -185,7 +185,107 @@
                 }
             };
         }
+
+        function registrationLinkModalState() {
+            return {
+                linkOpen: false,
+                linkLoading: false,
+                linkSaving: false,
+                linkError: '',
+                linkEventId: null,
+                linkEventName: '',
+                linkHasLink: false,
+                linkShortUrl: '',
+                linkExpiresAt: '',
+                linkCopied: false,
+                openLinkModal(eventId, eventName) {
+                    this.linkEventId = eventId;
+                    this.linkEventName = eventName || '';
+                    this.linkOpen = true;
+                    this.linkError = '';
+                    this.linkCopied = false;
+                    this.fetchLink();
+                },
+                closeLinkModal() {
+                    this.linkOpen = false;
+                    this.linkSaving = false;
+                    this.linkLoading = false;
+                },
+                csrfToken() {
+                    const meta = document.querySelector('meta[name="csrf-token"]');
+                    return meta ? meta.getAttribute('content') : '';
+                },
+                linkShowUrl() {
+                    return @json(url('/admin/events')) + '/' + this.linkEventId + '/registration-link';
+                },
+                applyLinkPayload(data) {
+                    this.linkHasLink = !!data.has_link;
+                    this.linkShortUrl = data.short_url || '';
+                    this.linkExpiresAt = data.expires_at || '';
+                },
+                async fetchLink() {
+                    this.linkLoading = true;
+                    this.linkError = '';
+                    try {
+                        const res = await fetch(this.linkShowUrl(), {
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                            credentials: 'same-origin',
+                        });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        this.applyLinkPayload(await res.json());
+                    } catch (e) {
+                        this.linkError = @json(__('event.deeplink.load_error'));
+                    } finally {
+                        this.linkLoading = false;
+                    }
+                },
+                async generateLink() {
+                    await this.postLink();
+                },
+                async regenerateLink() {
+                    if (!window.confirm(@json(__('event.deeplink.regenerate_confirm')))) {
+                        return;
+                    }
+                    await this.postLink();
+                },
+                async postLink() {
+                    this.linkSaving = true;
+                    this.linkError = '';
+                    try {
+                        const res = await fetch(this.linkShowUrl(), {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': this.csrfToken(),
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({}),
+                        });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        this.applyLinkPayload(await res.json());
+                        this.linkCopied = false;
+                    } catch (e) {
+                        this.linkError = @json(__('event.deeplink.save_error'));
+                    } finally {
+                        this.linkSaving = false;
+                    }
+                },
+                async copyLink() {
+                    if (!this.linkShortUrl) return;
+                    try {
+                        await navigator.clipboard.writeText(this.linkShortUrl);
+                        this.linkCopied = true;
+                        setTimeout(() => { this.linkCopied = false; }, 2000);
+                    } catch (e) {
+                        // ignore
+                    }
+                },
+            };
+        }
     </script>
     @livewireScripts
 </body>
 </html>
+

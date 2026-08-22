@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Event;
-use App\Services\Deeplink\DeeplinkTokenService;
+use App\Services\Deeplink\EventRegistrationLinkService;
 use Illuminate\Console\Command;
 
 class DeeplinkGenerateCommand extends Command
@@ -11,9 +11,9 @@ class DeeplinkGenerateCommand extends Command
     protected $signature = 'deeplink:generate
                             {event : ID del evento}';
 
-    protected $description = 'Genera el deep link de registro de un evento (vence con end_date)';
+    protected $description = 'Genera (o regenera) el short link de registro de un evento';
 
-    public function handle(DeeplinkTokenService $tokens): int
+    public function handle(EventRegistrationLinkService $links): int
     {
         $eventId = (int) $this->argument('event');
         $event = Event::query()->find($eventId);
@@ -24,15 +24,15 @@ class DeeplinkGenerateCommand extends Command
             return self::FAILURE;
         }
 
-        $issued = $tokens->issue($event);
+        $link = $links->issueOrRegenerate($event);
 
-        $this->info('Link generado:');
-        $this->line($issued['url']);
+        $this->info('Short link generado:');
+        $this->line($link->shortUrl());
         $this->newLine();
-        $this->line('feature: '.$issued['feature']);
-        $this->line('event_id: '.$issued['event_id']);
-        $this->line('jti: '.$issued['jti']);
-        $this->line('expires_at: '.$issued['expires_at']->toIso8601String());
+        $this->line('long (activar): '.$link->longActivateUrl());
+        $this->line('short_code: '.$link->short_code);
+        $this->line('jti: '.$link->jti);
+        $this->line('expires_at: '.$link->expires_at->toIso8601String());
 
         return self::SUCCESS;
     }

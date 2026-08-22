@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Activar invitación — Desert Eventos</title>
     <style>
         :root {
@@ -96,10 +97,44 @@
             Si no, descargala desde la tienda y volvé a tocar el link.
         </p>
         <div class="actions">
-            <a class="btn btn-primary" href="{{ $playStoreUrl }}">Descargar en Google Play</a>
-            <a class="btn btn-secondary" href="{{ $appStoreUrl }}">Descargar en App Store</a>
+            <a class="btn btn-primary" href="{{ $playStoreUrl }}" data-store="play">Descargar en Google Play</a>
+            <a class="btn btn-secondary" href="{{ $appStoreUrl }}" data-store="app_store">Descargar en App Store</a>
         </div>
         <p class="hint">deserteventos.com.ar</p>
     </main>
+    <script>
+        (function () {
+            const token = @json($token);
+            const code = @json($code ?? null);
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const endpoint = @json(route('activar.store-click'));
+
+            function trackStoreClick(store) {
+                const body = JSON.stringify({ store: store, token: token || null, code: code || null });
+                if (navigator.sendBeacon) {
+                    const blob = new Blob([body], { type: 'application/json' });
+                    // sendBeacon with JSON often needs FormData for CSRF; use fetch keepalive instead
+                }
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrf,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: body,
+                    keepalive: true,
+                    credentials: 'same-origin',
+                }).catch(function () {});
+            }
+
+            document.querySelectorAll('[data-store]').forEach(function (el) {
+                el.addEventListener('click', function () {
+                    trackStoreClick(el.getAttribute('data-store'));
+                });
+            });
+        })();
+    </script>
 </body>
 </html>

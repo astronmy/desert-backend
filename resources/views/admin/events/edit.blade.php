@@ -7,7 +7,7 @@
         </div>
     </x-slot>
 
-    <div class="rounded-lg bg-[var(--desert-surface)] p-4 sm:p-6">
+    <div class="rounded-lg bg-[var(--desert-surface)] p-4 sm:p-6" x-data="registrationLinkModalState()">
         @if (session('status'))
             <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">{{ session('status') }}</div>
         @endif
@@ -18,29 +18,17 @@
             </div>
             <div class="space-y-3 p-5">
                 <p class="text-sm text-gray-600">{{ __('event.deeplink.help') }}</p>
-                <form method="POST" action="{{ route('admin.events.deeplink', $event) }}">
-                    @csrf
-                    <button type="submit" class="rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-[var(--desert-bg)] hover:bg-[var(--desert-gold-dark)] hover:text-white">
-                        {{ __('event.deeplink.generate') }}
+                <div class="flex flex-wrap gap-2">
+                    <button type="button"
+                            @click="openLinkModal({{ $event->id }}, @js($event->name))"
+                            class="rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-[var(--desert-bg)] hover:bg-[var(--desert-gold-dark)] hover:text-white">
+                        {{ __('event.deeplink.open_modal') }}
                     </button>
-                </form>
-                @if (session('deeplink_url'))
-                    <div>
-                        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">{{ __('event.deeplink.url') }}</p>
-                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-                            <input id="deeplink-url" type="text" readonly value="{{ session('deeplink_url') }}"
-                                   class="w-full rounded-md border-gray-300 bg-gray-50 font-mono text-xs text-gray-800 shadow-sm" />
-                            <button type="button"
-                                    onclick="navigator.clipboard.writeText(document.getElementById('deeplink-url').value)"
-                                    class="shrink-0 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--desert-bg)]">
-                                {{ __('event.deeplink.copy') }}
-                            </button>
-                        </div>
-                        @if (session('deeplink_expires_at'))
-                            <p class="mt-2 text-xs text-gray-500">{{ __('event.deeplink.expires_at', ['date' => session('deeplink_expires_at')]) }}</p>
-                        @endif
-                    </div>
-                @endif
+                    <a href="{{ route('admin.events.link-metrics', $event) }}" wire:navigate
+                       class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {{ __('event.deeplink.metrics') }}
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -174,5 +162,6 @@
                 </div>
             </form>
         </div>
+        <x-registration-link-modal />
     </div>
 </x-admin-layout>

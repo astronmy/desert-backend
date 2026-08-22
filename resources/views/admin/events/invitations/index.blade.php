@@ -5,7 +5,16 @@
                 <h1 class="text-xl font-semibold text-white">{{ __('invitation.index.title') }}</h1>
                 <p class="text-sm text-[var(--desert-sand)]">{{ __('invitation.index.subtitle', ['name' => $event->name]) }}</p>
             </div>
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2" x-data="registrationLinkModalState()">
+                <button type="button"
+                        @click="openLinkModal({{ $event->id }}, @js($event->name))"
+                        class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-gold)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
+                    {{ __('event.deeplink.open_modal') }}
+                </button>
+                <a href="{{ route('admin.events.link-metrics', $event) }}" wire:navigate
+                   class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-bg-elevated)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
+                    {{ __('event.deeplink.metrics') }}
+                </a>
                 <a href="{{ route('admin.events.accesses.index', $event) }}" wire:navigate
                    class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-bg-elevated)] bg-white px-3 py-2 text-sm font-semibold text-[var(--desert-bg-elevated)] shadow-sm hover:bg-[var(--desert-sand)]">
                     {{ __('access.index.title') }}
@@ -21,6 +30,7 @@
                     </svg>
                     {{ __('invitation.index.new') }}
                 </a>
+                <x-registration-link-modal />
             </div>
         </div>
     </x-slot>
