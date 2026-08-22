@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AccessController;
+use App\Http\Controllers\Api\DeeplinkController;
 use App\Http\Controllers\Api\InvitationController;
 use Illuminate\Support\Facades\Route;
 
@@ -12,4 +13,5 @@ Route::middleware('throttle:30,1')->group(function () {
 Route::middleware('throttle:60,1')->group(function () {
     Route::get('invitations/{code}/entry', [InvitationController::class, 'entry']);
     Route::post('accesses', [AccessController::class, 'store']);
+    Route::post('deeplink/redeem', [DeeplinkController::class, 'redeem']);
 });

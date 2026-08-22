@@ -101,5 +101,78 @@
                 @endif
             </div>
         </div>
+
+        <div class="overflow-hidden rounded-xl border border-[var(--desert-sand)] bg-white shadow-sm lg:col-span-2">
+            <div class="flex flex-col gap-3 border-b border-[var(--desert-sand)] bg-[var(--desert-bg)] px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--desert-sand)]">{{ __('invitation.deeplink.title') }}</h2>
+                @if($invitation->status->value !== 'cancelled')
+                    <form method="POST" action="{{ route('admin.events.invitations.deeplink', [$event, $invitation]) }}" class="flex flex-wrap items-end gap-2">
+                        @csrf
+                        <div>
+                            <label for="days" class="block text-xs text-[var(--desert-sand)]">{{ __('invitation.deeplink.days') }}</label>
+                            <input id="days" name="days" type="number" min="1" max="365" value="{{ old('days', 30) }}"
+                                   class="mt-1 w-24 rounded-md border-0 bg-white/10 px-2 py-1.5 text-sm text-white ring-1 ring-white/20 focus:ring-[var(--desert-gold)]" />
+                        </div>
+                        <button type="submit"
+                                class="rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-[var(--desert-bg)] hover:bg-[var(--desert-gold-dark)] hover:text-white">
+                            {{ __('invitation.deeplink.generate') }}
+                        </button>
+                    </form>
+                @endif
+            </div>
+            <div class="space-y-4 p-5">
+                @if (session('error'))
+                    <div class="rounded-md bg-red-50 p-3 text-sm text-red-800">{{ session('error') }}</div>
+                @endif
+                @if (session('status') && session('deeplink_url'))
+                    <div class="rounded-md bg-green-50 p-3 text-sm text-green-800">{{ session('status') }}</div>
+                @endif
+                @if (session('deeplink_url'))
+                    <div>
+                        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">{{ __('invitation.deeplink.url') }}</p>
+                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <input id="deeplink-url" type="text" readonly value="{{ session('deeplink_url') }}"
+                                   class="w-full rounded-md border-gray-300 bg-gray-50 font-mono text-xs text-gray-800 shadow-sm" />
+                            <button type="button"
+                                    onclick="navigator.clipboard.writeText(document.getElementById('deeplink-url').value)"
+                                    class="shrink-0 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--desert-bg)]">
+                                {{ __('invitation.deeplink.copy') }}
+                            </button>
+                        </div>
+                        @if (session('deeplink_expires_at'))
+                            <p class="mt-2 text-xs text-gray-500">{{ __('invitation.deeplink.expires_at', ['date' => session('deeplink_expires_at')]) }}</p>
+                        @endif
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">{{ __('invitation.deeplink.help') }}</p>
+                @endif
+
+                <div>
+                    <h3 class="mb-2 text-sm font-semibold text-gray-900">{{ __('invitation.deeplink.redemptions') }}</h3>
+                    @if ($redemptions->isEmpty())
+                        <p class="text-sm text-gray-500">{{ __('invitation.deeplink.no_redemptions') }}</p>
+                    @else
+                        <div class="overflow-x-auto rounded-lg ring-1 ring-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600">{{ __('invitation.deeplink.device_id') }}</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-600">{{ __('invitation.deeplink.redeemed_at') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 bg-white">
+                                    @foreach ($redemptions as $redemption)
+                                        <tr>
+                                            <td class="px-3 py-2 font-mono text-xs text-gray-800">{{ $redemption->device_id }}</td>
+                                            <td class="px-3 py-2 text-gray-700">{{ $redemption->redeemed_at?->format('d/m/Y H:i') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
 </x-admin-layout>

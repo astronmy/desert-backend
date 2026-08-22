@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Activar invitación — Desert Eventos</title>
+    <style>
+        :root {
+            --bg: #182828;
+            --surface: #EAE4D8;
+            --gold: #DCA15B;
+            --gold-dark: #B58543;
+            --accent: #C0B39B;
+            --muted: #919496;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% 0%, rgba(220, 161, 91, 0.14), transparent 55%),
+                linear-gradient(165deg, #1c3231 0%, var(--bg) 50%, #122020 100%);
+            color: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            padding: 36px 28px;
+            border: 1px solid rgba(192, 179, 155, 0.28);
+            border-radius: 12px;
+            background: rgba(39, 60, 59, 0.55);
+            backdrop-filter: blur(8px);
+        }
+        .logo {
+            width: 96px;
+            height: 96px;
+            object-fit: contain;
+            margin: 0 auto 20px;
+            display: block;
+        }
+        h1 {
+            font-size: 1.45rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: 0.01em;
+        }
+        p {
+            color: var(--accent);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 28px;
+        }
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        a.btn {
+            display: block;
+            text-decoration: none;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        a.btn-primary {
+            background: var(--gold);
+            color: var(--bg);
+        }
+        a.btn-primary:hover { background: var(--gold-dark); }
+        a.btn-secondary {
+            background: transparent;
+            color: var(--surface);
+            border: 1px solid rgba(192, 179, 155, 0.45);
+        }
+        a.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+        .hint {
+            margin-top: 22px;
+            font-size: 0.75rem;
+            color: var(--muted);
+            letter-spacing: 0.04em;
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <img class="logo" src="{{ asset('assets/logo-desert.png') }}" alt="Desert Eventos">
+        <h1>Abrí la app para confirmar tu invitación</h1>
+        <p>
+            Si tenés Desert Eventos instalada, este link debería abrirla sola.
+            Si no, descargala desde la tienda y volvé a tocar el link.
+        </p>
+        <div class="actions">
+            <a class="btn btn-primary" href="{{ $playStoreUrl }}">Descargar en Google Play</a>
+            <a class="btn btn-secondary" href="{{ $appStoreUrl }}">Descargar en App Store</a>
+        </div>
+        <p class="hint">deserteventos.com.ar</p>
+    </main>
+</body>
+</html>

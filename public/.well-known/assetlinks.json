@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "ar.com.deserteventos.app",
+      "sha256_cert_fingerprints": [
+        "65:4C:EE:A8:1C:95:6C:F9:47:7E:F2:70:3F:50:CB:E0:E6:D4:DC:C6:9E:1B:5B:3B:3F:52:2C:71:C1:92:D0:E8"
+      ]
+    }
+  }
+]

@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'deeplink' => [
+        'secret' => env('DEEPLINK_HMAC_SECRET'),
+        'base_url' => env('DEEPLINK_BASE_URL', 'https://desert.rxstudio.dev'),
+        'play_store_url' => env('DEEPLINK_PLAY_STORE_URL', 'https://play.google.com/store/apps/details?id=ar.com.deserteventos.app'),
+        'app_store_url' => env('DEEPLINK_APP_STORE_URL', 'https://apps.apple.com/app/id000000000'),
+        'feature' => 'invite',
+        'default_ttl_days' => 30,
+    ],
+
 ];

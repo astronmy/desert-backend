@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\DocumentType;
 use App\Enums\InvitationStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Invitation\GenerateDeeplinkRequest;
 use App\Http\Requests\Admin\Invitation\ImportInvitationsRequest;
 use App\Http\Requests\Admin\Invitation\StoreInvitationRequest;
 use App\Http\Requests\Admin\Invitation\UpdateInvitationRequest;
+use App\Models\DeeplinkRedemption;
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\Invitation;
+use App\Services\Deeplink\DeeplinkTokenService;
 use App\Services\Invitations\ImportEventInvitationsService;
 use App\Services\Invitations\InvitationCodeGenerator;
 use Illuminate\Http\RedirectResponse;
@@ -98,7 +101,37 @@ class EventInvitationController extends Controller
 
         $invitation->load('guest');
 
-        return view('admin.events.invitations.show', compact('event', 'invitation'));
+        $redemptions = DeeplinkRedemption::query()
+            ->where('invitation_code', $invitation->code)
+            ->orderByDesc('redeemed_at')
+            ->limit(20)
+            ->get();
+
+        return view('admin.events.invitations.show', compact('event', 'invitation', 'redemptions'));
+    }
+
+    public function generateDeeplink(
+        GenerateDeeplinkRequest $request,
+        Event $event,
+        Invitation $invitation,
+        DeeplinkTokenService $tokens
+    ): RedirectResponse {
+        $this->ensureInvitationBelongsToEvent($event, $invitation);
+
+        if ($invitation->status === InvitationStatus::Cancelled) {
+            return back()->with('error', __('invitation.deeplink.cancelled'));
+        }
+
+        $days = (int) ($request->validated('days')
+            ?? config('services.deeplink.default_ttl_days', 30));
+
+        $issued = $tokens->issue($invitation, now()->addDays($days));
+
+        return redirect()
+            ->route('admin.events.invitations.show', [$event, $invitation])
+            ->with('status', __('invitation.deeplink.generated'))
+            ->with('deeplink_url', $issued['url'])
+            ->with('deeplink_expires_at', $issued['expires_at']->timezone(config('app.timezone'))->format('d/m/Y H:i'));
     }
 
     public function edit(Event $event, Invitation $invitation): View

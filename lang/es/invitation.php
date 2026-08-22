@@ -67,4 +67,20 @@ return [
         'cancelled' => 'Invitación cancelada.',
         'already_exists' => 'Este invitado ya tiene una invitación para este evento.',
     ],
+
+    'deeplink' => [
+        'title' => 'Link de registro (app)',
+        'generate' => 'Generar link',
+        'days' => 'Vigencia (días)',
+        'url' => 'URL para enviar',
+        'copy' => 'Copiar',
+        'help' => 'Generá un link firmado para que el invitado abra la app sin tipear el código.',
+        'expires_at' => 'Vence: :date',
+        'generated' => 'Link de registro generado.',
+        'cancelled' => 'No se puede generar un link para una invitación cancelada.',
+        'redemptions' => 'Canjes registrados',
+        'no_redemptions' => 'Todavía no hubo canjes de este código.',
+        'device_id' => 'Dispositivo',
+        'redeemed_at' => 'Canjeado',
+    ],
 ];
