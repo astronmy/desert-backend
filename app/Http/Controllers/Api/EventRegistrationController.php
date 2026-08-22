@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\DocumentType;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\EventResource;
 use App\Models\Event;
 use App\Services\Invitations\SelfRegisterInvitationService;
 use Illuminate\Http\JsonResponse;
@@ -27,24 +28,13 @@ class EventRegistrationController extends Controller
 
         $result = $register->register($event, $data, $request->file('selfie'));
         $invitation = $result['invitation'];
+        $invitation->loadMissing(['event.images', 'guest']);
 
         return response()->json([
             'message' => 'Registro recibido. Queda pendiente de aprobación.',
             'code' => $invitation->code,
             'status' => $invitation->status->value,
-            'event' => [
-                'id' => $invitation->event->id,
-                'name' => $invitation->event->name,
-                'init_date' => $invitation->event->init_date->toDateString(),
-                'end_date' => $invitation->event->end_date->toDateString(),
-                'type' => $invitation->event->type->value,
-                'description' => $invitation->event->description,
-                'short_description' => $invitation->event->short_description,
-                'host' => $invitation->event->host,
-                'image_url' => $invitation->event->imageUrl(),
-                'mobile_image_url' => $invitation->event->mobileImageUrl(),
-                'gallery' => $invitation->event->galleryUrls(),
-            ],
+            'event' => EventResource::make($invitation->event)->resolve(),
             'guest' => [
                 'first_name' => $invitation->guest->first_name,
                 'last_name' => $invitation->guest->last_name,

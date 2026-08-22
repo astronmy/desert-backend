@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\DocumentType;
 use App\Enums\InvitationStatus;
 use App\Http\Controllers\Controller;
-use App\Models\Event;
+use App\Http\Resources\Api\EventResource;
 use App\Models\Invitation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,7 +33,7 @@ class InvitationController extends Controller
         return response()->json([
             'code' => $invitation->code,
             'status' => $invitation->status->value,
-            'event' => $this->eventPayload($invitation->event),
+            'event' => EventResource::make($invitation->event)->resolve(),
             'guest' => [
                 'first_name' => $invitation->guest->first_name,
                 'last_name' => $invitation->guest->last_name,
@@ -72,7 +72,7 @@ class InvitationController extends Controller
         return response()->json([
             'code' => $invitation->code,
             'status' => $invitation->status->value,
-            'event' => $this->eventPayload($invitation->event),
+            'event' => EventResource::make($invitation->event)->resolve(),
             'guest' => [
                 'first_name' => $invitation->guest->first_name,
                 'last_name' => $invitation->guest->last_name,
@@ -155,29 +155,5 @@ class InvitationController extends Controller
             'confirmed_at' => $invitation->confirmed_at?->toIso8601String(),
             'selfie_url' => $invitation->selfieUrl(),
         ]);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function eventPayload(Event $event): array
-    {
-        if (! $event->relationLoaded('images')) {
-            $event->load('images');
-        }
-
-        return [
-            'id' => $event->id,
-            'name' => $event->name,
-            'init_date' => $event->init_date->toDateString(),
-            'end_date' => $event->end_date->toDateString(),
-            'type' => $event->type->value,
-            'description' => $event->description,
-            'short_description' => $event->short_description,
-            'host' => $event->host,
-            'image_url' => $event->imageUrl(),
-            'mobile_image_url' => $event->mobileImageUrl(),
-            'gallery' => $event->galleryUrls(),
-        ];
     }
 }
