@@ -73,17 +73,35 @@ class UserController extends Controller
     }
 
     /**
-     * @return array{roles: \Illuminate\Database\Eloquent\Collection<int, Role>, events: \Illuminate\Database\Eloquent\Collection<int, Event>, rolesMeta: array<int, array{requires_event: bool}>}
+     * @return array{
+     *   roles: \Illuminate\Database\Eloquent\Collection<int, Role>,
+     *   eventsForSelect: list<array{id: int, name: string, dates: string, type_label: string}>,
+     *   rolesMeta: array<int|string, array{name: string, requires_event: bool}>
+     * }
      */
     private function formData(): array
     {
         $roles = Role::query()->where('is_active', true)->orderBy('name')->get();
-        $events = Event::query()->orderByDesc('init_date')->get(['id', 'name']);
 
         $rolesMeta = $roles->mapWithKeys(fn (Role $role) => [
-            $role->id => ['requires_event' => $role->requires_event],
+            $role->id => [
+                'name' => $role->name,
+                'requires_event' => $role->requires_event,
+            ],
         ])->all();
 
-        return compact('roles', 'events', 'rolesMeta');
+        $eventsForSelect = Event::query()
+            ->orderByDesc('init_date')
+            ->get(['id', 'name', 'init_date', 'end_date', 'type'])
+            ->map(fn (Event $event) => [
+                'id' => $event->id,
+                'name' => $event->name,
+                'dates' => $event->init_date->format('d/m/Y').' – '.$event->end_date->format('d/m/Y'),
+                'type_label' => $event->type->label(),
+            ])
+            ->values()
+            ->all();
+
+        return compact('roles', 'eventsForSelect', 'rolesMeta');
     }
 }

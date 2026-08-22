@@ -27,9 +27,16 @@ return [
         'password_help' => 'Mínimo 8 caracteres.',
         'new_password_help' => 'Dejar en blanco para no cambiar. Mínimo 8 caracteres si la cambiás.',
         'create_submit' => 'Crear usuario',
-        'select_role' => 'Seleccionar rol',
-        'select_event' => 'Seleccionar evento',
+        'select_role' => 'Elegí un rol',
+        'select_event' => 'Elegí un evento',
+        'role_help' => 'El rol define qué puede ver y hacer el usuario en el panel.',
         'event_help' => 'Obligatorio para roles que requieren evento (p. ej. Cliente).',
+        'requires_event_badge' => 'Requiere evento',
+        'full_access_hint' => 'Acceso completo al panel',
+        'search_event_placeholder' => 'Buscar evento por nombre…',
+        'no_events_found' => 'No hay eventos que coincidan.',
+        'no_events' => 'No hay eventos cargados.',
+        'clear_event' => 'Quitar selección',
     ],
 
     'validation' => [
