@@ -84,6 +84,8 @@ class RolePermissionSeeder extends Seeder
                 'invitaciones.ver',
                 'invitaciones.crear',
                 'invitaciones.exportar',
+                'invitaciones.moderar',
+                'deeplink.generar',
             ];
             $client->permissions()->sync(
                 collect($clientSlugs)->map(fn (string $slug) => $permissionIds[$slug])->all()

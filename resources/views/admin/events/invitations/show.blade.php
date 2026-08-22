@@ -125,11 +125,13 @@
             </div>
         </div>
 
-        <div class="rounded-xl border border-dashed border-gray-300 bg-white p-4 text-sm text-gray-600 lg:col-span-2">
-            {{ __('invitation.deeplink.use_event_link') }}
-            <a href="{{ route('admin.events.edit', $event) }}" wire:navigate class="font-medium text-[var(--desert-bg-elevated)] underline">
-                {{ __('invitation.deeplink.go_to_event') }}
-            </a>
-        </div>
+        @can('permission', 'eventos.editar')
+            <div class="rounded-xl border border-dashed border-gray-300 bg-white p-4 text-sm text-gray-600 lg:col-span-2">
+                {{ __('invitation.deeplink.use_event_link') }}
+                <a href="{{ route('admin.events.edit', $event) }}" wire:navigate class="font-medium text-[var(--desert-bg-elevated)] underline">
+                    {{ __('invitation.deeplink.go_to_event') }}
+                </a>
+            </div>
+        @endcan
     </div>
 </x-admin-layout>
