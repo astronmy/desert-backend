@@ -49,6 +49,11 @@ class Event extends Model
         return $this->hasMany(Invitation::class);
     }
 
+    public function eventNotifications(): HasMany
+    {
+        return $this->hasMany(EventNotification::class);
+    }
+
     public function accesses(): HasMany
     {
         return $this->hasMany(Access::class);

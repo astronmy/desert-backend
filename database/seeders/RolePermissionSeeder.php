@@ -37,6 +37,10 @@ class RolePermissionSeeder extends Seeder
         ['module' => 'accesos', 'action' => 'ver', 'label' => 'Ver accesos'],
         ['module' => 'deeplink', 'action' => 'ver', 'label' => 'Ver link de registro / métricas'],
         ['module' => 'deeplink', 'action' => 'generar', 'label' => 'Generar link de registro'],
+        ['module' => 'notificaciones', 'action' => 'ver', 'label' => 'Ver notificaciones'],
+        ['module' => 'notificaciones', 'action' => 'crear', 'label' => 'Crear notificaciones'],
+        ['module' => 'notificaciones', 'action' => 'editar', 'label' => 'Editar notificaciones'],
+        ['module' => 'notificaciones', 'action' => 'eliminar', 'label' => 'Eliminar notificaciones'],
     ];
 
     public function run(): void
@@ -86,6 +90,10 @@ class RolePermissionSeeder extends Seeder
                 'invitaciones.exportar',
                 'invitaciones.moderar',
                 'deeplink.generar',
+                'notificaciones.ver',
+                'notificaciones.crear',
+                'notificaciones.editar',
+                'notificaciones.eliminar',
             ];
             $client->permissions()->sync(
                 collect($clientSlugs)->map(fn (string $slug) => $permissionIds[$slug])->all()
