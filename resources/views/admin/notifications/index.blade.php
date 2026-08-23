@@ -30,18 +30,18 @@
         close() { this.open = false; this.confirmValue = ''; },
         submit() { if (this.confirmValue === this.confirmLabel && this.formId) { var f = document.getElementById(this.formId); if (f) f.submit(); } this.close(); }
     }">
-        @if($events->isNotEmpty())
+        @if($eventsForSelect !== [])
             <div class="mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                 <form method="GET" action="{{ route('admin.notifications.index') }}" class="flex flex-wrap items-end gap-4">
-                    <div class="min-w-[220px]">
-                        <label for="filter_event_id" class="block text-sm font-medium text-gray-700">{{ __('notification.attributes.event') }}</label>
-                        <select id="filter_event_id" name="event_id"
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3.5 py-2.5 text-sm shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]">
-                            <option value="">{{ __('notification.index.all_events') }}</option>
-                            @foreach($events as $event)
-                                <option value="{{ $event->id }}" @selected((string) request('event_id') === (string) $event->id)>{{ $event->name }}</option>
-                            @endforeach
-                        </select>
+                    <div class="min-w-[260px] flex-1">
+                        <label class="block text-sm font-medium text-gray-700">{{ __('notification.attributes.event') }}</label>
+                        <x-event-combobox
+                            name="event_id"
+                            :events="$eventsForSelect"
+                            :selected="request('event_id')"
+                            :placeholder="__('notification.index.all_events')"
+                            :allow-clear="true"
+                        />
                     </div>
                     <div class="flex gap-2">
                         <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-[var(--desert-bg)]">

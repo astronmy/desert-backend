@@ -19,10 +19,19 @@
                       type: @js(old('type', 'instant')),
                       scope: @js(old('scope', 'general')),
                       invitations: [],
+                      invitationQuery: '',
                       selected: @js(array_map('intval', old('invitation_ids', []))),
                       loading: false,
                       loadError: '',
                       endpointBase: @js(url('/admin/events')),
+                      get filteredInvitations() {
+                          const q = (this.invitationQuery || '').trim().toLowerCase();
+                          if (!q) return this.invitations;
+                          return this.invitations.filter(inv =>
+                              (inv.guest && inv.guest.toLowerCase().includes(q)) ||
+                              (inv.code && inv.code.toLowerCase().includes(q))
+                          );
+                      },
                       init() {
                           this.$watch('eventId', () => this.fetchInvitations());
                           this.$watch('scope', () => { if (this.scope === 'specific') this.fetchInvitations(); });
@@ -58,19 +67,20 @@
                   }">
                 @csrf
 
-                <div>
+                <div @event-chosen="eventId = $event.detail">
                     <x-input-label for="event_id" :value="__('notification.attributes.event')" />
                     @if($lockedEventId)
                         <input type="hidden" name="event_id" value="{{ $lockedEventId }}" />
-                        <p class="mt-1 text-sm font-medium text-gray-900">{{ $events->first()?->name }}</p>
+                        <p class="mt-1 text-sm font-medium text-gray-900">{{ $lockedEventName }}</p>
                     @else
-                        <select id="event_id" name="event_id" x-model.number="eventId" required
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3.5 py-2.5 text-sm shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]">
-                            <option value="">{{ __('notification.form.select_event') }}</option>
-                            @foreach($events as $event)
-                                <option value="{{ $event->id }}" @selected($oldEventId === $event->id)>{{ $event->name }}</option>
-                            @endforeach
-                        </select>
+                        <x-event-combobox
+                            name="event_id"
+                            :events="$eventsForSelect"
+                            :selected="$oldEventId"
+                            :placeholder="__('notification.form.select_event')"
+                            :allow-clear="true"
+                            :required="true"
+                        />
                     @endif
                     <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                 </div>
@@ -130,16 +140,22 @@
                     <template x-if="!loading && !loadError && eventId && invitations.length === 0">
                         <p class="text-sm text-gray-500">{{ __('notification.form.no_notifiable') }}</p>
                     </template>
-                    <div class="max-h-64 space-y-2 overflow-y-auto rounded-md border border-gray-200 p-3" x-show="!loading && invitations.length > 0">
-                        <template x-for="inv in invitations" :key="inv.id">
-                            <label class="flex items-center gap-2 text-sm text-gray-800">
-                                <input type="checkbox" name="invitation_ids[]" :value="inv.id"
-                                       :checked="selected.includes(inv.id)"
-                                       @change="toggle(inv.id)"
-                                       class="rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]" />
-                                <span x-text="inv.guest + ' (' + inv.code + ')'"></span>
-                            </label>
-                        </template>
+                    <div x-show="!loading && invitations.length > 0" class="space-y-2">
+                        <input type="search" x-model="invitationQuery"
+                               placeholder="{{ __('notification.form.search_guest_placeholder') }}"
+                               class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]" />
+                        <div class="max-h-64 space-y-2 overflow-y-auto rounded-md border border-gray-200 p-3">
+                            <template x-for="inv in filteredInvitations" :key="inv.id">
+                                <label class="flex items-center gap-2 text-sm text-gray-800">
+                                    <input type="checkbox" name="invitation_ids[]" :value="inv.id"
+                                           :checked="selected.includes(inv.id)"
+                                           @change="toggle(inv.id)"
+                                           class="rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]" />
+                                    <span x-text="inv.guest + ' (' + inv.code + ')'"></span>
+                                </label>
+                            </template>
+                            <p class="text-sm text-gray-500" x-show="filteredInvitations.length === 0">{{ __('notification.form.no_events_found') }}</p>
+                        </div>
                     </div>
                     <x-input-error :messages="$errors->get('invitation_ids')" class="mt-2" />
                 </div>

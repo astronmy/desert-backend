@@ -10,6 +10,7 @@ use App\Models\Event;
 use App\Models\EventNotification;
 use App\Models\Invitation;
 use App\Services\Notifications\EventNotificationService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,23 +34,25 @@ class EventNotificationController extends Controller
         }
 
         $notifications = $query->paginate(15)->withQueryString();
-        $events = $user?->requiresEvent()
-            ? collect()
-            : Event::query()->orderBy('name')->get(['id', 'name']);
+        $eventsForSelect = $user?->requiresEvent()
+            ? []
+            : $this->eventsForSelect();
 
-        return view('admin.notifications.index', compact('notifications', 'events'));
+        return view('admin.notifications.index', compact('notifications', 'eventsForSelect'));
     }
 
     public function create(Request $request): View
     {
         $user = $request->user();
-        $events = $user?->requiresEvent()
-            ? Event::query()->whereKey($user->event_id)->get(['id', 'name'])
-            : Event::query()->orderBy('name')->get(['id', 'name']);
-
         $lockedEventId = $user?->requiresEvent() ? $user->event_id : null;
+        $eventsForSelect = $user?->requiresEvent()
+            ? $this->eventsForSelect(Event::query()->whereKey($user->event_id))
+            : $this->eventsForSelect();
+        $lockedEventName = $user?->requiresEvent()
+            ? ($eventsForSelect[0]['name'] ?? null)
+            : null;
 
-        return view('admin.notifications.create', compact('events', 'lockedEventId'));
+        return view('admin.notifications.create', compact('eventsForSelect', 'lockedEventId', 'lockedEventName'));
     }
 
     public function store(
@@ -139,5 +142,24 @@ class EventNotificationController extends Controller
                 'guest' => trim($invitation->guest->first_name.' '.$invitation->guest->last_name),
             ])->values(),
         ]);
+    }
+
+    /**
+     * @return list<array{id: int, name: string, dates: string, type_label: string}>
+     */
+    private function eventsForSelect(?Builder $query = null): array
+    {
+        return ($query ?? Event::query())
+            ->orderByDesc('init_date')
+            ->orderBy('name')
+            ->get(['id', 'name', 'init_date', 'end_date', 'type'])
+            ->map(fn (Event $event) => [
+                'id' => $event->id,
+                'name' => $event->name,
+                'dates' => $event->init_date->format('d/m/Y').' – '.$event->end_date->format('d/m/Y'),
+                'type_label' => $event->type->label(),
+            ])
+            ->values()
+            ->all();
     }
 }
