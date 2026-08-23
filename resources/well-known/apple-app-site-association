@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appID": "REEMPLAZAR_TEAM_ID.ar.com.deserteventos.app",
+        "appID": "B8NDXS7429.ar.com.deserteventos.app",
         "paths": ["/activar", "/activar/*"]
       }
     ]
