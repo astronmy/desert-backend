@@ -27,6 +27,7 @@ class InvitationFactory extends Factory
             'code' => app(InvitationCodeGenerator::class)->generate(),
             'status' => InvitationStatus::Pending,
             'selfie_path' => null,
+            'uuid_notification' => null,
             'confirmed_at' => null,
         ];
     }

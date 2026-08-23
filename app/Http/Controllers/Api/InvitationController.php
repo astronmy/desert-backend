@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\DocumentType;
 use App\Enums\InvitationStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\ConfirmInvitationRequest;
 use App\Http\Resources\Api\EventResource;
 use App\Models\Invitation;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class InvitationController extends Controller
 {
@@ -88,7 +86,7 @@ class InvitationController extends Controller
         ]);
     }
 
-    public function confirm(Request $request, string $code): JsonResponse
+    public function confirm(ConfirmInvitationRequest $request, string $code): JsonResponse
     {
         $invitation = Invitation::query()
             ->with('guest')
@@ -107,13 +105,7 @@ class InvitationController extends Controller
             return response()->json(['message' => 'La invitación ya fue confirmada.'], 409);
         }
 
-        $data = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'document_number' => ['required', 'string', 'max:50'],
-            'id_type' => ['required', Rule::enum(DocumentType::class)],
-            'selfie' => ['required', 'image', 'max:5120'],
-        ]);
+        $data = $request->validated();
 
         $documentNumber = preg_replace('/\D+/', '', $data['document_number']) ?: $data['document_number'];
 
@@ -143,6 +135,7 @@ class InvitationController extends Controller
                 'status' => InvitationStatus::Confirmed,
                 'selfie_path' => $path,
                 'confirmed_at' => now(),
+                'uuid_notification' => $data['uuid_notification'] ?? null,
             ]);
         });
 

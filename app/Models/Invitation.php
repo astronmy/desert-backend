@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
     'code',
     'status',
     'selfie_path',
+    'uuid_notification',
     'confirmed_at',
 ])]
 class Invitation extends Model

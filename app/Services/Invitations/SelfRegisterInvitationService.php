@@ -20,7 +20,7 @@ class SelfRegisterInvitationService
     ) {}
 
     /**
-     * @param  array{first_name: string, last_name: string, document_number: string, id_type: string}  $data
+     * @param  array{first_name: string, last_name: string, document_number: string, id_type: string, uuid_notification?: string|null}  $data
      * @return array{invitation: Invitation, created: bool}
      */
     public function register(Event $event, array $data, UploadedFile $selfie): array
@@ -73,6 +73,7 @@ class SelfRegisterInvitationService
                 'code' => $this->codeGenerator->generate(),
                 'status' => InvitationStatus::Pending,
                 'confirmed_at' => null,
+                'uuid_notification' => $data['uuid_notification'] ?? null,
             ]);
 
             $path = $selfie->store('invitations/'.$invitation->id, 'public');
