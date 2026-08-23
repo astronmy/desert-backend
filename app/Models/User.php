@@ -46,6 +46,10 @@ class User extends Authenticatable
             return false;
         }
 
+        if ($this->isAdminRole()) {
+            return true;
+        }
+
         return $role->hasPermission($slug);
     }
 

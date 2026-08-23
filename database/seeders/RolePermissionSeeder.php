@@ -100,7 +100,10 @@ class RolePermissionSeeder extends Seeder
             );
 
             User::query()
-                ->whereNull('role_id')
+                ->where(function ($query) use ($admin): void {
+                    $query->whereNull('role_id')
+                        ->orWhere('role_id', $admin->id);
+                })
                 ->update(['role_id' => $admin->id, 'event_id' => null]);
         });
     }
