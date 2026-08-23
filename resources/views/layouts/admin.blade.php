@@ -216,7 +216,7 @@
             };
         }
 
-        function eventCombobox(config) {
+        window.eventCombobox = function eventCombobox(config) {
             return {
                 eventId: config.eventId ?? null,
                 events: config.events || [],
@@ -256,7 +256,7 @@
             };
         }
 
-        function notificationCreateForm(config) {
+        window.notificationCreateForm = function notificationCreateForm(config) {
             return {
                 eventId: config.eventId ?? null,
                 type: config.type,

@@ -15,7 +15,7 @@
 <div
     class="relative"
     @click.outside="eventOpen = false"
-    x-data='eventCombobox(@js(['eventId' => $selected, 'events' => $events]))'
+    x-data="eventCombobox(@js(['eventId' => $selected, 'events' => $events]))"
 >
     <input type="hidden" name="{{ $name }}" :value="eventId ?? ''" @if($required) required @endif />
 

@@ -20,9 +20,9 @@
     </x-slot>
 
     <div class="rounded-lg bg-[var(--desert-surface)] p-4 sm:p-6">
-        <div class="overflow-hidden rounded-lg bg-white shadow-sm">
+        <div class="overflow-visible rounded-lg bg-white shadow-sm">
             <form action="{{ route('admin.notifications.store') }}" method="POST" class="space-y-6 p-6"
-                  x-data='notificationCreateForm(@js($createForm))'>
+                  x-data="notificationCreateForm(@js($createForm))"
                 @csrf
 
                 <div @combo-event-selected="onEventSelected($event.detail)">
