@@ -1,6 +1,14 @@
 @php
     $oldEventId = old('event_id', $lockedEventId);
     $oldEventId = $oldEventId !== null && $oldEventId !== '' ? (int) $oldEventId : null;
+    $createForm = [
+        'eventId' => $oldEventId,
+        'type' => old('type', 'instant'),
+        'scope' => old('scope', 'general'),
+        'selected' => array_map('intval', old('invitation_ids', [])),
+        'endpointTemplate' => route('admin.events.notifiable-invitations', ['event' => '__EVENT__']),
+        'loadErrorMessage' => __('notification.form.load_error'),
+    ];
 @endphp
 <x-admin-layout>
     <x-slot name="header">
@@ -14,68 +22,7 @@
     <div class="rounded-lg bg-[var(--desert-surface)] p-4 sm:p-6">
         <div class="overflow-hidden rounded-lg bg-white shadow-sm">
             <form action="{{ route('admin.notifications.store') }}" method="POST" class="space-y-6 p-6"
-                  x-data="{
-                      eventId: @js($oldEventId),
-                      type: @js(old('type', 'instant')),
-                      scope: @js(old('scope', 'general')),
-                      invitations: [],
-                      invitationQuery: '',
-                      selected: @js(array_map('intval', old('invitation_ids', []))),
-                      loading: false,
-                      loadError: '',
-                      endpointTemplate: @js(route('admin.events.notifiable-invitations', ['event' => '__EVENT__'])),
-                      get filteredInvitations() {
-                          const q = (this.invitationQuery || '').trim().toLowerCase();
-                          if (!q) return this.invitations;
-                          return this.invitations.filter(inv =>
-                              (inv.guest && inv.guest.toLowerCase().includes(q)) ||
-                              (inv.code && inv.code.toLowerCase().includes(q)) ||
-                              (inv.document && inv.document.toLowerCase().includes(q)) ||
-                              (inv.uuid && inv.uuid.toLowerCase().includes(q))
-                          );
-                      },
-                      init() {
-                          this.$watch('eventId', () => this.fetchInvitations());
-                          this.$watch('scope', () => { if (this.scope === 'specific') this.fetchInvitations(); });
-                          if (this.eventId && this.scope === 'specific') this.fetchInvitations();
-                      },
-                      onEventSelected(id) {
-                          const next = id ? Number(id) : null;
-                          if (this.eventId !== next) this.selected = [];
-                          this.invitationQuery = '';
-                          this.eventId = next;
-                      },
-                      async fetchInvitations() {
-                          if (!this.eventId || this.scope !== 'specific') {
-                              this.invitations = [];
-                              return;
-                          }
-                          this.loading = true;
-                          this.loadError = '';
-                          try {
-                              const res = await fetch(this.endpointTemplate.replace('__EVENT__', this.eventId), {
-                                  headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                                  credentials: 'same-origin',
-                              });
-                              if (!res.ok) throw new Error('HTTP ' + res.status);
-                              const json = await res.json();
-                              this.invitations = json.data || [];
-                          } catch (e) {
-                              this.loadError = @json(__('notification.form.load_error'));
-                              this.invitations = [];
-                          } finally {
-                              this.loading = false;
-                          }
-                      },
-                      selectAllVisible() {
-                          this.filteredInvitations.forEach(inv => {
-                              if (!this.selected.includes(inv.id)) this.selected.push(inv.id);
-                          });
-                      },
-                      clearSelection() {
-                          this.selected = [];
-                      }
-                  }">
+                  x-data='notificationCreateForm(@js($createForm))'>
                 @csrf
 
                 <div @combo-event-selected="onEventSelected($event.detail)">

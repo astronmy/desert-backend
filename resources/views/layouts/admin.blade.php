@@ -216,6 +216,114 @@
             };
         }
 
+        function eventCombobox(config) {
+            return {
+                eventId: config.eventId ?? null,
+                events: config.events || [],
+                eventOpen: false,
+                eventQuery: '',
+                get selectedEvent() {
+                    if (!this.eventId) return null;
+                    return this.events.find(e => e.id === this.eventId || e.id === Number(this.eventId)) || null;
+                },
+                get filteredEvents() {
+                    const q = (this.eventQuery || '').trim().toLowerCase();
+                    if (!q) return this.events;
+                    return this.events.filter(e =>
+                        e.name.toLowerCase().includes(q) ||
+                        (e.type_label && e.type_label.toLowerCase().includes(q)) ||
+                        (e.dates && e.dates.toLowerCase().includes(q))
+                    );
+                },
+                selectEvent(id) {
+                    this.eventId = id;
+                    this.eventOpen = false;
+                    this.eventQuery = '';
+                    this.$dispatch('combo-event-selected', id);
+                },
+                clearEvent() {
+                    this.eventId = null;
+                    this.eventQuery = '';
+                    this.$dispatch('combo-event-selected', null);
+                },
+                openEventPicker() {
+                    this.eventOpen = true;
+                    this.$nextTick(() => {
+                        const el = this.$refs.eventSearch;
+                        if (el) el.focus();
+                    });
+                },
+            };
+        }
+
+        function notificationCreateForm(config) {
+            return {
+                eventId: config.eventId ?? null,
+                type: config.type,
+                scope: config.scope,
+                selected: config.selected || [],
+                endpointTemplate: config.endpointTemplate,
+                loadErrorMessage: config.loadErrorMessage,
+                invitations: [],
+                invitationQuery: '',
+                loading: false,
+                loadError: '',
+                get filteredInvitations() {
+                    const q = (this.invitationQuery || '').trim().toLowerCase();
+                    if (!q) return this.invitations;
+                    return this.invitations.filter(inv =>
+                        (inv.guest && inv.guest.toLowerCase().includes(q)) ||
+                        (inv.code && inv.code.toLowerCase().includes(q)) ||
+                        (inv.document && inv.document.toLowerCase().includes(q)) ||
+                        (inv.uuid && inv.uuid.toLowerCase().includes(q))
+                    );
+                },
+                init() {
+                    this.$watch('eventId', () => this.fetchInvitations());
+                    this.$watch('scope', (scope) => {
+                        if (scope === 'specific') this.fetchInvitations();
+                    });
+                    if (this.eventId && this.scope === 'specific') this.fetchInvitations();
+                },
+                onEventSelected(id) {
+                    const next = id ? Number(id) : null;
+                    if (this.eventId !== next) this.selected = [];
+                    this.invitationQuery = '';
+                    this.eventId = next;
+                },
+                async fetchInvitations() {
+                    if (!this.eventId || this.scope !== 'specific') {
+                        this.invitations = [];
+                        return;
+                    }
+                    this.loading = true;
+                    this.loadError = '';
+                    try {
+                        const res = await fetch(this.endpointTemplate.replace('__EVENT__', this.eventId), {
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                            credentials: 'same-origin',
+                        });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        const json = await res.json();
+                        this.invitations = json.data || [];
+                    } catch (e) {
+                        this.loadError = this.loadErrorMessage;
+                        this.invitations = [];
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                selectAllVisible() {
+                    this.filteredInvitations.forEach((inv) => {
+                        if (!this.selected.includes(inv.id)) this.selected.push(inv.id);
+                    });
+                },
+                clearSelection() {
+                    this.selected = [];
+                },
+            };
+        }
+
         function registrationLinkModalState() {
             return {
                 linkOpen: false,

@@ -15,44 +15,7 @@
 <div
     class="relative"
     @click.outside="eventOpen = false"
-    x-data="{
-        eventId: @js($selected),
-        events: @js($events),
-        eventOpen: false,
-        eventQuery: '',
-        get selectedEvent() {
-            if (!this.eventId) return null;
-            return this.events.find(e => e.id === this.eventId || e.id === Number(this.eventId)) || null;
-        },
-        get filteredEvents() {
-            const q = (this.eventQuery || '').trim().toLowerCase();
-            if (!q) return this.events;
-            return this.events.filter(e =>
-                e.name.toLowerCase().includes(q) ||
-                (e.type_label && e.type_label.toLowerCase().includes(q)) ||
-                (e.dates && e.dates.toLowerCase().includes(q))
-            );
-        },
-        selectEvent(id) {
-            this.eventId = id;
-            this.eventOpen = false;
-            this.eventQuery = '';
-            this.$dispatch('combo-event-selected', id);
-        },
-        clearEvent() {
-            this.eventId = null;
-            this.eventQuery = '';
-            this.$dispatch('combo-event-selected', null);
-        },
-        openEventPicker() {
-            this.eventOpen = true;
-            this.$nextTick(() => {
-                const el = this.$refs.eventSearch;
-                if (el) el.focus();
-            });
-        }
-    }"
-    x-init="$watch('eventId', value => $dispatch('combo-event-selected', value))"
+    x-data='eventCombobox(@js(['eventId' => $selected, 'events' => $events]))'
 >
     <input type="hidden" name="{{ $name }}" :value="eventId ?? ''" @if($required) required @endif />
 
