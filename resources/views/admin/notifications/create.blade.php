@@ -23,19 +23,27 @@
                       selected: @js(array_map('intval', old('invitation_ids', []))),
                       loading: false,
                       loadError: '',
-                      endpointBase: @js(url('/admin/events')),
+                      endpointTemplate: @js(route('admin.events.notifiable-invitations', ['event' => '__EVENT__'])),
                       get filteredInvitations() {
                           const q = (this.invitationQuery || '').trim().toLowerCase();
                           if (!q) return this.invitations;
                           return this.invitations.filter(inv =>
                               (inv.guest && inv.guest.toLowerCase().includes(q)) ||
-                              (inv.code && inv.code.toLowerCase().includes(q))
+                              (inv.code && inv.code.toLowerCase().includes(q)) ||
+                              (inv.document && inv.document.toLowerCase().includes(q)) ||
+                              (inv.uuid && inv.uuid.toLowerCase().includes(q))
                           );
                       },
                       init() {
                           this.$watch('eventId', () => this.fetchInvitations());
                           this.$watch('scope', () => { if (this.scope === 'specific') this.fetchInvitations(); });
                           if (this.eventId && this.scope === 'specific') this.fetchInvitations();
+                      },
+                      onEventSelected(id) {
+                          const next = id ? Number(id) : null;
+                          if (this.eventId !== next) this.selected = [];
+                          this.invitationQuery = '';
+                          this.eventId = next;
                       },
                       async fetchInvitations() {
                           if (!this.eventId || this.scope !== 'specific') {
@@ -45,7 +53,7 @@
                           this.loading = true;
                           this.loadError = '';
                           try {
-                              const res = await fetch(this.endpointBase + '/' + this.eventId + '/notifiable-invitations', {
+                              const res = await fetch(this.endpointTemplate.replace('__EVENT__', this.eventId), {
                                   headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                                   credentials: 'same-origin',
                               });
@@ -59,15 +67,18 @@
                               this.loading = false;
                           }
                       },
-                      toggle(id) {
-                          const i = this.selected.indexOf(id);
-                          if (i === -1) this.selected.push(id);
-                          else this.selected.splice(i, 1);
+                      selectAllVisible() {
+                          this.filteredInvitations.forEach(inv => {
+                              if (!this.selected.includes(inv.id)) this.selected.push(inv.id);
+                          });
+                      },
+                      clearSelection() {
+                          this.selected = [];
                       }
                   }">
                 @csrf
 
-                <div @event-chosen="eventId = $event.detail">
+                <div @combo-event-selected="onEventSelected($event.detail)">
                     <x-input-label for="event_id" :value="__('notification.attributes.event')" />
                     @if($lockedEventId)
                         <input type="hidden" name="event_id" value="{{ $lockedEventId }}" />
@@ -131,30 +142,50 @@
                 <div x-show="scope === 'specific'" x-cloak class="space-y-3">
                     <x-input-label :value="__('notification.attributes.invitation_ids')" />
                     <p class="text-xs text-gray-500">{{ __('notification.form.specific_help') }}</p>
-                    <template x-if="loading">
-                        <p class="text-sm text-gray-500">{{ __('notification.form.loading_invitations') }}</p>
+
+                    <template x-for="id in selected" :key="'sel-'+id">
+                        <input type="hidden" :name="scope === 'specific' ? 'invitation_ids[]' : null" :value="id" />
                     </template>
-                    <template x-if="!loading && loadError">
-                        <p class="text-sm text-red-600" x-text="loadError"></p>
-                    </template>
-                    <template x-if="!loading && !loadError && eventId && invitations.length === 0">
-                        <p class="text-sm text-gray-500">{{ __('notification.form.no_notifiable') }}</p>
-                    </template>
-                    <div x-show="!loading && invitations.length > 0" class="space-y-2">
-                        <input type="search" x-model="invitationQuery"
-                               placeholder="{{ __('notification.form.search_guest_placeholder') }}"
-                               class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]" />
-                        <div class="max-h-64 space-y-2 overflow-y-auto rounded-md border border-gray-200 p-3">
+
+                    <p class="text-sm text-gray-500" x-show="!eventId">{{ __('notification.form.pick_event_first') }}</p>
+                    <p class="text-sm text-gray-500" x-show="eventId && loading">{{ __('notification.form.loading_invitations') }}</p>
+                    <p class="text-sm text-red-600" x-show="eventId && !loading && loadError" x-text="loadError"></p>
+                    <p class="text-sm text-gray-500" x-show="eventId && !loading && !loadError && invitations.length === 0">{{ __('notification.form.no_notifiable') }}</p>
+
+                    <div x-show="eventId && !loading && invitations.length > 0" class="space-y-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <input type="search" x-model="invitationQuery"
+                                   placeholder="{{ __('notification.form.search_guest_placeholder') }}"
+                                   class="min-w-[220px] flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]" />
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-xs text-gray-500"><span x-text="selected.length"></span> {{ __('notification.form.selected_label') }}</span>
+                                <button type="button" @click="selectAllVisible()"
+                                        class="rounded-md border border-gray-300 px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">
+                                    {{ __('notification.form.select_all_visible') }}
+                                </button>
+                                <button type="button" @click="clearSelection()" x-show="selected.length > 0"
+                                        class="rounded-md border border-gray-300 px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">
+                                    {{ __('notification.form.clear_selection') }}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="max-h-80 divide-y divide-gray-100 overflow-y-auto rounded-md border border-gray-200">
                             <template x-for="inv in filteredInvitations" :key="inv.id">
-                                <label class="flex items-center gap-2 text-sm text-gray-800">
-                                    <input type="checkbox" name="invitation_ids[]" :value="inv.id"
-                                           :checked="selected.includes(inv.id)"
-                                           @change="toggle(inv.id)"
-                                           class="rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]" />
-                                    <span x-text="inv.guest + ' (' + inv.code + ')'"></span>
+                                <label class="flex cursor-pointer items-start gap-3 px-3 py-2.5 hover:bg-[var(--desert-sand)]/40">
+                                    <input type="checkbox" :value="inv.id" x-model.number="selected"
+                                           class="mt-1 rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]" />
+                                    <span class="min-w-0">
+                                        <span class="block text-sm font-medium text-gray-900" x-text="inv.guest"></span>
+                                        <span class="block text-xs text-gray-500">
+                                            <span x-text="inv.document"></span>
+                                            <span x-show="inv.document"> · </span>
+                                            <span x-text="inv.code"></span>
+                                        </span>
+                                        <span class="block truncate font-mono text-xs text-gray-400" x-text="inv.uuid"></span>
+                                    </span>
                                 </label>
                             </template>
-                            <p class="text-sm text-gray-500" x-show="filteredInvitations.length === 0">{{ __('notification.form.no_events_found') }}</p>
+                            <p class="px-3 py-3 text-sm text-gray-500" x-show="filteredInvitations.length === 0">{{ __('notification.form.no_guests_found') }}</p>
                         </div>
                     </div>
                     <x-input-error :messages="$errors->get('invitation_ids')" class="mt-2" />

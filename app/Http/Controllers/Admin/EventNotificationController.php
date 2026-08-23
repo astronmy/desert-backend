@@ -132,14 +132,19 @@ class EventNotificationController extends Controller
             ->with('guest')
             ->where('event_id', $event->id)
             ->whereNotNull('uuid_notification')
+            ->where('uuid_notification', '!=', '')
             ->orderBy('id')
-            ->get();
+            ->get()
+            ->sortBy(fn (Invitation $invitation) => mb_strtolower($invitation->guest?->fullName() ?? ''))
+            ->values();
 
         return response()->json([
             'data' => $invitations->map(fn (Invitation $invitation) => [
                 'id' => $invitation->id,
                 'code' => $invitation->code,
-                'guest' => trim($invitation->guest->first_name.' '.$invitation->guest->last_name),
+                'guest' => $invitation->guest?->fullName() ?? '',
+                'document' => trim(($invitation->guest?->id_type?->label() ?? '').' '.($invitation->guest?->document_number ?? '')),
+                'uuid' => $invitation->uuid_notification,
             ])->values(),
         ]);
     }

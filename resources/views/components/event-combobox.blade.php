@@ -37,12 +37,12 @@
             this.eventId = id;
             this.eventOpen = false;
             this.eventQuery = '';
-            this.$dispatch('event-chosen', id);
+            this.$dispatch('combo-event-selected', id);
         },
         clearEvent() {
             this.eventId = null;
             this.eventQuery = '';
-            this.$dispatch('event-chosen', null);
+            this.$dispatch('combo-event-selected', null);
         },
         openEventPicker() {
             this.eventOpen = true;
@@ -52,7 +52,7 @@
             });
         }
     }"
-    x-init="$watch('eventId', value => $dispatch('event-chosen', value))"
+    x-init="$watch('eventId', value => $dispatch('combo-event-selected', value))"
 >
     <input type="hidden" name="{{ $name }}" :value="eventId ?? ''" @if($required) required @endif />
 
@@ -93,6 +93,8 @@
                 type="text"
                 x-ref="eventSearch"
                 x-model="eventQuery"
+                @keydown.enter.prevent="filteredEvents.length && selectEvent(filteredEvents[0].id)"
+                @keydown.escape.prevent="eventOpen = false"
                 placeholder="{{ __('notification.form.search_event_placeholder') }}"
                 class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]"
             />
