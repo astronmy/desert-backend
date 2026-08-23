@@ -6,6 +6,7 @@ return [
     'menu' => [
         'dashboard' => 'Dashboard',
         'events' => 'Eventos',
+        'notifications' => 'Notificaciones',
         'users' => 'Usuarios',
         'roles' => 'Roles',
     ],

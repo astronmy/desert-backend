@@ -23,6 +23,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     require __DIR__.'/admin/event_accesses.php';
     require __DIR__.'/admin/event_invitations.php';
     require __DIR__.'/admin/events.php';
+    require __DIR__.'/admin/notifications.php';
     require __DIR__.'/admin/roles.php';
     require __DIR__.'/admin/users.php';
 });
