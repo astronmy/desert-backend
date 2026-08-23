@@ -101,6 +101,10 @@
                     <dt class="text-sm text-gray-500">{{ __('invitation.attributes.confirmed_at') }}</dt>
                     <dd class="text-sm font-medium text-gray-900">{{ $invitation->confirmed_at?->format('d/m/Y H:i') ?? '—' }}</dd>
                 </div>
+                <div class="flex justify-between gap-4 py-3">
+                    <dt class="text-sm text-gray-500">{{ __('invitation.attributes.uuid_notification') }}</dt>
+                    <dd class="break-all text-right font-mono text-sm font-medium text-gray-900">{{ $invitation->uuid_notification ?: '—' }}</dd>
+                </div>
             </dl>
         </div>
 

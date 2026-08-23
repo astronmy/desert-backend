@@ -5,6 +5,7 @@ return [
         'code' => 'Código',
         'status' => 'Estado',
         'confirmed_at' => 'Confirmada',
+        'uuid_notification' => 'UUID notificación',
         'selfie' => 'Selfie',
     ],
 

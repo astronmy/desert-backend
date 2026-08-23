@@ -159,6 +159,7 @@
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('guest.attributes.full_name') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('guest.attributes.document_number') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.code') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.uuid_notification') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.status') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.confirmed_at') }}</th>
                     <th class="px-4 py-3 text-right text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('admin.table.actions') }}</th>
@@ -179,6 +180,13 @@
                             {{ $invitation->guest->id_type->label() }} {{ $invitation->guest->document_number }}
                         </td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm font-mono text-gray-900">{{ $invitation->code }}</td>
+                        <td class="max-w-[12rem] px-4 py-3 text-sm font-mono text-gray-600">
+                            @if($invitation->uuid_notification)
+                                <span class="block truncate" title="{{ $invitation->uuid_notification }}">{{ $invitation->uuid_notification }}</span>
+                            @else
+                                —
+                            @endif
+                        </td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm">
                             <span @class([
                                 'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium',
@@ -224,7 +232,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="{{ $canModerate ? 7 : 6 }}" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
+                        <td colspan="{{ $canModerate ? 8 : 7 }}" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>
