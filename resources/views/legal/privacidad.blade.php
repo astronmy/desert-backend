@@ -254,8 +254,17 @@
 
     <h2>8. Menores</h2>
     <p>
-        La App no está dirigida a menores de 18 años. No recolectamos datos de niños de forma intencional. Si un menor
-        se registró, el responsable o tutor puede pedir la eliminación a
+        La App está dirigida a personas de <strong>13 años o más</strong>. No está hecha para niños menores de 13
+        ni se publica en las categorías Kids / “hecha para niños” de las tiendas. No recolectamos datos de niños
+        menores de 13 de forma intencional.
+    </p>
+    <p>
+        Quienes tienen entre 13 y 17 años, al enviar el formulario de invitación, declaran que un padre, madre o tutor
+        autorizó ese uso para el ingreso al evento (ver
+        <a href="{{ route('legal.terminos') }}">Términos — Elegibilidad</a>).
+    </p>
+    <p>
+        Si un menor de 13 se registró, el responsable o tutor puede pedir la eliminación a
         <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a>.
     </p>
 

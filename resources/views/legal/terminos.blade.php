@@ -44,11 +44,28 @@
 
     <h2>3. Elegibilidad</h2>
     <p>
-        La App está dirigida a personas de <strong>18 años o más</strong>. No está pensada para menores ni se dirige a niños.
+        La App está dirigida a personas de <strong>13 años o más</strong>. No está hecha para niños menores de 13
+        ni se publica en las categorías Kids / “hecha para niños” de las tiendas.
     </p>
+    <ul>
+        <li>
+            <strong>13 años o más:</strong> podés usar la App, consultar el predio y, si tenés invitación,
+            confirmarla o registrarte.
+        </li>
+        <li>
+            <strong>Entre 13 y 17 años:</strong> al enviar el formulario (nombre, documento y selfie)
+            <strong>declarás</strong> que tu madre, padre o tutor autorizó ese uso para el ingreso al evento.
+            No pedimos un consentimiento aparte en pantalla.
+        </li>
+        <li>
+            <strong>Menores de 13:</strong> no deben registrarse. Si un evento los incluye, el adulto coordina
+            el acceso con el organizador.
+        </li>
+    </ul>
     <p>
-        Si confirmás una invitación o te registrás a un evento, declarás que los datos (nombre, documento y foto)
-        son tuyos o que tenés autorización de la persona titular.
+        Al confirmar una invitación o registrarte, aceptás estos Términos y la
+        <a href="{{ route('legal.privacidad') }}">Política de Privacidad</a>.
+        Declarás que los datos son tuyos o que estás autorizado a cargarlos.
     </p>
 
     <h2>4. Cómo se accede</h2>
