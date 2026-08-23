@@ -18,10 +18,6 @@
         Si no estás de acuerdo, no la uses.
     </p>
 
-    <p class="note">
-        Este texto está pensado para publicación en las stores. No reemplaza el asesoramiento de un abogado.
-    </p>
-
     <hr>
 
     <h2>1. Quiénes somos</h2>
@@ -37,11 +33,10 @@
     <h2>2. Qué es la App</h2>
     <p>La App es un servicio institucional y de invitaciones digitales. Permite, entre otras cosas:</p>
     <ul>
-        <li>consultar información del predio (ubicación, galería, contacto);</li>
-        <li>ver la agenda pública de eventos;</li>
-        <li>confirmar o registrarse en una invitación con código o enlace;</li>
-        <li>guardar en el teléfono el código QR de acceso al evento;</li>
-        <li>(uso interno de staff) escanear un QR en puerta para verificar el ingreso.</li>
+        <li>Consultar información del predio (ubicación, galería, contacto);</li>
+        <li>Ver la agenda pública de eventos;</li>
+        <li>Confirmar o registrarse en una invitación con código o enlace;</li>
+        <li>Guardar en el teléfono el código QR de acceso al evento;</li>
     </ul>
     <p>
         No es una red social, no ofrece pagos dentro de la App y no vende entradas al público general desde la App.
