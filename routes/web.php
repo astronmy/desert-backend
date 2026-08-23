@@ -21,5 +21,8 @@ Route::get('/r/{code}', ShortRegistrationLinkController::class)
     ->where('code', '[A-Za-z0-9]{8}')
     ->name('registration.short');
 
+Route::view('/terminos', 'legal.terminos')->name('legal.terminos');
+Route::view('/privacidad', 'legal.privacidad')->name('legal.privacidad');
+
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';
