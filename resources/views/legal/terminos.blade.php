@@ -75,7 +75,6 @@
         <li>con un <strong>código</strong> que te envió el organizador; o</li>
         <li>
             con un <strong>enlace de activación</strong>
-            (<code>https://desert.rxstudio.dev/activar</code> o el esquema <code>deserteventos://activar</code>).
             Ese enlace puede ser de un solo uso y está ligado al dispositivo.
         </li>
     </ul>

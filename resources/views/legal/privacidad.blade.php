@@ -22,10 +22,6 @@
         exigencias de privacidad de <strong>Apple App Store</strong> y <strong>Google Play</strong>.
     </p>
 
-    <p class="note">
-        Este texto está pensado para publicación en las stores. No reemplaza el asesoramiento de un abogado.
-    </p>
-
     <hr>
 
     <h2>1. Resumen (lo que piden las tiendas)</h2>
@@ -99,17 +95,13 @@
         Para ejercer derechos o pedir la supresión de tus datos en servidor:
         <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a>.
     </p>
-    <p>
-        El backend de la App se sirve en <code>https://desert.rxstudio.dev</code> (API bajo <code>/api</code>).
-        Ese hosting procesa los datos por cuenta del Organizador.
-    </p>
 
     <h2>3. Datos que tratamos y finalidad</h2>
 
     <h3>3.1 Si solo navegás la App (inicio, agenda, predio)</h3>
     <ul>
         <li>No pedimos nombre ni documento.</li>
-        <li>El listado de eventos se descarga de forma pública (<code>GET /api/events</code>).</li>
+        <li>El listado de eventos se descarga de forma pública.</li>
         <li>
             El dispositivo necesita <strong>internet</strong>. El servidor puede registrar logs técnicos habituales
             (IP, fecha, ruta) por seguridad y operación, no para perfil comercial.
