@@ -8,7 +8,7 @@
 
     <p class="meta"><strong>Desert Eventos</strong></p>
     <p class="meta">Luján de Cuyo, Mendoza, República Argentina</p>
-    <p class="meta">Correo: <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a></p>
+    <p class="meta">Correo: <a href="mailto:info@deserteventos.com">info@deserteventos.com</a></p>
 
     <p class="vigencia">Vigencia: 22 de agosto de 2026.</p>
 
@@ -26,7 +26,7 @@
         (el “Organizador”, “nosotros”).
     </p>
     <p>
-        Contacto: <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a><br>
+        Contacto: <a href="mailto:info@deserteventos.com">info@deserteventos.com</a><br>
         WhatsApp: +54 9 261 708-3142
     </p>
 
@@ -115,7 +115,7 @@
     <p>
         Si desinstalás la App, borrás los datos del teléfono o cambiás de dispositivo, es posible que pierdas el QR local.
         En ese caso contactanos a
-        <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a>.
+        <a href="mailto:info@deserteventos.com">info@deserteventos.com</a>.
     </p>
 
     <h2>7. Agenda de eventos</h2>
@@ -207,6 +207,6 @@
     <h2>15. Contacto</h2>
     <p>
         Consultas sobre estos Términos:
-        <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a>.
+        <a href="mailto:info@deserteventos.com">info@deserteventos.com</a>.
     </p>
 @endsection

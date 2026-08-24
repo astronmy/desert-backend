@@ -8,7 +8,7 @@
 
     <p class="meta"><strong>Responsable:</strong> Desert Eventos</p>
     <p class="meta">Luján de Cuyo, Mendoza, República Argentina</p>
-    <p class="meta">Correo: <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a></p>
+    <p class="meta">Correo: <a href="mailto:info@deserteventos.com">info@deserteventos.com</a></p>
 
     <p class="vigencia">Vigencia: 22 de agosto de 2026.</p>
 
@@ -93,7 +93,7 @@
     <p><strong>Desert Eventos</strong>, Luján de Cuyo, Mendoza.</p>
     <p>
         Para ejercer derechos o pedir la supresión de tus datos en servidor:
-        <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a>.
+        <a href="mailto:info@deserteventos.com">info@deserteventos.com</a>.
     </p>
 
     <h2>3. Datos que tratamos y finalidad</h2>
@@ -219,7 +219,7 @@
     <p>
         Podés pedir <strong>acceso, rectificación, actualización o supresión</strong> de tus datos, y la información
         prevista en el art. 6 de la Ley 25.326, escribiendo a
-        <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a>
+        <a href="mailto:info@deserteventos.com">info@deserteventos.com</a>
         desde un correo que permita identificarte (y, si aplica, el código de invitación o el evento).
     </p>
     <p>
@@ -235,7 +235,7 @@
         </li>
         <li>
             <strong>En nuestros servidores:</strong> pedí la baja por mail a
-            <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a>,
+            <a href="mailto:info@deserteventos.com">info@deserteventos.com</a>,
             indicando nombre, documento y evento. Procesaremos la eliminación o anonimización de tu registro de
             invitación y selfie, salvo que debamos conservar algo por una obligación legal o un reclamo abierto.
         </li>
@@ -257,7 +257,7 @@
     </p>
     <p>
         Si un menor de 13 se registró, el responsable o tutor puede pedir la eliminación a
-        <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a>.
+        <a href="mailto:info@deserteventos.com">info@deserteventos.com</a>.
     </p>
 
     <h2>9. Permisos del sistema</h2>
@@ -321,7 +321,7 @@
     <h2>14. Contacto</h2>
     <p>
         <strong>Desert Eventos</strong><br>
-        <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a><br>
+        <a href="mailto:info@deserteventos.com">info@deserteventos.com</a><br>
         WhatsApp: +54 9 261 708-3142<br>
         Luján de Cuyo, Mendoza, Argentina
     </p>

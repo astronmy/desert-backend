@@ -191,7 +191,7 @@
         </article>
 
         <footer class="site">
-            <p>Luján de Cuyo, Mendoza · <a href="mailto:info@deserteventos.com.ar">info@deserteventos.com.ar</a></p>
+            <p>Luján de Cuyo, Mendoza · <a href="mailto:info@deserteventos.com">info@deserteventos.com</a></p>
         </footer>
     </div>
 </body>
