@@ -97,7 +97,7 @@
             Si no, descargala desde la tienda y volvé a este link.
         </p>
         <div class="actions">
-            <a class="btn btn-primary" id="open-app" href="#">Abrir Desert Eventos</a>
+            <a class="btn btn-primary" id="open-app" href="{{ $customSchemeUrl }}">Abrir Desert Eventos</a>
             <a class="btn btn-secondary" href="{{ $playStoreUrl }}" data-store="play">Descargar en Google Play</a>
             <a class="btn btn-secondary" href="{{ $appStoreUrl }}" data-store="app_store">Descargar en App Store</a>
         </div>
@@ -106,50 +106,22 @@
     <script>
         (function () {
             const token = @json($token);
-            const feature = @json($feature);
             const code = @json($code ?? null);
-            const appPackage = @json($appPackage);
-            const deeplinkHost = @json($deeplinkHost);
+            const customSchemeUrl = @json($customSchemeUrl);
+            const intentUrl = @json($intentUrl);
             const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             const endpoint = @json(route('activar.store-click'));
-
-            function queryString() {
-                const params = new URLSearchParams();
-                if (feature) params.set('feature', feature);
-                if (token) params.set('token', token);
-                return params.toString();
-            }
-
-            function appUrls() {
-                const q = queryString();
-                const custom = 'deserteventos://activar' + (q ? '?' + q : '');
-                const intent = 'intent://activar' + (q ? '?' + q : '') +
-                    '#Intent;scheme=https;host=' + encodeURIComponent(deeplinkHost) +
-                    ';package=' + encodeURIComponent(appPackage) + ';end';
-                return { custom: custom, intent: intent };
-            }
-
-            function openApp() {
-                if (!token) return false;
-                const urls = appUrls();
-                const isAndroid = /Android/i.test(navigator.userAgent || '');
-                window.location.href = isAndroid ? urls.intent : urls.custom;
-                return true;
-            }
+            const isAndroid = /Android/i.test(navigator.userAgent || '');
 
             const openBtn = document.getElementById('open-app');
-            if (openBtn) {
-                const urls = appUrls();
-                const isAndroid = /Android/i.test(navigator.userAgent || '');
-                openBtn.setAttribute('href', isAndroid ? urls.intent : urls.custom);
-                openBtn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    openApp();
-                });
+            if (openBtn && isAndroid) {
+                openBtn.setAttribute('href', intentUrl);
             }
 
             if (token) {
-                setTimeout(openApp, 250);
+                setTimeout(function () {
+                    window.location.href = isAndroid ? intentUrl : customSchemeUrl;
+                }, 400);
             }
 
             function trackStoreClick(store) {

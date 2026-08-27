@@ -4,7 +4,7 @@
     "details": [
       {
         "appID": "B8NDXS7429.ar.com.deserteventos.app",
-        "paths": ["/activar", "/activar/*"]
+        "paths": ["/activar", "/activar/*", "/r", "/r/*"]
       }
     ]
   }

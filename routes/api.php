@@ -19,6 +19,8 @@ Route::middleware('throttle:60,1')->group(function () {
     Route::get('invitations/{code}/entry', [InvitationController::class, 'entry']);
     Route::post('accesses', [AccessController::class, 'store']);
     Route::post('deeplink/redeem', [DeeplinkController::class, 'redeem']);
+    Route::get('deeplink/r/{code}', [DeeplinkController::class, 'resolveShort'])
+        ->where('code', '[A-Za-z0-9]{8}');
 });
 
 Route::middleware(['web', 'auth'])->group(function () {
