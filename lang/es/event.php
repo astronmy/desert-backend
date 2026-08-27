@@ -55,12 +55,14 @@ return [
 
     'deeplink' => [
         'title' => 'Link de registro (app)',
-        'help' => 'Un único link corto compartible. Vence el día de fin del evento. Quien lo abre se registra con selfie y queda pendiente de aprobación.',
+        'help' => 'El link corto es más cómodo para compartir. El link completo (/activar) abre la app instalada hoy. Regenerar invalida ambos.',
         'generate' => 'Generar link',
         'regenerate' => 'Regenerar',
         'regenerate_hint' => 'Regenerar invalida el link anterior; quien tenga el viejo ya no podrá usarlo.',
         'regenerate_confirm' => '¿Regenerar el link? El link actual dejará de funcionar.',
         'url' => 'URL corta',
+        'url_full' => 'URL completa (abre la app)',
+        'url_full_help' => 'Usá esta si el short abre el navegador. Es el /activar?token=… que entiende la app actual.',
         'copy' => 'Copiar',
         'copied' => 'Copiado',
         'expires_at' => 'Vence: :date',

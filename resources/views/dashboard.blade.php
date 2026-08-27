@@ -21,7 +21,7 @@
             <div class="rounded-md bg-amber-50 p-4 text-sm text-amber-900">{{ __('dashboard.no_event') }}</div>
         @else
             {{-- Registration short link --}}
-            <div class="mb-6 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm" x-data="{ copied: false }">
+            <div class="mb-6 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm" x-data="{ copied: '' }">
                 <div class="border-b border-gray-200 bg-[var(--desert-bg)] px-5 py-3">
                     <h3 class="text-sm font-semibold uppercase tracking-wide text-[var(--desert-sand)]">{{ __('dashboard.link.title') }}</h3>
                 </div>
@@ -34,15 +34,27 @@
                                 <input id="dashboard-short-url" type="text" readonly value="{{ $registrationLink->shortUrl() }}"
                                        class="w-full rounded-md border-gray-300 bg-gray-50 font-mono text-xs text-gray-800 shadow-sm" />
                                 <button type="button"
-                                        @click="navigator.clipboard.writeText(document.getElementById('dashboard-short-url').value).then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                        @click="navigator.clipboard.writeText(document.getElementById('dashboard-short-url').value).then(() => { copied = 'short'; setTimeout(() => copied = '', 2000) })"
                                         class="shrink-0 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--desert-bg)]">
-                                    <span x-text="copied ? '{{ __('dashboard.link.copied') }}' : '{{ __('dashboard.link.copy') }}'"></span>
+                                    <span x-text="copied === 'short' ? '{{ __('dashboard.link.copied') }}' : '{{ __('dashboard.link.copy') }}'"></span>
                                 </button>
                             </div>
-                            <p class="mt-2 text-xs text-gray-500">
-                                {{ __('dashboard.link.expires_at', ['date' => $registrationLink->expires_at->timezone(config('app.timezone'))->format('d/m/Y H:i')]) }}
-                            </p>
                         </div>
+                        <div>
+                            <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">{{ __('dashboard.link.url_full') }}</p>
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-start">
+                                <textarea id="dashboard-long-url" readonly rows="3"
+                                          class="w-full resize-none rounded-md border-gray-300 bg-gray-50 font-mono text-xs text-gray-800 shadow-sm">{{ $registrationLink->longActivateUrl() }}</textarea>
+                                <button type="button"
+                                        @click="navigator.clipboard.writeText(document.getElementById('dashboard-long-url').value).then(() => { copied = 'long'; setTimeout(() => copied = '', 2000) })"
+                                        class="shrink-0 rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--desert-gold-dark)]">
+                                    <span x-text="copied === 'long' ? '{{ __('dashboard.link.copied') }}' : '{{ __('dashboard.link.copy') }}'"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500">
+                            {{ __('dashboard.link.expires_at', ['date' => $registrationLink->expires_at->timezone(config('app.timezone'))->format('d/m/Y H:i')]) }}
+                        </p>
                         @can('permission', 'deeplink.generar')
                             <form method="POST" action="{{ route('admin.dashboard.registration-link') }}"
                                   onsubmit="return confirm(@js(__('dashboard.link.regenerate_confirm')))">

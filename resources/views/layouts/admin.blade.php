@@ -334,14 +334,15 @@
                 linkEventName: '',
                 linkHasLink: false,
                 linkShortUrl: '',
+                linkLongUrl: '',
                 linkExpiresAt: '',
-                linkCopied: false,
+                linkCopied: '',
                 openLinkModal(eventId, eventName) {
                     this.linkEventId = eventId;
                     this.linkEventName = eventName || '';
                     this.linkOpen = true;
                     this.linkError = '';
-                    this.linkCopied = false;
+                    this.linkCopied = '';
                     this.fetchLink();
                 },
                 closeLinkModal() {
@@ -359,6 +360,7 @@
                 applyLinkPayload(data) {
                     this.linkHasLink = !!data.has_link;
                     this.linkShortUrl = data.short_url || '';
+                    this.linkLongUrl = data.long_url || '';
                     this.linkExpiresAt = data.expires_at || '';
                 },
                 async fetchLink() {
@@ -403,19 +405,20 @@
                         });
                         if (!res.ok) throw new Error('HTTP ' + res.status);
                         this.applyLinkPayload(await res.json());
-                        this.linkCopied = false;
+                        this.linkCopied = '';
                     } catch (e) {
                         this.linkError = @json(__('event.deeplink.save_error'));
                     } finally {
                         this.linkSaving = false;
                     }
                 },
-                async copyLink() {
-                    if (!this.linkShortUrl) return;
+                async copyLink(kind) {
+                    const value = kind === 'long' ? this.linkLongUrl : this.linkShortUrl;
+                    if (!value) return;
                     try {
-                        await navigator.clipboard.writeText(this.linkShortUrl);
-                        this.linkCopied = true;
-                        setTimeout(() => { this.linkCopied = false; }, 2000);
+                        await navigator.clipboard.writeText(value);
+                        this.linkCopied = kind;
+                        setTimeout(() => { if (this.linkCopied === kind) this.linkCopied = ''; }, 2000);
                     } catch (e) {
                         // ignore
                     }

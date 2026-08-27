@@ -10,8 +10,9 @@ return [
 
     'link' => [
         'title' => 'Link de registro',
-        'help' => 'Compartí este link para que los invitados se registren en la app.',
+        'help' => 'El link corto es para compartir. El completo abre la app instalada (/activar).',
         'url' => 'URL corta',
+        'url_full' => 'URL completa (abre la app)',
         'copy' => 'Copiar',
         'copied' => 'Copiado',
         'expires_at' => 'Vence: :date',

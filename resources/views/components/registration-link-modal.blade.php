@@ -44,15 +44,28 @@
                             <input type="text" readonly :value="linkShortUrl"
                                    class="w-full rounded-md border-gray-300 bg-gray-50 font-mono text-xs text-gray-800 shadow-sm" />
                             <button type="button"
-                                    @click="copyLink()"
+                                    @click="copyLink('short')"
                                     class="shrink-0 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--desert-bg)]">
-                                <span x-text="linkCopied ? '{{ __('event.deeplink.copied') }}' : '{{ __('event.deeplink.copy') }}'"></span>
+                                <span x-text="linkCopied === 'short' ? '{{ __('event.deeplink.copied') }}' : '{{ __('event.deeplink.copy') }}'"></span>
                             </button>
                         </div>
-                        <p class="mt-2 text-xs text-gray-500" x-show="linkExpiresAt">
-                            {{ __('event.deeplink.expires_label') }}: <span x-text="linkExpiresAt"></span>
-                        </p>
                     </div>
+                    <div>
+                        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">{{ __('event.deeplink.url_full') }}</p>
+                        <div class="flex flex-col gap-2 sm:flex-row sm:items-start">
+                            <textarea readonly rows="3" :value="linkLongUrl"
+                                      class="w-full resize-none rounded-md border-gray-300 bg-gray-50 font-mono text-xs text-gray-800 shadow-sm"></textarea>
+                            <button type="button"
+                                    @click="copyLink('long')"
+                                    class="shrink-0 rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--desert-gold-dark)]">
+                                <span x-text="linkCopied === 'long' ? '{{ __('event.deeplink.copied') }}' : '{{ __('event.deeplink.copy') }}'"></span>
+                            </button>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">{{ __('event.deeplink.url_full_help') }}</p>
+                    </div>
+                    <p class="text-xs text-gray-500" x-show="linkExpiresAt">
+                        {{ __('event.deeplink.expires_label') }}: <span x-text="linkExpiresAt"></span>
+                    </p>
                     <div class="flex flex-wrap gap-2 pt-1">
                         <button type="button"
                                 @click="regenerateLink()"

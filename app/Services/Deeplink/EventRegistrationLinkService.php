@@ -140,6 +140,7 @@ class EventRegistrationLinkService
     /**
      * @return array{
      *   short_url: string|null,
+     *   long_url: string|null,
      *   expires_at: string|null,
      *   expires_at_iso: string|null,
      *   has_link: bool,
@@ -153,6 +154,7 @@ class EventRegistrationLinkService
         if (! $link) {
             return [
                 'short_url' => null,
+                'long_url' => null,
                 'expires_at' => null,
                 'expires_at_iso' => null,
                 'has_link' => false,
@@ -162,6 +164,7 @@ class EventRegistrationLinkService
 
         return [
             'short_url' => $link->shortUrl(),
+            'long_url' => $link->longActivateUrl(),
             'expires_at' => $link->expires_at->timezone(config('app.timezone'))->format('d/m/Y H:i'),
             'expires_at_iso' => $link->expires_at->toIso8601String(),
             'has_link' => true,
