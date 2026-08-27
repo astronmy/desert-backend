@@ -5,8 +5,8 @@
       "namespace": "android_app",
       "package_name": "ar.com.deserteventos.app",
       "sha256_cert_fingerprints": [
-        "45:A5:06:56:98:D8:07:F0:8B:75:D7:07:A3:58:06:EE:30:22:9B:BE:C2:94:67:E2:FA:25:C5:89:14:01:4C:82"
-        //"65:4C:EE:A8:1C:95:6C:F9:47:7E:F2:70:3F:50:CB:E0:E6:D4:DC:C6:9E:1B:5B:3B:3F:52:2C:71:C1:92:D0:E8"
+        "45:A5:06:56:98:D8:07:F0:8B:75:D7:07:A3:58:06:EE:30:22:9B:BE:C2:94:67:E2:FA:25:C5:89:14:01:4C:82",
+        "65:4C:EE:A8:1C:95:6C:F9:47:7E:F2:70:3F:50:CB:E0:E6:D4:DC:C6:9E:1B:5B:3B:3F:52:2C:71:C1:92:D0:E8"
       ]
     }
   }
