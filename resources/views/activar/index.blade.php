@@ -93,11 +93,12 @@
         <img class="logo" src="{{ asset('assets/logo-desert.png') }}" alt="Desert Eventos">
         <h1>Abrí la app para confirmar tu invitación</h1>
         <p>
-            Si tenés Desert Eventos instalada, este link debería abrirla sola.
-            Si no, descargala desde la tienda y volvé a tocar el link.
+            Si tenés Desert Eventos instalada, tocá el botón para abrirla.
+            Si no, descargala desde la tienda y volvé a este link.
         </p>
         <div class="actions">
-            <a class="btn btn-primary" href="{{ $playStoreUrl }}" data-store="play">Descargar en Google Play</a>
+            <a class="btn btn-primary" id="open-app" href="#">Abrir Desert Eventos</a>
+            <a class="btn btn-secondary" href="{{ $playStoreUrl }}" data-store="play">Descargar en Google Play</a>
             <a class="btn btn-secondary" href="{{ $appStoreUrl }}" data-store="app_store">Descargar en App Store</a>
         </div>
         <p class="hint">deserteventos.com.ar</p>
@@ -105,16 +106,54 @@
     <script>
         (function () {
             const token = @json($token);
+            const feature = @json($feature);
             const code = @json($code ?? null);
+            const appPackage = @json($appPackage);
+            const deeplinkHost = @json($deeplinkHost);
             const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             const endpoint = @json(route('activar.store-click'));
 
+            function queryString() {
+                const params = new URLSearchParams();
+                if (feature) params.set('feature', feature);
+                if (token) params.set('token', token);
+                return params.toString();
+            }
+
+            function appUrls() {
+                const q = queryString();
+                const custom = 'deserteventos://activar' + (q ? '?' + q : '');
+                const intent = 'intent://activar' + (q ? '?' + q : '') +
+                    '#Intent;scheme=https;host=' + encodeURIComponent(deeplinkHost) +
+                    ';package=' + encodeURIComponent(appPackage) + ';end';
+                return { custom: custom, intent: intent };
+            }
+
+            function openApp() {
+                if (!token) return false;
+                const urls = appUrls();
+                const isAndroid = /Android/i.test(navigator.userAgent || '');
+                window.location.href = isAndroid ? urls.intent : urls.custom;
+                return true;
+            }
+
+            const openBtn = document.getElementById('open-app');
+            if (openBtn) {
+                const urls = appUrls();
+                const isAndroid = /Android/i.test(navigator.userAgent || '');
+                openBtn.setAttribute('href', isAndroid ? urls.intent : urls.custom);
+                openBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    openApp();
+                });
+            }
+
+            if (token) {
+                setTimeout(openApp, 250);
+            }
+
             function trackStoreClick(store) {
                 const body = JSON.stringify({ store: store, token: token || null, code: code || null });
-                if (navigator.sendBeacon) {
-                    const blob = new Blob([body], { type: 'application/json' });
-                    // sendBeacon with JSON often needs FormData for CSRF; use fetch keepalive instead
-                }
                 fetch(endpoint, {
                     method: 'POST',
                     headers: {
