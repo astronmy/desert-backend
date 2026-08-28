@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\EventPlace;
 use App\Enums\EventType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Event\StoreEventRequest;
@@ -24,6 +25,7 @@ class EventController extends Controller
         $events = Event::query()
             ->when($request->filled('name'), fn ($q) => $q->where('name', 'like', '%'.$request->string('name').'%'))
             ->when($request->filled('type'), fn ($q) => $q->where('type', $request->string('type')))
+            ->when($request->filled('place'), fn ($q) => $q->where('place', $request->string('place')))
             ->when($request->filled('date_from'), fn ($q) => $q->whereDate('init_date', '>=', $request->date('date_from')))
             ->when($request->filled('date_to'), fn ($q) => $q->whereDate('init_date', '<=', $request->date('date_to')))
             ->orderByDesc('init_date')
@@ -31,15 +33,17 @@ class EventController extends Controller
             ->withQueryString();
 
         $types = EventType::options();
+        $places = EventPlace::options();
 
-        return view('admin.events.index', compact('events', 'types'));
+        return view('admin.events.index', compact('events', 'types', 'places'));
     }
 
     public function create(): View
     {
         $types = EventType::options();
+        $places = EventPlace::options();
 
-        return view('admin.events.create', compact('types'));
+        return view('admin.events.create', compact('types', 'places'));
     }
 
     public function store(StoreEventRequest $request): RedirectResponse
@@ -49,6 +53,7 @@ class EventController extends Controller
             'init_date',
             'end_date',
             'type',
+            'place',
             'description',
             'short_description',
             'host',
@@ -68,8 +73,9 @@ class EventController extends Controller
     {
         $event->load('images');
         $types = EventType::options();
+        $places = EventPlace::options();
 
-        return view('admin.events.edit', compact('event', 'types'));
+        return view('admin.events.edit', compact('event', 'types', 'places'));
     }
 
     public function update(UpdateEventRequest $request, Event $event): RedirectResponse
@@ -79,6 +85,7 @@ class EventController extends Controller
             'init_date',
             'end_date',
             'type',
+            'place',
             'description',
             'short_description',
             'host',

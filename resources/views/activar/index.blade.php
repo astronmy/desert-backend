@@ -93,8 +93,8 @@
         <img class="logo" src="{{ asset('assets/logo-desert.png') }}" alt="Desert Eventos">
         <h1>Abrí la app para confirmar tu invitación</h1>
         <p>
-            Si tenés Desert Eventos instalada, tocá el botón para abrirla.
-            Si no, descargala desde la tienda y volvé a este link.
+            Si tenés Desert Eventos instalada, tocá <strong>Abrir Desert Eventos</strong>.
+            Si llegaste desde WhatsApp y no abre, en el menú (⋮) elegí Abrir en Chrome o en el navegador.
         </p>
         <div class="actions">
             <a class="btn btn-primary" id="open-app" href="{{ $customSchemeUrl }}">Abrir Desert Eventos</a>
@@ -108,19 +108,12 @@
             const token = @json($token);
             const code = @json($code ?? null);
             const customSchemeUrl = @json($customSchemeUrl);
-            const intentUrl = @json($intentUrl);
             const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             const endpoint = @json(route('activar.store-click'));
-            const isAndroid = /Android/i.test(navigator.userAgent || '');
 
-            const openBtn = document.getElementById('open-app');
-            if (openBtn && isAndroid) {
-                openBtn.setAttribute('href', intentUrl);
-            }
-
-            if (token) {
+            if (token && customSchemeUrl) {
                 setTimeout(function () {
-                    window.location.href = isAndroid ? intentUrl : customSchemeUrl;
+                    window.location.href = customSchemeUrl;
                 }, 400);
             }
 

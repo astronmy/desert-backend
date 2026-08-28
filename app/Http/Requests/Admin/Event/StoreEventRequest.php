@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Event;
 
+use App\Enums\EventPlace;
 use App\Enums\EventType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -23,6 +24,7 @@ class StoreEventRequest extends FormRequest
             'init_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:init_date'],
             'type' => ['required', Rule::enum(EventType::class)],
+            'place' => ['required', Rule::enum(EventPlace::class)],
             'description' => ['nullable', 'string'],
             'short_description' => ['nullable', 'string', 'max:500'],
             'host' => ['nullable', 'string', 'max:255'],

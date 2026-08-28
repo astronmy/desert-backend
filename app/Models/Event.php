@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EventPlace;
 use App\Enums\EventType;
 use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
     'init_date',
     'end_date',
     'type',
+    'place',
     'description',
     'short_description',
     'host',
@@ -36,6 +38,7 @@ class Event extends Model
             'init_date' => 'date',
             'end_date' => 'date',
             'type' => EventType::class,
+            'place' => EventPlace::class,
         ];
     }
 

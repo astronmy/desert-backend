@@ -77,15 +77,27 @@
                     </div>
                 </div>
 
-                <div>
-                    <x-input-label for="type" :value="__('event.attributes.type')" />
-                    <x-select-input id="type" name="type" class="mt-1" required>
-                        <option value="">{{ __('event.form.select_type') }}</option>
-                        @foreach($types as $value => $label)
-                            <option value="{{ $value }}" @selected(old('type', $event->type->value) === $value)>{{ $label }}</option>
-                        @endforeach
-                    </x-select-input>
-                    <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                <div class="grid gap-6 sm:grid-cols-2">
+                    <div>
+                        <x-input-label for="type" :value="__('event.attributes.type')" />
+                        <x-select-input id="type" name="type" class="mt-1" required>
+                            <option value="">{{ __('event.form.select_type') }}</option>
+                            @foreach($types as $value => $label)
+                                <option value="{{ $value }}" @selected(old('type', $event->type->value) === $value)>{{ $label }}</option>
+                            @endforeach
+                        </x-select-input>
+                        <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                    </div>
+                    <div>
+                        <x-input-label for="place" :value="__('event.attributes.place')" />
+                        <x-select-input id="place" name="place" class="mt-1" required>
+                            <option value="">{{ __('event.form.select_place') }}</option>
+                            @foreach($places as $value => $label)
+                                <option value="{{ $value }}" @selected(old('place', $event->place->value) === $value)>{{ $label }}</option>
+                            @endforeach
+                        </x-select-input>
+                        <x-input-error :messages="$errors->get('place')" class="mt-2" />
+                    </div>
                 </div>
 
                 <div class="border-t border-gray-200 pt-6 space-y-6">

@@ -6,6 +6,7 @@ return [
         'init_date' => 'Fecha inicio',
         'end_date' => 'Fecha fin',
         'type' => 'Tipo',
+        'place' => 'Lugar',
         'date_from' => 'Desde',
         'date_to' => 'Hasta',
         'description' => 'Descripción general',
@@ -24,11 +25,17 @@ return [
         'private' => 'Privado',
     ],
 
+    'places' => [
+        'gala' => 'Gala',
+        'clasico' => 'Clásico',
+    ],
+
     'index' => [
         'title' => 'Eventos',
         'new' => 'Nuevo evento',
         'search_name_placeholder' => 'Buscar por nombre',
         'all_types' => 'Todos los tipos',
+        'all_places' => 'Todos los lugares',
         'empty' => 'No hay eventos.',
     ],
 
@@ -36,6 +43,7 @@ return [
         'create_title' => 'Nuevo evento',
         'edit_title' => 'Editar: :name',
         'select_type' => 'Seleccionar tipo',
+        'select_place' => 'Seleccionar lugar',
         'create_submit' => 'Crear evento',
         'media_section' => 'Imágenes',
         'short_description_hint' => 'Máximo 500 caracteres. Ideal para listados y cards.',

@@ -50,6 +50,15 @@
                     @endforeach
                 </x-select-input>
             </div>
+            <div class="min-w-[180px]">
+                <label for="filter_place" class="block text-sm font-medium text-gray-700">{{ __('event.attributes.place') }}</label>
+                <x-select-input id="filter_place" name="place" class="mt-1">
+                    <option value="">{{ __('event.index.all_places') }}</option>
+                    @foreach($places as $value => $label)
+                        <option value="{{ $value }}" @selected(request('place') === $value)>{{ $label }}</option>
+                    @endforeach
+                </x-select-input>
+            </div>
             <div class="min-w-[160px]">
                 <label for="filter_date_from" class="block text-sm font-medium text-gray-700">{{ __('event.attributes.date_from') }}</label>
                 <input type="date" id="filter_date_from" name="date_from" value="{{ request('date_from') }}"
@@ -86,6 +95,7 @@
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.init_date') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.end_date') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.type') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.place') }}</th>
                     <th class="px-4 py-3 text-right text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('admin.table.actions') }}</th>
                 </tr>
             </thead>
@@ -98,6 +108,11 @@
                         <td class="whitespace-nowrap px-4 py-3 text-sm">
                             <span class="inline-flex rounded-full bg-[var(--desert-sand)] px-2.5 py-0.5 text-xs font-medium text-[var(--desert-bg)]">
                                 {{ $event->type->label() }}
+                            </span>
+                        </td>
+                        <td class="whitespace-nowrap px-4 py-3 text-sm">
+                            <span class="inline-flex rounded-full bg-[var(--desert-sand)] px-2.5 py-0.5 text-xs font-medium text-[var(--desert-bg)]">
+                                {{ $event->place->label() }}
                             </span>
                         </td>
                         <td class="px-4 py-3">
@@ -141,7 +156,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-gray-500">{{ __('event.index.empty') }}</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">{{ __('event.index.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\EventPlace;
 use App\Enums\EventType;
 use App\Models\Event;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -34,6 +35,7 @@ class EventFactory extends Factory
             'init_date' => $initDate->format('Y-m-d'),
             'end_date' => $endDate->format('Y-m-d'),
             'type' => fake()->randomElement(EventType::cases()),
+            'place' => fake()->randomElement(EventPlace::cases()),
             'description' => fake()->optional(0.8)->paragraphs(2, true),
             'short_description' => fake()->optional(0.9)->sentence(12),
             'host' => fake()->optional(0.85)->name(),
