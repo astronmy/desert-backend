@@ -334,7 +334,6 @@
                 linkEventName: '',
                 linkHasLink: false,
                 linkShortUrl: '',
-                linkLongUrl: '',
                 linkExpiresAt: '',
                 linkCopied: '',
                 openLinkModal(eventId, eventName) {
@@ -360,7 +359,6 @@
                 applyLinkPayload(data) {
                     this.linkHasLink = !!data.has_link;
                     this.linkShortUrl = data.short_url || '';
-                    this.linkLongUrl = data.long_url || '';
                     this.linkExpiresAt = data.expires_at || '';
                 },
                 async fetchLink() {
@@ -413,10 +411,9 @@
                     }
                 },
                 async copyLink(kind) {
-                    const value = kind === 'long' ? this.linkLongUrl : this.linkShortUrl;
-                    if (!value) return;
+                    if (!this.linkShortUrl) return;
                     try {
-                        await navigator.clipboard.writeText(value);
+                        await navigator.clipboard.writeText(this.linkShortUrl);
                         this.linkCopied = kind;
                         setTimeout(() => { if (this.linkCopied === kind) this.linkCopied = ''; }, 2000);
                     } catch (e) {

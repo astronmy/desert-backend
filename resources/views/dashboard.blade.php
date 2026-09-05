@@ -40,18 +40,6 @@
                                 </button>
                             </div>
                         </div>
-                        <div>
-                            <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">{{ __('dashboard.link.url_full') }}</p>
-                            <div class="flex flex-col gap-2 sm:flex-row sm:items-start">
-                                <textarea id="dashboard-long-url" readonly rows="3"
-                                          class="w-full resize-none rounded-md border-gray-300 bg-gray-50 font-mono text-xs text-gray-800 shadow-sm">{{ $registrationLink->longActivateUrl() }}</textarea>
-                                <button type="button"
-                                        @click="navigator.clipboard.writeText(document.getElementById('dashboard-long-url').value).then(() => { copied = 'long'; setTimeout(() => copied = '', 2000) })"
-                                        class="shrink-0 rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--desert-gold-dark)]">
-                                    <span x-text="copied === 'long' ? '{{ __('dashboard.link.copied') }}' : '{{ __('dashboard.link.copy') }}'"></span>
-                                </button>
-                            </div>
-                        </div>
                         <p class="text-xs text-gray-500">
                             {{ __('dashboard.link.expires_at', ['date' => $registrationLink->expires_at->timezone(config('app.timezone'))->format('d/m/Y H:i')]) }}
                         </p>

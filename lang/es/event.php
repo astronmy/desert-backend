@@ -34,6 +34,7 @@ return [
         'title' => 'Eventos',
         'new' => 'Nuevo evento',
         'search_name_placeholder' => 'Buscar por nombre',
+        'search_host_placeholder' => 'Buscar por anfitrión',
         'all_types' => 'Todos los tipos',
         'all_places' => 'Todos los lugares',
         'empty' => 'No hay eventos.',
@@ -63,14 +64,12 @@ return [
 
     'deeplink' => [
         'title' => 'Link de registro (app)',
-        'help' => 'El link corto es más cómodo para compartir. El link completo (/activar) abre la app instalada hoy. Regenerar invalida ambos.',
+        'help' => 'Un único link corto compartible. Vence el día de fin del evento. Regenerar invalida el link anterior.',
         'generate' => 'Generar link',
         'regenerate' => 'Regenerar',
         'regenerate_hint' => 'Regenerar invalida el link anterior; quien tenga el viejo ya no podrá usarlo.',
         'regenerate_confirm' => '¿Regenerar el link? El link actual dejará de funcionar.',
         'url' => 'URL corta',
-        'url_full' => 'URL completa (abre la app)',
-        'url_full_help' => 'Usá esta si el short abre el navegador. Es el /activar?token=… que entiende la app actual.',
         'copy' => 'Copiar',
         'copied' => 'Copiado',
         'expires_at' => 'Vence: :date',

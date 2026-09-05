@@ -42,6 +42,12 @@
                        class="mt-1 block w-full rounded-md border border-gray-300 px-3.5 py-2.5 shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)] text-sm" />
             </div>
             <div class="min-w-[180px]">
+                <label for="filter_host" class="block text-sm font-medium text-gray-700">{{ __('event.attributes.host') }}</label>
+                <input type="text" id="filter_host" name="host" value="{{ request('host') }}"
+                       placeholder="{{ __('event.index.search_host_placeholder') }}"
+                       class="mt-1 block w-full rounded-md border border-gray-300 px-3.5 py-2.5 shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)] text-sm" />
+            </div>
+            <div class="min-w-[180px]">
                 <label for="filter_type" class="block text-sm font-medium text-gray-700">{{ __('event.attributes.type') }}</label>
                 <x-select-input id="filter_type" name="type" class="mt-1">
                     <option value="">{{ __('event.index.all_types') }}</option>
@@ -92,6 +98,7 @@
             <thead class="bg-[var(--desert-bg-elevated)]">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.name') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.host') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.init_date') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.end_date') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.type') }}</th>
@@ -103,6 +110,7 @@
                 @forelse($events as $event)
                     <tr>
                         <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">{{ $event->name }}</td>
+                        <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $event->host ?: '—' }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $event->init_date->format('d/m/Y') }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $event->end_date->format('d/m/Y') }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm">
@@ -156,7 +164,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">{{ __('event.index.empty') }}</td>
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">{{ __('event.index.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>

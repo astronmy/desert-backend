@@ -24,6 +24,7 @@ class EventController extends Controller
     {
         $events = Event::query()
             ->when($request->filled('name'), fn ($q) => $q->where('name', 'like', '%'.$request->string('name').'%'))
+            ->when($request->filled('host'), fn ($q) => $q->where('host', 'like', '%'.$request->string('host').'%'))
             ->when($request->filled('type'), fn ($q) => $q->where('type', $request->string('type')))
             ->when($request->filled('place'), fn ($q) => $q->where('place', $request->string('place')))
             ->when($request->filled('date_from'), fn ($q) => $q->whereDate('init_date', '>=', $request->date('date_from')))

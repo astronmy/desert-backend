@@ -33,10 +33,6 @@
                 <p class="text-xs font-medium uppercase tracking-wide text-gray-500">{{ __('event.deeplink.url') }}</p>
                 <p class="mt-1 break-all font-mono text-sm text-gray-900">{{ $active_link->shortUrl() }}</p>
             </div>
-            <div>
-                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">{{ __('event.deeplink.url_full') }}</p>
-                <p class="mt-1 break-all font-mono text-sm text-gray-900">{{ $active_link->longActivateUrl() }}</p>
-            </div>
             <p class="text-xs text-gray-500">{{ __('event.deeplink.expires_at', ['date' => $active_link->expires_at->timezone(config('app.timezone'))->format('d/m/Y H:i')]) }}</p>
         </div>
     @else
