@@ -94,7 +94,6 @@
         <h1>Abrí la app para confirmar tu invitación</h1>
         <p>
             Si tenés Desert Eventos instalada, tocá <strong>Abrir Desert Eventos</strong>.
-            Si llegaste desde WhatsApp y no abre, en el menú (⋮) elegí Abrir en Chrome o en el navegador.
         </p>
         <div class="actions">
             <a class="btn btn-primary" id="open-app" href="{{ $customSchemeUrl }}">Abrir Desert Eventos</a>
