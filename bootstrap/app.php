@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\EnsureEventAccess;
+use App\Http\Middleware\EnsurePermission;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,11 +15,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->redirectGuestsTo('/login');
+        $middleware->redirectGuestsTo(function (Request $request): ?string {
+            if ($request->is('api/*')) {
+                return null;
+            }
+
+            return '/login';
+        });
         $middleware->redirectUsersTo('/admin/dashboard');
         $middleware->alias([
-            'permission' => \App\Http\Middleware\EnsurePermission::class,
-            'event.access' => \App\Http\Middleware\EnsureEventAccess::class,
+            'permission' => EnsurePermission::class,
+            'event.access' => EnsureEventAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

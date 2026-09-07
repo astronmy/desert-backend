@@ -9,6 +9,7 @@ Panel de administración y API para **[Desert Eventos](https://deserteventos.com
 | Capa | Tecnología |
 |------|------------|
 | Framework | Laravel 13 (PHP 8.3+) |
+| Auth API | Laravel Sanctum (token Bearer) |
 | UI admin | Blade + Livewire + Alpine + Tailwind CSS 4 |
 | Excel | Maatwebsite Excel |
 | Base de datos | MySQL |
@@ -28,9 +29,9 @@ Panel de administración y API para **[Desert Eventos](https://deserteventos.com
   - Código único + estados: `pending` → `confirmed` / `cancelled`
 - **Accesos** — registro de ingreso por QR (un solo acceso por invitación)
 - **API mobile / scanner**
-  - Consulta y confirmación de invitación (datos + selfie)
-  - Consulta de entrada (`/entry`): foto + si ingresó y cuándo
-  - Check-in de acceso por código (`POST /accesses`)
+  - Consulta y confirmación de invitación (datos + selfie) — pública
+  - Login scanner (`POST /api/auth/login`) para rol **Control de Acceso**
+  - Consulta de entrada (`/entry`) y check-in (`POST /accesses`) — requieren Bearer
 
 ### Modelo de dominio
 
@@ -128,15 +129,57 @@ Rutas principales:
 
 ## API
 
-Base: `/api`  
-Sin autenticación por token (acceso por código de invitación).
+Base: `/api`
 
-| Método | Endpoint | Uso | Throttle |
-|--------|----------|-----|----------|
-| `GET` | `/api/invitations/{code}` | App: datos básicos de la invitación | 30/min |
-| `POST` | `/api/invitations/{code}/confirm` | App: confirmar + selfie | 30/min |
-| `GET` | `/api/invitations/{code}/entry` | Scanner: datos + foto + si ingresó | 60/min |
-| `POST` | `/api/accesses` | Scanner: registrar ingreso (QR) | 60/min |
+La app de invitados (consulta/confirmación, eventos, deeplink) sigue **pública**.  
+El scanner de puerta usa **Sanctum**: rol de sistema **Control de Acceso** (sin acceso al panel web). Crear el usuario en Admin → Usuarios. En prod, seed del rol: `php artisan db:seed --class=RolePermissionSeeder`.
+
+| Método | Endpoint | Uso | Auth | Throttle |
+|--------|----------|-----|------|----------|
+| `POST` | `/api/auth/login` | Scanner: email + password → token | no | 10/min |
+| `POST` | `/api/auth/logout` | Revoca el token actual | Bearer | 60/min |
+| `GET` | `/api/auth/me` | Usuario autenticado | Bearer | 60/min |
+| `GET` | `/api/invitations/{code}` | App: datos básicos de la invitación | no | 30/min |
+| `POST` | `/api/invitations/{code}/confirm` | App: confirmar + selfie | no | 30/min |
+| `GET` | `/api/invitations/{code}/entry` | Scanner: datos + foto + si ingresó | Bearer (`accesos.registrar`) | 60/min |
+| `POST` | `/api/accesses` | Scanner: registrar ingreso (QR) | Bearer (`accesos.registrar`) | 60/min |
+
+### Auth scanner
+
+Solo el rol **Control de Acceso** puede loguearse por API. Admin y Cliente reciben `403`. El login web de ese rol se rechaza.
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+```
+
+```json
+{
+  "email": "puerta@deserteventos.com.ar",
+  "password": "secret"
+}
+```
+
+Respuesta `200`:
+
+```json
+{
+  "token": "1|...",
+  "token_type": "Bearer",
+  "user": {
+    "id": 3,
+    "name": "Puerta Gala",
+    "email": "puerta@deserteventos.com.ar",
+    "role": {
+      "id": 3,
+      "name": "Control de Acceso",
+      "slug": "control-acceso"
+    }
+  }
+}
+```
+
+Luego: `Authorization: Bearer {token}`. Sin token en `/entry` o `/accesses` → `401`.
 
 ### 1. Obtener invitación
 
@@ -207,11 +250,14 @@ Para la puerta/scanner: datos del invitado, selfie y si ya ingresó (y cuándo).
 
 ```http
 GET /api/invitations/{code}/entry
+Authorization: Bearer {token}
 ```
 
 | Status | Significado |
 |--------|-------------|
 | `200` | OK |
+| `401` | Sin token o token inválido |
+| `403` | Token de un usuario sin `accesos.registrar` |
 | `404` | Código inexistente |
 | `410` | Invitación cancelada |
 
@@ -251,6 +297,7 @@ Usado por el scanner en puerta: lee el QR (código) y notifica el ingreso.
 
 ```http
 POST /api/accesses
+Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
@@ -269,6 +316,8 @@ Content-Type: application/json
 | Status | Significado |
 |--------|-------------|
 | `201` | Acceso registrado |
+| `401` | Sin token o token inválido |
+| `403` | Token de un usuario sin `accesos.registrar` |
 | `404` | Invitación no encontrada |
 | `409` | Ya ingresó (`accessed_at` del primer acceso) |
 | `410` | Invitación cancelada |

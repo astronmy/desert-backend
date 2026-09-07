@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -38,7 +39,7 @@ class UserFactory extends Factory
     public function admin(): static
     {
         return $this->state(function () {
-            $roleId = \App\Models\Role::query()->where('slug', \App\Models\Role::SLUG_ADMIN)->value('id');
+            $roleId = Role::query()->where('slug', Role::SLUG_ADMIN)->value('id');
 
             return [
                 'role_id' => $roleId,
@@ -50,11 +51,23 @@ class UserFactory extends Factory
     public function client(?int $eventId = null): static
     {
         return $this->state(function () use ($eventId) {
-            $roleId = \App\Models\Role::query()->where('slug', \App\Models\Role::SLUG_CLIENT)->value('id');
+            $roleId = Role::query()->where('slug', Role::SLUG_CLIENT)->value('id');
 
             return [
                 'role_id' => $roleId,
                 'event_id' => $eventId,
+            ];
+        });
+    }
+
+    public function accessControl(): static
+    {
+        return $this->state(function () {
+            $roleId = Role::query()->where('slug', Role::SLUG_ACCESS_CONTROL)->value('id');
+
+            return [
+                'role_id' => $roleId,
+                'event_id' => null,
             ];
         });
     }

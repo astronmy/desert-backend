@@ -36,6 +36,7 @@ class RolePermissionSeeder extends Seeder
         ['module' => 'invitaciones', 'action' => 'importar', 'label' => 'Importar invitaciones'],
         ['module' => 'invitaciones', 'action' => 'moderar', 'label' => 'Moderar invitaciones'],
         ['module' => 'accesos', 'action' => 'ver', 'label' => 'Ver accesos'],
+        ['module' => 'accesos', 'action' => 'registrar', 'label' => 'Registrar acceso (API scanner)'],
         ['module' => 'deeplink', 'action' => 'ver', 'label' => 'Ver link de registro / métricas'],
         ['module' => 'deeplink', 'action' => 'generar', 'label' => 'Generar link de registro'],
         ['module' => 'notificaciones', 'action' => 'ver', 'label' => 'Ver notificaciones'],
@@ -82,6 +83,16 @@ class RolePermissionSeeder extends Seeder
                 ]
             );
 
+            $accessControl = Role::query()->updateOrCreate(
+                ['slug' => Role::SLUG_ACCESS_CONTROL],
+                [
+                    'name' => 'Control de Acceso',
+                    'requires_event' => false,
+                    'is_system' => true,
+                    'is_active' => true,
+                ]
+            );
+
             $admin->permissions()->sync(array_values($permissionIds));
 
             $clientSlugs = [
@@ -100,6 +111,10 @@ class RolePermissionSeeder extends Seeder
             $client->permissions()->sync(
                 collect($clientSlugs)->map(fn (string $slug) => $permissionIds[$slug])->all()
             );
+
+            $accessControl->permissions()->sync([
+                $permissionIds['accesos.registrar'],
+            ]);
 
             User::query()
                 ->where(function ($query) use ($admin): void {

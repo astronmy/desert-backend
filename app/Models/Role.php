@@ -20,6 +20,8 @@ class Role extends Model
 
     public const SLUG_CLIENT = 'cliente';
 
+    public const SLUG_ACCESS_CONTROL = 'control-acceso';
+
     /**
      * @return array<string, string>
      */

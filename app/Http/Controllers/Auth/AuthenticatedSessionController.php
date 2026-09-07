@@ -44,6 +44,16 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
+        if ($user->isAccessControl()) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => __('role.messages.api_only'),
+            ]);
+        }
+
         if ($user->requiresEvent() && ! $user->event_id) {
             Auth::guard('web')->logout();
             $request->session()->invalidate();

@@ -9,13 +9,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 #[Fillable(['name', 'email', 'password', 'role_id', 'event_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * @return array<string, string>
@@ -66,6 +67,11 @@ class User extends Authenticatable
     public function isAdminRole(): bool
     {
         return $this->role?->slug === Role::SLUG_ADMIN;
+    }
+
+    public function isAccessControl(): bool
+    {
+        return $this->role?->slug === Role::SLUG_ACCESS_CONTROL;
     }
 
     /**

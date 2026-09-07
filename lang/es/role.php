@@ -51,5 +51,7 @@ return [
         'forbidden' => 'No tenés permiso para realizar esta acción.',
         'inactive_role' => 'Tu rol está inactivo. Contactá al administrador.',
         'client_needs_event' => 'Tu usuario Cliente no tiene un evento asociado. Contactá al administrador.',
+        'api_only' => 'Este usuario solo puede acceder por API.',
+        'api_forbidden' => 'Este usuario no puede autenticarse por API.',
     ],
 ];
