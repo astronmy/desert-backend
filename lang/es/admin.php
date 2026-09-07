@@ -5,6 +5,7 @@ return [
 
     'menu' => [
         'dashboard' => 'Dashboard',
+        'my_event' => 'Mi evento',
         'events' => 'Eventos',
         'notifications' => 'Notificaciones',
         'users' => 'Usuarios',

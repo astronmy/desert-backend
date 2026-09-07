@@ -27,6 +27,7 @@ class RolePermissionSeeder extends Seeder
         ['module' => 'eventos', 'action' => 'crear', 'label' => 'Crear eventos'],
         ['module' => 'eventos', 'action' => 'editar', 'label' => 'Editar eventos'],
         ['module' => 'eventos', 'action' => 'eliminar', 'label' => 'Eliminar eventos'],
+        ['module' => 'eventos', 'action' => 'contenido', 'label' => 'Editar contenido del evento (descripciones e imágenes)'],
         ['module' => 'invitaciones', 'action' => 'ver', 'label' => 'Ver invitaciones'],
         ['module' => 'invitaciones', 'action' => 'crear', 'label' => 'Crear invitaciones'],
         ['module' => 'invitaciones', 'action' => 'editar', 'label' => 'Editar invitaciones'],
@@ -85,6 +86,7 @@ class RolePermissionSeeder extends Seeder
 
             $clientSlugs = [
                 'dashboard.ver',
+                'eventos.contenido',
                 'invitaciones.ver',
                 'invitaciones.crear',
                 'invitaciones.exportar',

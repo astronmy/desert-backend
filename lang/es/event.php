@@ -62,6 +62,12 @@ return [
         'deleted' => 'Evento eliminado.',
     ],
 
+    'content' => [
+        'title' => 'Mi evento',
+        'help' => 'Podés actualizar las descripciones y las imágenes que se ven en la app. El nombre y las fechas los define el administrador.',
+        'open' => 'Editar contenido',
+    ],
+
     'deeplink' => [
         'title' => 'Link de registro (app)',
         'help' => 'Un único link corto compartible. Vence el día de fin del evento. Regenerar invalida el link anterior.',

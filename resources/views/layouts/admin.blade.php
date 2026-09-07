@@ -71,6 +71,14 @@
                                 'permission' => 'dashboard.ver',
                             ],
                             [
+                                'label' => __('admin.menu.my_event'),
+                                'route' => 'admin.client-event.edit',
+                                'active' => request()->routeIs('admin.client-event.*'),
+                                'icon' => 'my_event',
+                                'permission' => 'eventos.contenido',
+                                'requires_event' => true,
+                            ],
+                            [
                                 'label' => __('admin.menu.events'),
                                 'route' => 'admin.events.index',
                                 'active' => request()->routeIs('admin.events.index')
@@ -102,7 +110,16 @@
                                 'icon' => 'roles',
                                 'permission' => 'roles.ver',
                             ],
-                        ])->filter(fn ($item) => $user && $user->canPermission($item['permission']))->values();
+                        ])->filter(function ($item) use ($user) {
+                            if (! $user || ! $user->canPermission($item['permission'])) {
+                                return false;
+                            }
+                            if (! empty($item['requires_event']) && ! $user->requiresEvent()) {
+                                return false;
+                            }
+
+                            return true;
+                        })->values();
                     @endphp
                     @foreach($menuItems as $item)
                         <li>
@@ -113,7 +130,7 @@
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z" />
                                         </svg>
-                                    @elseif($item['icon'] === 'events')
+                                    @elseif($item['icon'] === 'events' || $item['icon'] === 'my_event')
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>

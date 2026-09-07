@@ -20,6 +20,20 @@
         @if (! $event)
             <div class="rounded-md bg-amber-50 p-4 text-sm text-amber-900">{{ __('dashboard.no_event') }}</div>
         @else
+            @can('permission', 'eventos.contenido')
+                <div class="mb-6 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+                    <div class="border-b border-gray-200 bg-[var(--desert-bg)] px-5 py-3">
+                        <h3 class="text-sm font-semibold uppercase tracking-wide text-[var(--desert-sand)]">{{ __('dashboard.event_content.title') }}</h3>
+                    </div>
+                    <div class="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-sm text-gray-600">{{ __('dashboard.event_content.help') }}</p>
+                        <a href="{{ route('admin.client-event.edit') }}" wire:navigate
+                           class="inline-flex shrink-0 items-center gap-2 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-bg)]">
+                            {{ __('dashboard.event_content.cta') }}
+                        </a>
+                    </div>
+                </div>
+            @endcan
             {{-- Registration short link --}}
             <div class="mb-6 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm" x-data="{ copied: '' }">
                 <div class="border-b border-gray-200 bg-[var(--desert-bg)] px-5 py-3">

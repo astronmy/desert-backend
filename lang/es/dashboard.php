@@ -8,6 +8,12 @@ return [
     'invitations_section' => 'Invitaciones',
     'no_event' => 'No tenés un evento asociado. Contactá al administrador.',
 
+    'event_content' => [
+        'title' => 'Contenido del evento',
+        'help' => 'Editá las descripciones y las fotos que se muestran en la app.',
+        'cta' => 'Editar contenido',
+    ],
+
     'link' => [
         'title' => 'Link de registro',
         'help' => 'Compartí este link para que los invitados se registren en la app.',
