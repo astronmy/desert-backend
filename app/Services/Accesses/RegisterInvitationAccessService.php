@@ -2,6 +2,7 @@
 
 namespace App\Services\Accesses;
 
+use App\Contracts\GuestNotifier;
 use App\Enums\InvitationStatus;
 use App\Models\Access;
 use App\Models\Invitation;
@@ -12,6 +13,10 @@ use RuntimeException;
 
 class RegisterInvitationAccessService
 {
+    public function __construct(
+        private readonly GuestNotifier $notifier
+    ) {}
+
     /**
      * @return array{access: Access, invitation: Invitation}
      */
@@ -68,6 +73,9 @@ class RegisterInvitationAccessService
         }
 
         $access->load('event');
+        $invitation->setRelation('access', $access);
+        $invitation->loadMissing('event');
+        $this->notifier->welcomeToEvent($invitation);
 
         return [
             'access' => $access,

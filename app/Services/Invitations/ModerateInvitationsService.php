@@ -21,7 +21,10 @@ class ModerateInvitationsService
      */
     public function approve(Event $event, array $ids): array
     {
-        return DB::transaction(function () use ($event, $ids) {
+        /** @var list<Invitation> $approved */
+        $approved = [];
+
+        $result = DB::transaction(function () use ($event, $ids, &$approved) {
             /** @var Collection<int, Invitation> $invitations */
             $invitations = Invitation::query()
                 ->where('event_id', $event->id)
@@ -39,12 +42,18 @@ class ModerateInvitationsService
                     'status' => InvitationStatus::Confirmed,
                     'confirmed_at' => $invitation->confirmed_at ?? now(),
                 ]);
-                $this->notifier->invitationApproved($invitation->fresh(['guest', 'event']));
+                $approved[] = $invitation->fresh(['guest', 'event']);
                 $updated++;
             }
 
             return ['updated' => $updated];
         });
+
+        foreach ($approved as $invitation) {
+            $this->notifier->invitationApproved($invitation);
+        }
+
+        return $result;
     }
 
     /**

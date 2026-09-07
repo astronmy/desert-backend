@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Contracts\GuestNotifier;
 use App\Contracts\OneSignalServiceInterface;
 use App\Models\User;
-use App\Services\Notifications\LogGuestNotifier;
+use App\Services\Notifications\OneSignalGuestNotifier;
 use App\Services\Notifications\OneSignalService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(GuestNotifier::class, LogGuestNotifier::class);
+        $this->app->bind(GuestNotifier::class, OneSignalGuestNotifier::class);
         $this->app->bind(OneSignalServiceInterface::class, OneSignalService::class);
     }
 

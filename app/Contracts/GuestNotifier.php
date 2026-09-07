@@ -7,8 +7,12 @@ use App\Models\Invitation;
 interface GuestNotifier
 {
     /**
-     * Notifica al invitado que su registro fue aprobado.
-     * Stub OneSignal: no envía push hasta configurar el provider real.
+     * Push al aprobar la invitación. Sync; no debe lanzar.
      */
     public function invitationApproved(Invitation $invitation): void;
+
+    /**
+     * Push de bienvenida al registrar el ingreso. Sync; no debe lanzar.
+     */
+    public function welcomeToEvent(Invitation $invitation): void;
 }

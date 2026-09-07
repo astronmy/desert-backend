@@ -10,6 +10,11 @@ return [
         'date_to' => 'Hasta',
     ],
 
+    'push' => [
+        'welcome_title' => 'Bienvenido',
+        'welcome_message' => 'Bienvenido a :event',
+    ],
+
     'index' => [
         'title' => 'Accesos',
         'subtitle' => 'Evento: :name',

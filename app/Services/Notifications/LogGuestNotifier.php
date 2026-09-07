@@ -15,7 +15,15 @@ class LogGuestNotifier implements GuestNotifier
             'code' => $invitation->code,
             'event_id' => $invitation->event_id,
             'guest_id' => $invitation->guest_id,
-            'message' => 'Hemos confirmado tu invitación',
+        ]);
+    }
+
+    public function welcomeToEvent(Invitation $invitation): void
+    {
+        Log::info('onesignal.stub.welcome_to_event', [
+            'invitation_id' => $invitation->id,
+            'code' => $invitation->code,
+            'event_id' => $invitation->event_id,
         ]);
     }
 }

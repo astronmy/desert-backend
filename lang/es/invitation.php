@@ -74,6 +74,11 @@ return [
         'bulk_rejected' => ':count invitación(es) rechazada(s).',
     ],
 
+    'push' => [
+        'approved_title' => 'Invitación confirmada',
+        'approved_message' => 'Hemos confirmado tu invitación a :event',
+    ],
+
     'moderation' => [
         'approve' => 'Aprobar',
         'reject' => 'Rechazar',
