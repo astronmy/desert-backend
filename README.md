@@ -204,7 +204,9 @@ Respuesta (ejemplo):
     "name": "Casamiento Pérez",
     "init_date": "2026-09-12",
     "end_date": "2026-09-12",
-    "type": "wedding"
+    "type": "wedding",
+    "place": "gala",
+    "place_label": "Gala"
   },
   "guest": {
     "first_name": "Juan",
@@ -272,7 +274,9 @@ Respuesta (ejemplo):
     "name": "Casamiento Pérez",
     "init_date": "2026-09-12",
     "end_date": "2026-09-12",
-    "type": "wedding"
+    "type": "wedding",
+    "place": "gala",
+    "place_label": "Gala"
   },
   "guest": {
     "first_name": "Juan",
