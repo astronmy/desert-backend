@@ -29,8 +29,9 @@ Panel de administración y API para **[Desert Eventos](https://deserteventos.com
   - Código único + estados: `pending` → `confirmed` / `cancelled`
 - **Accesos** — registro de ingreso por QR (un solo acceso por invitación)
 - **API mobile / scanner**
-  - Login (`POST /api/auth/login`) para rol **Control de Acceso**
-  - Consulta y confirmación de invitación, `/entry` y check-in — requieren Bearer (`accesos.registrar`)
+  - Consulta y confirmación de invitación (datos + selfie) — pública
+  - Login scanner (`POST /api/auth/login`) para rol **Control de Acceso**
+  - Consulta de entrada (`/entry`) y check-in (`POST /accesses`) — requieren Bearer
 
 ### Modelo de dominio
 
@@ -130,17 +131,16 @@ Rutas principales:
 
 Base: `/api`
 
-Consulta, confirmación, `/entry` y check-in usan **Sanctum**: rol **Control de Acceso** (sin panel web). Crear el usuario en Admin → Usuarios. En prod: `php artisan db:seed --class=RolePermissionSeeder`.
-
-Siguen públicos: listado de eventos, auto-registro y deeplinks.
+La app de invitados (consulta/confirmación, eventos, deeplink) sigue **pública**.  
+El scanner de puerta usa **Sanctum**: rol de sistema **Control de Acceso** (sin acceso al panel web). Crear el usuario en Admin → Usuarios. En prod, seed del rol: `php artisan db:seed --class=RolePermissionSeeder`.
 
 | Método | Endpoint | Uso | Auth | Throttle |
 |--------|----------|-----|------|----------|
 | `POST` | `/api/auth/login` | Scanner: email + password → token | no | 10/min |
 | `POST` | `/api/auth/logout` | Revoca el token actual | Bearer | 60/min |
 | `GET` | `/api/auth/me` | Usuario autenticado | Bearer | 60/min |
-| `GET` | `/api/invitations/{code}` | Datos básicos de la invitación | Bearer (`accesos.registrar`) | 60/min |
-| `POST` | `/api/invitations/{code}/confirm` | Confirmar + selfie | Bearer (`accesos.registrar`) | 60/min |
+| `GET` | `/api/invitations/{code}` | App: datos básicos de la invitación | no | 30/min |
+| `POST` | `/api/invitations/{code}/confirm` | App: confirmar + selfie | no | 30/min |
 | `GET` | `/api/invitations/{code}/entry` | Scanner: datos + foto + si ingresó | Bearer (`accesos.registrar`) | 60/min |
 | `POST` | `/api/accesses` | Scanner: registrar ingreso (QR) | Bearer (`accesos.registrar`) | 60/min |
 
@@ -179,20 +179,17 @@ Respuesta `200`:
 }
 ```
 
-Luego: `Authorization: Bearer {token}`. Sin token en invitaciones, `/entry` o `/accesses` → `401`.
+Luego: `Authorization: Bearer {token}`. Sin token en `/entry` o `/accesses` → `401`.
 
 ### 1. Obtener invitación
 
 ```http
 GET /api/invitations/{code}
-Authorization: Bearer {token}
 ```
 
 | Status | Significado |
 |--------|-------------|
 | `200` | OK |
-| `401` | Sin token o token inválido |
-| `403` | Token de un usuario sin `accesos.registrar` |
 | `404` | Código inexistente |
 | `410` | Invitación cancelada |
 
@@ -224,11 +221,10 @@ Respuesta (ejemplo):
 
 ### 2. Confirmar invitación
 
-Confirmar datos y selfie (mismo token de Control de Acceso).
+Usado por la app mobile: el invitado carga/confirma datos y selfie.
 
 ```http
 POST /api/invitations/{code}/confirm
-Authorization: Bearer {token}
 Content-Type: multipart/form-data
 ```
 
@@ -243,8 +239,6 @@ Content-Type: multipart/form-data
 | Status | Significado |
 |--------|-------------|
 | `200` | Confirmada |
-| `401` | Sin token o token inválido |
-| `403` | Token de un usuario sin `accesos.registrar` |
 | `404` | Código inexistente |
 | `409` | Ya estaba confirmada |
 | `410` | Cancelada |
@@ -356,16 +350,18 @@ Respuesta OK (ejemplo):
 }
 ```
 
-Flujo típico (todos con Bearer de Control de Acceso):
+Flujo típico app + puerta:
 
 ```
-Control de Acceso                     Backend
-   |-- POST /api/auth/login ---------->|
-   |<-- token -------------------------|
-   |-- GET /invitations/{code} ------->|
-   |-- POST /invitations/{code}/confirm|
-   |-- GET /invitations/{code}/entry ->|
-   |-- POST /accesses ---------------->|
+App mobile          Backend              Scanner puerta
+   |                   |                      |
+   |-- GET invitation->|                      |
+   |-- POST confirm -->|  (selfie + datos)     |
+   |                   |                      |
+   |                   |<-- GET .../entry ----|
+   |                   |   (foto + ¿ingresó?) |
+   |                   |<-- POST /accesses ---|
+   |                   |   (código del QR)    |
 ```
 
 ---

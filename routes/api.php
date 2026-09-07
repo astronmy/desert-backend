@@ -15,6 +15,8 @@ Route::middleware('throttle:10,1')->group(function () {
 
 Route::middleware('throttle:30,1')->group(function () {
     Route::get('events', [EventController::class, 'index']);
+    Route::get('invitations/{code}', [InvitationController::class, 'show']);
+    Route::post('invitations/{code}/confirm', [InvitationController::class, 'confirm']);
     Route::post('events/{event}/register', [EventRegistrationController::class, 'store']);
 });
 
@@ -27,10 +29,6 @@ Route::middleware('throttle:60,1')->group(function () {
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::get('auth/me', [AuthController::class, 'me']);
-    Route::get('invitations/{code}', [InvitationController::class, 'show'])
-        ->middleware('permission:accesos.registrar');
-    Route::post('invitations/{code}/confirm', [InvitationController::class, 'confirm'])
-        ->middleware('permission:accesos.registrar');
     Route::get('invitations/{code}/entry', [InvitationController::class, 'entry'])
         ->middleware('permission:accesos.registrar');
     Route::post('accesses', [AccessController::class, 'store'])
