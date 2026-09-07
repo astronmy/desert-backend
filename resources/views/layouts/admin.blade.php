@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="admin-force-light" style="color-scheme: light;">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Desert') }} - {{ __('admin.title') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -37,28 +37,31 @@
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
              class="fixed inset-0 z-40 bg-black/50 lg:hidden"
-             @click="sidebarOpen = false"
+             @click="closeSidebar()"
              style="display: none;"
              x-cloak>
         </div>
 
-        <aside :class="{
-                'w-64': !sidebarCollapsed,
-                'w-[4.5rem]': sidebarCollapsed,
-                '-translate-x-full lg:translate-x-0': true
+        <aside
+            class="admin-sidebar fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-[var(--desert-border)] bg-[var(--desert-bg)] transition-all duration-300 ease-in-out lg:translate-x-0"
+            :class="{
+                'translate-x-0': sidebarOpen,
+                '-translate-x-full': !sidebarOpen,
+                'lg:translate-x-0 lg:w-64': !sidebarCollapsed,
+                'lg:translate-x-0 lg:w-[4.5rem]': sidebarCollapsed,
             }"
-            class="fixed inset-y-0 left-0 z-50 flex flex-col bg-[var(--desert-bg)] border-r border-[var(--desert-border)] transition-all duration-300 ease-in-out lg:translate-x-0"
-            :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }">
+        >
             <div class="flex h-16 shrink-0 items-center justify-center border-b border-[var(--desert-border)] transition-[padding] duration-300"
-                 :class="sidebarCollapsed ? 'px-2' : 'px-4'">
-                <a href="{{ route('admin.dashboard') }}" wire:navigate class="flex items-center justify-center overflow-hidden w-full min-w-0">
+                 :class="showSidebarLabels ? 'px-4' : 'px-2'">
+                <a href="{{ route('admin.dashboard') }}" wire:navigate @click="closeSidebar()"
+                   class="flex min-w-0 w-full items-center justify-center overflow-hidden">
                     <img src="{{ asset('assets/logo-desert.png') }}" alt="{{ config('app.name') }}"
                          class="h-10 w-auto shrink-0 object-contain transition-all duration-300"
-                         :class="sidebarCollapsed ? 'max-h-8 max-w-[3rem]' : 'max-w-[10rem]'" />
+                         :class="showSidebarLabels ? 'max-w-[10rem]' : 'max-h-8 max-w-[3rem]'" />
                 </a>
             </div>
 
-            <nav class="flex-1 overflow-y-auto py-4 px-3">
+            <nav class="admin-sidebar-nav flex-1 overflow-y-auto px-3 py-4">
                 <ul class="space-y-1">
                     @php
                         $user = auth()->user();
@@ -123,7 +126,7 @@
                     @endphp
                     @foreach($menuItems as $item)
                         <li>
-                            <a href="{{ route($item['route']) }}" wire:navigate
+                            <a href="{{ route($item['route']) }}" wire:navigate @click="closeSidebar()"
                                class="admin-sidebar-link {{ $item['active'] ? 'admin-sidebar-link-active' : '' }}">
                                 <span class="admin-sidebar-icon flex h-5 w-5 shrink-0 items-center justify-center">
                                     @if($item['icon'] === 'dashboard')
@@ -148,7 +151,7 @@
                                         </svg>
                                     @endif
                                 </span>
-                                <span x-show="!sidebarCollapsed" x-transition>{{ $item['label'] }}</span>
+                                <span x-show="showSidebarLabels" x-transition>{{ $item['label'] }}</span>
                             </a>
                         </li>
                     @endforeach
@@ -158,10 +161,10 @@
 
         <div class="flex flex-1 flex-col lg:pl-0"
              :class="sidebarCollapsed ? 'lg:pl-[4.5rem]' : 'lg:pl-64'">
-            <header class="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 border-b border-[var(--desert-border)] bg-[var(--desert-bg)] px-4 sm:px-6 lg:px-8">
+            <header class="admin-header sticky top-0 z-[60] flex min-h-16 shrink-0 items-center gap-4 border-b border-[var(--desert-border)] bg-[var(--desert-bg)] px-4 sm:px-6 lg:px-8">
                 <button type="button"
                         @click="toggleSidebar()"
-                        class="rounded-md p-2 text-[var(--desert-accent)] hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[var(--desert-accent)]">
+                        class="relative z-[60] rounded-md p-2 text-[var(--desert-accent)] hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[var(--desert-accent)]">
                     <span class="sr-only">{{ __('admin.sidebar.toggle') }}</span>
                     <svg x-show="!sidebarOpen" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -216,20 +219,53 @@
             return {
                 sidebarOpen: false,
                 sidebarCollapsed: false,
+                isDesktop() {
+                    return window.matchMedia('(min-width: 1024px)').matches;
+                },
+                get showSidebarLabels() {
+                    return ! this.isDesktop() || ! this.sidebarCollapsed;
+                },
+                lockScroll(lock) {
+                    document.documentElement.classList.toggle('overflow-hidden', lock);
+                    document.body.classList.toggle('overflow-hidden', lock);
+                },
+                closeSidebar() {
+                    this.sidebarOpen = false;
+                    this.lockScroll(false);
+                },
                 init() {
-                    if (typeof localStorage !== 'undefined') {
+                    if (this.isDesktop() && typeof localStorage !== 'undefined') {
                         this.sidebarCollapsed = localStorage.getItem('adminSidebarCollapsed') === 'true';
+                    } else {
+                        this.sidebarCollapsed = false;
                     }
-                    document.addEventListener('livewire:navigated', () => { this.sidebarOpen = false; });
+
+                    this.$watch('sidebarOpen', (open) => {
+                        this.lockScroll(! this.isDesktop() && open);
+                    });
+
+                    document.addEventListener('livewire:navigated', () => this.closeSidebar());
+
+                    window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
+                        if (event.matches) {
+                            this.closeSidebar();
+                            if (typeof localStorage !== 'undefined') {
+                                this.sidebarCollapsed = localStorage.getItem('adminSidebarCollapsed') === 'true';
+                            }
+                        } else {
+                            this.sidebarCollapsed = false;
+                            this.closeSidebar();
+                        }
+                    });
                 },
                 toggleSidebar() {
-                    if (window.innerWidth >= 1024) {
-                        this.sidebarCollapsed = !this.sidebarCollapsed;
+                    if (this.isDesktop()) {
+                        this.sidebarCollapsed = ! this.sidebarCollapsed;
                         localStorage.setItem('adminSidebarCollapsed', this.sidebarCollapsed);
-                    } else {
-                        this.sidebarOpen = !this.sidebarOpen;
+                        return;
                     }
-                }
+                    this.sidebarOpen = ! this.sidebarOpen;
+                },
             };
         }
 

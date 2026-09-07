@@ -27,6 +27,19 @@
     display: none !important;
 }
 
+.admin-sidebar {
+    padding-top: env(safe-area-inset-top, 0px);
+}
+
+.admin-sidebar-nav {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+.admin-header {
+    padding-top: env(safe-area-inset-top, 0px);
+}
+
 .admin-force-light .admin-content-light,
 .admin-force-light .admin-content-light * {
     color-scheme: light;
