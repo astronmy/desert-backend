@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\EventClientController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\EventRegistrationLinkController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,16 @@ Route::middleware(['permission:deeplink.generar', 'event.access'])->group(functi
 
 Route::middleware('permission:eventos.ver')->group(function () {
     Route::get('events', [EventController::class, 'index'])->name('events.index');
+    Route::get('events/{event}/client', [EventClientController::class, 'show'])->name('events.client.show');
+});
+
+Route::middleware('permission:usuarios.crear')->group(function () {
+    Route::post('events/{event}/client', [EventClientController::class, 'store'])->name('events.client.store');
+});
+
+Route::middleware('permission:usuarios.editar')->group(function () {
+    Route::post('events/{event}/client/password', [EventClientController::class, 'regeneratePassword'])
+        ->name('events.client.password');
 });
 
 Route::middleware('permission:eventos.crear')->group(function () {

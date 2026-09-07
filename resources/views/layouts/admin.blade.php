@@ -422,6 +422,164 @@
                 },
             };
         }
+
+        function eventClientModalState() {
+            return {
+                clientOpen: false,
+                clientLoading: false,
+                clientSaving: false,
+                clientError: '',
+                clientEventId: null,
+                clientEventName: '',
+                clientExists: false,
+                clientShowForm: false,
+                clientEmail: '',
+                clientPassword: '',
+                clientCopied: false,
+                openClientModal(eventId, eventName) {
+                    this.clientEventId = eventId;
+                    this.clientEventName = eventName || '';
+                    this.clientOpen = true;
+                    this.clientError = '';
+                    this.clientCopied = false;
+                    this.clientShowForm = false;
+                    this.clientEmail = '';
+                    this.clientPassword = '';
+                    this.fetchClient();
+                },
+                closeClientModal() {
+                    this.clientOpen = false;
+                    this.clientSaving = false;
+                    this.clientLoading = false;
+                    this.clientShowForm = false;
+                },
+                clientUrl() {
+                    return @json(url('/admin/events')) + '/' + this.clientEventId + '/client';
+                },
+                firstError(data, fallback) {
+                    if (data && data.errors) {
+                        const first = Object.values(data.errors)[0];
+                        if (Array.isArray(first) && first[0]) return first[0];
+                    }
+                    return (data && data.message) || fallback;
+                },
+                autogeneratePassword() {
+                    const sets = ['abcdefghijkmnopqrstuvwxyz', 'ABCDEFGHJKLMNPQRSTUVWXYZ', '23456789', '!@#$%&*'];
+                    let out = '';
+                    for (let i = 0; i < sets.length; i++) {
+                        out += sets[i].charAt(Math.floor(Math.random() * sets[i].length));
+                    }
+                    const all = sets.join('');
+                    while (out.length < 12) {
+                        out += all.charAt(Math.floor(Math.random() * all.length));
+                    }
+                    this.clientPassword = out.split('').sort(() => Math.random() - 0.5).join('');
+                },
+                startCreateClient() {
+                    this.clientShowForm = true;
+                    this.clientError = '';
+                    this.clientEmail = '';
+                    this.clientPassword = '';
+                },
+                async fetchClient() {
+                    this.clientLoading = true;
+                    this.clientError = '';
+                    try {
+                        const res = await fetch(this.clientUrl(), {
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                            credentials: 'same-origin',
+                        });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        const data = await res.json();
+                        this.clientExists = !!data.exists;
+                        this.clientEmail = data.email || '';
+                        this.clientPassword = '';
+                    } catch (e) {
+                        this.clientError = @json(__('event.client.load_error'));
+                    } finally {
+                        this.clientLoading = false;
+                    }
+                },
+                async createClient() {
+                    this.clientSaving = true;
+                    this.clientError = '';
+                    try {
+                        const res = await fetch(this.clientUrl(), {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': this.csrfToken(),
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({
+                                email: this.clientEmail,
+                                password: this.clientPassword || null,
+                            }),
+                        });
+                        const data = await res.json().catch(() => ({}));
+                        if (!res.ok && res.status !== 409) {
+                            this.clientError = this.firstError(data, @json(__('event.client.save_error')));
+                            return;
+                        }
+                        this.clientExists = true;
+                        this.clientShowForm = false;
+                        this.clientEmail = data.email || this.clientEmail;
+                        this.clientPassword = data.password || this.clientPassword || '';
+                    } catch (e) {
+                        this.clientError = @json(__('event.client.save_error'));
+                    } finally {
+                        this.clientSaving = false;
+                    }
+                },
+                async regenerateClientPassword() {
+                    if (!window.confirm(@json(__('event.client.new_password_confirm')))) {
+                        return;
+                    }
+                    this.clientSaving = true;
+                    this.clientError = '';
+                    try {
+                        const res = await fetch(this.clientUrl() + '/password', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': this.csrfToken(),
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({}),
+                        });
+                        const data = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                            this.clientError = this.firstError(data, @json(__('event.client.password_error')));
+                            return;
+                        }
+                        this.clientEmail = data.email || this.clientEmail;
+                        this.clientPassword = data.password || '';
+                        this.clientCopied = false;
+                    } catch (e) {
+                        this.clientError = @json(__('event.client.password_error'));
+                    } finally {
+                        this.clientSaving = false;
+                    }
+                },
+                async copyClientCredentials() {
+                    const lines = ['Email: ' + (this.clientEmail || '')];
+                    if (this.clientPassword) {
+                        lines.push('Contraseña: ' + this.clientPassword);
+                    }
+                    try {
+                        await navigator.clipboard.writeText(lines.join('\n'));
+                        this.clientCopied = true;
+                        setTimeout(() => { this.clientCopied = false; }, 2000);
+                    } catch (e) {
+                        // ignore
+                    }
+                },
+            };
+        }
     </script>
     @livewireScripts
 </body>
