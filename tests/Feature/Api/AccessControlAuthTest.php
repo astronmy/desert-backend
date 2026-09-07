@@ -116,9 +116,15 @@ class AccessControlAuthTest extends TestCase
             ->assertUnauthorized();
     }
 
-    public function test_entry_and_accesses_require_token(): void
+    public function test_invitation_and_access_routes_require_token(): void
     {
         $invitation = Invitation::factory()->confirmed()->create();
+
+        $this->getJson('/api/invitations/'.$invitation->code)
+            ->assertUnauthorized();
+
+        $this->postJson('/api/invitations/'.$invitation->code.'/confirm')
+            ->assertUnauthorized();
 
         $this->getJson('/api/invitations/'.$invitation->code.'/entry')
             ->assertUnauthorized();
@@ -150,11 +156,14 @@ class AccessControlAuthTest extends TestCase
             ->assertJsonPath('access.has_entered', true);
     }
 
-    public function test_invitation_show_remains_public(): void
+    public function test_access_control_can_show_invitation(): void
     {
+        $user = User::factory()->accessControl()->create();
+        $token = $user->createToken('access-control')->plainTextToken;
         $invitation = Invitation::factory()->create();
 
-        $this->getJson('/api/invitations/'.$invitation->code)
+        $this->withToken($token)
+            ->getJson('/api/invitations/'.$invitation->code)
             ->assertOk()
             ->assertJsonPath('code', $invitation->code);
     }
