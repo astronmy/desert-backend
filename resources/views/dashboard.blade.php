@@ -6,6 +6,9 @@
     @if (session('status'))
         <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">{{ session('status') }}</div>
     @endif
+    @if (session('error'))
+        <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-800">{{ session('error') }}</div>
+    @endif
 
     <div class="mb-6 rounded-lg border border-[var(--desert-sand)] bg-white p-6 shadow-sm">
         <h2 class="text-lg font-semibold text-gray-900">{{ __('dashboard.welcome', ['name' => auth()->user()->name]) }}</h2>
@@ -81,10 +84,16 @@
             </div>
 
             @if ($invitations)
-                @php $canModerate = auth()->user()->canPermission('invitaciones.moderar'); @endphp
+                @php
+                    $canModerate = auth()->user()->canPermission('invitaciones.moderar');
+                    $canConfirmMore = $event->canConfirmMore();
+                @endphp
 
                 <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <h3 class="text-base font-semibold text-gray-900">{{ __('dashboard.invitations_section') }}</h3>
+                    <h3 class="text-base font-semibold text-gray-900">
+                        {{ __('dashboard.invitations_section') }}
+                        <span class="ml-2 font-medium text-gray-500">{{ __('dashboard.invitations_quota', ['confirmed' => $event->confirmedInvitationsCount(), 'limit' => $event->invitation_limit]) }}</span>
+                    </h3>
                     <div class="flex flex-wrap gap-2">
                         @can('permission', 'invitaciones.exportar')
                             <a href="{{ route('admin.events.invitations.export', $event) }}"
@@ -139,7 +148,11 @@
                         this.selected = checked ? ids.map(Number) : [];
                     }
                 }">
-                    @if ($canModerate)
+                    @unless ($canConfirmMore)
+                        <p class="mb-3 text-sm text-amber-800">{{ __('dashboard.quota_full') }}</p>
+                    @endunless
+
+                    @if ($canModerate && $canConfirmMore)
                         <form method="POST" action="{{ route('admin.dashboard.invitations.bulk-approve') }}"
                               class="mb-3 flex flex-wrap items-center gap-2"
                               x-show="selected.length > 0" x-cloak>
@@ -160,7 +173,7 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-[var(--desert-bg-elevated)]">
                                 <tr>
-                                    @if ($canModerate)
+                                    @if ($canModerate && $canConfirmMore)
                                         <th class="px-4 py-3">
                                             <input type="checkbox"
                                                    class="rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]"
@@ -177,7 +190,7 @@
                             <tbody class="divide-y divide-gray-200 bg-white">
                                 @forelse ($invitations as $invitation)
                                     <tr>
-                                        @if ($canModerate)
+                                        @if ($canModerate && $canConfirmMore)
                                             <td class="px-4 py-3">
                                                 <input type="checkbox" value="{{ $invitation->id }}"
                                                        class="rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]"
@@ -201,7 +214,7 @@
                                         </td>
                                         <td class="px-4 py-3">
                                             <div class="flex items-center justify-end gap-2">
-                                                @if ($canModerate && $invitation->status->value === 'pending')
+                                                @if ($canModerate && $canConfirmMore && $invitation->status->value === 'pending')
                                                     <form method="POST" action="{{ route('admin.dashboard.invitations.approve', $invitation) }}">
                                                         @csrf
                                                         <button type="submit"
@@ -221,7 +234,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="{{ $canModerate ? 6 : 5 }}" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
+                                        <td colspan="{{ $canModerate && $canConfirmMore ? 6 : 5 }}" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

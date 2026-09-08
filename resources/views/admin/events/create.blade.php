@@ -25,6 +25,13 @@
                 </div>
 
                 <div>
+                    <x-input-label for="invitation_limit" :value="__('event.attributes.invitation_limit')" />
+                    <x-text-input id="invitation_limit" name="invitation_limit" type="number" min="0" step="1" class="mt-1 block w-full" :value="old('invitation_limit')" required />
+                    <p class="mt-1 text-xs text-gray-500">{{ __('event.form.invitation_limit_hint') }}</p>
+                    <x-input-error :messages="$errors->get('invitation_limit')" class="mt-2" />
+                </div>
+
+                <div>
                     <x-input-label for="short_description" :value="__('event.attributes.short_description')" />
                     <textarea id="short_description" name="short_description" rows="2" maxlength="500"
                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]">{{ old('short_description') }}</textarea>

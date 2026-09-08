@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EventPlace;
 use App\Enums\EventType;
+use App\Enums\InvitationStatus;
 use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,6 +23,7 @@ use Illuminate\Support\Str;
     'description',
     'short_description',
     'host',
+    'invitation_limit',
     'image_path',
     'mobile_image_path',
 ])]
@@ -40,7 +42,25 @@ class Event extends Model
             'end_date' => 'date',
             'type' => EventType::class,
             'place' => EventPlace::class,
+            'invitation_limit' => 'integer',
         ];
+    }
+
+    public function confirmedInvitationsCount(): int
+    {
+        return $this->invitations()
+            ->where('status', InvitationStatus::Confirmed)
+            ->count();
+    }
+
+    public function remainingConfirmationSlots(): int
+    {
+        return max(0, (int) $this->invitation_limit - $this->confirmedInvitationsCount());
+    }
+
+    public function canConfirmMore(int $count = 1): bool
+    {
+        return $this->remainingConfirmationSlots() >= $count;
     }
 
     public function clients(): HasMany

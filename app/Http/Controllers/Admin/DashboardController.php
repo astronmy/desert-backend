@@ -69,7 +69,13 @@ class DashboardController extends Controller
         $event = $this->clientEvent($request);
         abort_unless($invitation->event_id === $event->id, 404);
 
-        $moderator->approve($event, [$invitation->id]);
+        $result = $moderator->approve($event, [$invitation->id]);
+
+        if ($result['skipped'] > 0 && $result['updated'] === 0) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', __('invitation.messages.capacity_reached'));
+        }
 
         return redirect()
             ->route('admin.dashboard')
@@ -87,9 +93,19 @@ class DashboardController extends Controller
 
         $result = $moderator->approve($event, $data['ids']);
 
+        if ($result['skipped'] > 0 && $result['updated'] === 0) {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('error', __('invitation.messages.capacity_reached'));
+        }
+
+        $message = $result['skipped'] > 0
+            ? __('invitation.messages.bulk_approved_partial', $result)
+            : __('invitation.messages.bulk_approved', ['count' => $result['updated']]);
+
         return redirect()
             ->route('admin.dashboard')
-            ->with('status', __('invitation.messages.bulk_approved', ['count' => $result['updated']]));
+            ->with('status', $message);
     }
 
     private function clientEvent(Request $request): Event

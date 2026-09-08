@@ -19,7 +19,7 @@ class ModerateInvitationsService
 
     /**
      * @param  list<int>  $ids
-     * @return array{updated: int}
+     * @return array{updated: int, skipped: int}
      */
     public function approve(Event $event, array $ids): array
     {
@@ -28,6 +28,11 @@ class ModerateInvitationsService
         $userId = auth()->id();
 
         $result = DB::transaction(function () use ($event, $ids, $userId, &$approved) {
+            $lockedEvent = Event::query()
+                ->whereKey($event->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
             /** @var Collection<int, Invitation> $invitations */
             $invitations = Invitation::query()
                 ->where('event_id', $event->id)
@@ -35,9 +40,18 @@ class ModerateInvitationsService
                 ->lockForUpdate()
                 ->get();
 
+            $slots = $lockedEvent->remainingConfirmationSlots();
             $updated = 0;
+            $skipped = 0;
+
             foreach ($invitations as $invitation) {
                 if ($invitation->status === InvitationStatus::Confirmed) {
+                    continue;
+                }
+
+                if ($slots <= 0) {
+                    $skipped++;
+
                     continue;
                 }
 
@@ -55,9 +69,10 @@ class ModerateInvitationsService
                 );
                 $approved[] = $invitation->fresh(['guest', 'event']);
                 $updated++;
+                $slots--;
             }
 
-            return ['updated' => $updated];
+            return ['updated' => $updated, 'skipped' => $skipped];
         });
 
         foreach ($approved as $invitation) {

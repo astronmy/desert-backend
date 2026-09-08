@@ -7,6 +7,7 @@ use App\Enums\InvitationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ConfirmInvitationRequest;
 use App\Http\Resources\Api\EventResource;
+use App\Models\Event;
 use App\Models\Invitation;
 use App\Services\Invitations\InvitationLogService;
 use Illuminate\Http\JsonResponse;
@@ -120,8 +121,26 @@ class InvitationController extends Controller
             ], 422);
         }
 
-        DB::transaction(function () use ($invitation, $data, $documentNumber, $request, $logs) {
-            $invitation->guest->update([
+        $confirmed = DB::transaction(function () use ($invitation, $data, $documentNumber, $request, $logs) {
+            $lockedEvent = Event::query()
+                ->whereKey($invitation->event_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $lockedInvitation = Invitation::query()
+                ->whereKey($invitation->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($lockedInvitation->status === InvitationStatus::Confirmed) {
+                return 'already';
+            }
+
+            if (! $lockedEvent->canConfirmMore()) {
+                return 'full';
+            }
+
+            $lockedInvitation->guest->update([
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
                 'document_number' => $documentNumber,
@@ -129,12 +148,12 @@ class InvitationController extends Controller
             ]);
 
             $path = $request->file('selfie')->store(
-                'invitations/'.$invitation->id,
+                'invitations/'.$lockedInvitation->id,
                 'public'
             );
 
-            $from = $invitation->status;
-            $invitation->update([
+            $from = $lockedInvitation->status;
+            $lockedInvitation->update([
                 'status' => InvitationStatus::Confirmed,
                 'selfie_path' => $path,
                 'confirmed_at' => now(),
@@ -142,13 +161,25 @@ class InvitationController extends Controller
             ]);
 
             $logs->record(
-                $invitation,
+                $lockedInvitation,
                 InvitationLogAction::Confirm,
                 $from,
                 InvitationStatus::Confirmed,
                 $request->user()?->id
             );
+
+            return 'ok';
         });
+
+        if ($confirmed === 'already') {
+            return response()->json(['message' => 'La invitación ya fue confirmada.'], 409);
+        }
+
+        if ($confirmed === 'full') {
+            return response()->json([
+                'message' => 'Se alcanzó el cupo de invitaciones confirmadas.',
+            ], 422);
+        }
 
         $invitation->refresh()->load(['event', 'guest']);
 

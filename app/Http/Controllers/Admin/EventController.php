@@ -58,6 +58,7 @@ class EventController extends Controller
             'description',
             'short_description',
             'host',
+            'invitation_limit',
         ]);
 
         $this->persistEventMedia->create($data, [
@@ -90,6 +91,7 @@ class EventController extends Controller
             'description',
             'short_description',
             'host',
+            'invitation_limit',
         ]);
 
         $this->persistEventMedia->update($event, $data, [

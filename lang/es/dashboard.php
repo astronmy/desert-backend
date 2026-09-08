@@ -6,6 +6,8 @@ return [
     'subtitle' => 'Bienvenido al panel de administración de Desert Eventos.',
     'client_subtitle' => 'Gestioná las invitaciones de tu evento: :name',
     'invitations_section' => 'Invitaciones',
+    'invitations_quota' => ':confirmed / :limit',
+    'quota_full' => 'Se alcanzó el cupo de confirmaciones.',
     'no_event' => 'No tenés un evento asociado. Contactá al administrador.',
 
     'event_content' => [

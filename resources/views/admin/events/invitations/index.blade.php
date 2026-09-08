@@ -142,10 +142,12 @@
             <input type="hidden" name="ids[]" :value="id" />
         </template>
         <span class="text-sm text-gray-700" x-text="selected.length + ' {{ __('invitation.moderation.selected') }}'"></span>
+        @if ($event->canConfirmMore())
         <button type="submit" name="action" value="approve"
                 class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
             {{ __('invitation.moderation.approve_selected') }}
         </button>
+        @endif
         <button type="submit" name="action" value="reject"
                 class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500"
                 onclick="return confirm(@js(__('invitation.moderation.confirm_reject')))">

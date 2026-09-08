@@ -28,6 +28,7 @@ class UpdateEventRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'short_description' => ['nullable', 'string', 'max:500'],
             'host' => ['nullable', 'string', 'max:255'],
+            'invitation_limit' => ['required', 'integer', 'min:0'],
             'image' => ['nullable', 'image', 'max:5120'],
             'mobile_image' => ['nullable', 'image', 'max:5120'],
             'remove_image' => ['nullable', 'boolean'],

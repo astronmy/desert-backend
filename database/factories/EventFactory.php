@@ -39,6 +39,7 @@ class EventFactory extends Factory
             'description' => fake()->optional(0.8)->paragraphs(2, true),
             'short_description' => fake()->optional(0.9)->sentence(12),
             'host' => fake()->optional(0.85)->name(),
+            'invitation_limit' => fake()->numberBetween(10, 200),
             'image_path' => null,
             'mobile_image_path' => null,
         ];

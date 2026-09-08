@@ -17,7 +17,7 @@
             </div>
             <div class="flex flex-wrap gap-2">
                 @unless($fromAccesses)
-                    @if($invitation->status->value !== 'confirmed')
+                    @if($invitation->status->value !== 'confirmed' && $event->canConfirmMore())
                         <form method="POST" action="{{ route('admin.events.invitations.approve', [$event, $invitation]) }}">
                             @csrf
                             <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500">

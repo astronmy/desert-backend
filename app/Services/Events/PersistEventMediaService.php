@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class PersistEventMediaService
 {
     /**
-     * @param  array{description?: string|null, short_description?: string|null, host?: string|null, name: string, init_date: string, end_date: string, type: string}  $attributes
+     * @param  array{description?: string|null, short_description?: string|null, host?: string|null, invitation_limit?: int, name: string, init_date: string, end_date: string, type: string}  $attributes
      * @param  array{image?: UploadedFile|null, mobile_image?: UploadedFile|null, gallery?: list<UploadedFile>|null}  $files
      */
     public function create(array $attributes, array $files = []): Event
@@ -27,7 +27,7 @@ class PersistEventMediaService
     }
 
     /**
-     * @param  array{description?: string|null, short_description?: string|null, host?: string|null, name: string, init_date: string, end_date: string, type: string}  $attributes
+     * @param  array{description?: string|null, short_description?: string|null, host?: string|null, invitation_limit?: int, name: string, init_date: string, end_date: string, type: string}  $attributes
      * @param  array{
      *     image?: UploadedFile|null,
      *     mobile_image?: UploadedFile|null,

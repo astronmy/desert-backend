@@ -72,7 +72,9 @@ return [
         'approved' => 'Invitación aprobada.',
         'rejected' => 'Invitación rechazada.',
         'bulk_approved' => ':count invitación(es) aprobada(s).',
+        'bulk_approved_partial' => ':updated invitación(es) aprobada(s). :skipped no se confirmaron porque se alcanzó el cupo.',
         'bulk_rejected' => ':count invitación(es) rechazada(s).',
+        'capacity_reached' => 'Se alcanzó el cupo de invitaciones confirmadas.',
     ],
 
     'push' => [

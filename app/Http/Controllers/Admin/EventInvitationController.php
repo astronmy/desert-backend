@@ -20,6 +20,7 @@ use App\Services\Invitations\InvitationLogService;
 use App\Services\Invitations\ModerateInvitationsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -114,17 +115,29 @@ class EventInvitationController extends Controller
         ModerateInvitationsService $moderator
     ): RedirectResponse {
         $data = $request->validated();
-        $result = $data['action'] === 'approve'
-            ? $moderator->approve($event, $data['ids'])
-            : $moderator->reject($event, $data['ids']);
+        if ($data['action'] === 'approve') {
+            $result = $moderator->approve($event, $data['ids']);
 
-        $message = $data['action'] === 'approve'
-            ? __('invitation.messages.bulk_approved', ['count' => $result['updated']])
-            : __('invitation.messages.bulk_rejected', ['count' => $result['updated']]);
+            if ($result['skipped'] > 0 && $result['updated'] === 0) {
+                return redirect()
+                    ->route('admin.events.invitations.index', $event)
+                    ->with('error', __('invitation.messages.capacity_reached'));
+            }
+
+            $message = $result['skipped'] > 0
+                ? __('invitation.messages.bulk_approved_partial', $result)
+                : __('invitation.messages.bulk_approved', ['count' => $result['updated']]);
+
+            return redirect()
+                ->route('admin.events.invitations.index', $event)
+                ->with('status', $message);
+        }
+
+        $result = $moderator->reject($event, $data['ids']);
 
         return redirect()
             ->route('admin.events.invitations.index', $event)
-            ->with('status', $message);
+            ->with('status', __('invitation.messages.bulk_rejected', ['count' => $result['updated']]));
     }
 
     public function approve(
@@ -133,7 +146,13 @@ class EventInvitationController extends Controller
         ModerateInvitationsService $moderator
     ): RedirectResponse {
         $this->ensureInvitationBelongsToEvent($event, $invitation);
-        $moderator->approve($event, [$invitation->id]);
+        $result = $moderator->approve($event, [$invitation->id]);
+
+        if ($result['skipped'] > 0 && $result['updated'] === 0) {
+            return redirect()
+                ->route('admin.events.invitations.show', [$event, $invitation])
+                ->with('error', __('invitation.messages.capacity_reached'));
+        }
 
         return redirect()
             ->route('admin.events.invitations.show', [$event, $invitation])
@@ -187,29 +206,59 @@ class EventInvitationController extends Controller
                 ->withErrors(['document_number' => __('invitation.messages.already_exists')]);
         }
 
-        $guest->update([
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'document_number' => $data['document_number'],
-            'id_type' => $data['id_type'],
-        ]);
-
         $status = InvitationStatus::from($data['status']);
-        $from = $invitation->status;
-        $invitation->update([
-            'status' => $status,
-            'confirmed_at' => $status === InvitationStatus::Confirmed
-                ? ($invitation->confirmed_at ?? now())
-                : null,
-        ]);
 
-        $logs->record(
-            $invitation,
-            InvitationLogAction::Edit,
-            $from,
-            $status,
-            $request->user()?->id
-        );
+        $updated = DB::transaction(function () use ($event, $invitation, $data, $status, $logs, $request) {
+            $lockedEvent = Event::query()
+                ->whereKey($event->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $lockedInvitation = Invitation::query()
+                ->whereKey($invitation->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $from = $lockedInvitation->status;
+
+            if (
+                $status === InvitationStatus::Confirmed
+                && $from !== InvitationStatus::Confirmed
+                && ! $lockedEvent->canConfirmMore()
+            ) {
+                return false;
+            }
+
+            $lockedInvitation->guest->update([
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'document_number' => $data['document_number'],
+                'id_type' => $data['id_type'],
+            ]);
+
+            $lockedInvitation->update([
+                'status' => $status,
+                'confirmed_at' => $status === InvitationStatus::Confirmed
+                    ? ($lockedInvitation->confirmed_at ?? now())
+                    : null,
+            ]);
+
+            $logs->record(
+                $lockedInvitation,
+                InvitationLogAction::Edit,
+                $from,
+                $status,
+                $request->user()?->id
+            );
+
+            return true;
+        });
+
+        if (! $updated) {
+            return back()
+                ->withInput()
+                ->withErrors(['status' => __('invitation.messages.capacity_reached')]);
+        }
 
         return redirect()
             ->route('admin.events.invitations.index', $event)
