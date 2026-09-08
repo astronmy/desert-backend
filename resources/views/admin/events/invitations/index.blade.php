@@ -34,13 +34,11 @@
                        class="inline-flex items-center gap-2 rounded-md border border-emerald-300/80 bg-emerald-500/20 px-3 py-2 text-sm font-semibold text-emerald-100 shadow-sm hover:bg-emerald-500/30">
                         {{ __('invitation.index.export') }}
                     </a>
-                @endcan
-                @if (auth()->user()?->isClient())
                     <a href="{{ $event->confirmedSiteUrl() }}" target="_blank" rel="noopener noreferrer"
-                       class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-gold)]/70 bg-[var(--desert-gold)]/20 px-3 py-2 text-sm font-semibold text-[var(--desert-gold)] shadow-sm hover:bg-[var(--desert-gold)]/30">
+                       class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-gold)] bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
                         {{ __('invitation.index.confirmed_site') }}
                     </a>
-                @endif
+                @endcan
                 @can('permission', 'invitaciones.importar')
                     <a href="{{ route('admin.events.invitations.import', $event) }}" wire:navigate
                        class="inline-flex items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20">
