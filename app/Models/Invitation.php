@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 
@@ -56,6 +57,11 @@ class Invitation extends Model
     {
         return $this->belongsToMany(EventNotification::class, 'event_notification_invitation')
             ->withTimestamps();
+    }
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(InvitationLog::class);
     }
 
     public function selfieUrl(): ?string

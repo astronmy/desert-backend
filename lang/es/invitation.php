@@ -21,6 +21,7 @@ return [
         'new' => 'Nueva invitación',
         'import' => 'Importar Excel',
         'export' => 'Exportar Excel',
+        'confirmed_site' => 'Sitio Confirmados',
         'search_name_placeholder' => 'Buscar por nombre',
         'search_document_placeholder' => 'Buscar por documento',
         'search_code_placeholder' => 'Buscar por código',
@@ -86,6 +87,35 @@ return [
         'reject_selected' => 'Rechazar seleccionadas',
         'selected' => 'seleccionada(s)',
         'confirm_reject' => '¿Rechazar las invitaciones seleccionadas?',
+    ],
+
+    'logs' => [
+        'button' => 'Historial',
+        'title' => 'Historial de invitaciones',
+        'date' => 'Fecha y hora',
+        'date_from' => 'Desde',
+        'date_to' => 'Hasta',
+        'user' => 'Usuario',
+        'action' => 'Acción',
+        'status_from' => 'Estado previo',
+        'status_to' => 'Estado nuevo',
+        'all_actions' => 'Todas las acciones',
+        'system' => 'App / sin usuario',
+        'empty' => 'No hay movimientos registrados.',
+        'actions' => [
+            'approve' => 'Aprobar',
+            'reject' => 'Rechazar',
+            'confirm' => 'Confirmar',
+            'edit' => 'Editar',
+        ],
+    ],
+
+    'confirmed_site' => [
+        'host_label' => 'Anfitrión',
+        'empty' => 'Todavía no hay invitados confirmados.',
+        'first_name' => 'Nombre',
+        'last_name' => 'Apellido',
+        'document' => 'DNI',
     ],
 
     'deeplink' => [

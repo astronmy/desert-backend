@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Enums\InvitationStatus;
 use App\Models\Event;
 use App\Models\Invitation;
 use Illuminate\Support\Collection;
@@ -11,13 +12,17 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class InvitationsExport implements FromCollection, WithHeadings, WithMapping
 {
-    public function __construct(private readonly Event $event) {}
+    public function __construct(
+        private readonly Event $event,
+        private readonly bool $confirmedOnly = false,
+    ) {}
 
     public function collection(): Collection
     {
         return Invitation::query()
             ->with('guest')
             ->where('event_id', $this->event->id)
+            ->when($this->confirmedOnly, fn ($q) => $q->where('status', InvitationStatus::Confirmed))
             ->orderBy('id')
             ->get();
     }

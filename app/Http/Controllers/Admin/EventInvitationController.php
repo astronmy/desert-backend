@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\DocumentType;
+use App\Enums\InvitationLogAction;
 use App\Enums\InvitationStatus;
 use App\Exports\InvitationsExport;
 use App\Http\Controllers\Controller;
@@ -15,6 +16,7 @@ use App\Models\Guest;
 use App\Models\Invitation;
 use App\Services\Invitations\ImportEventInvitationsService;
 use App\Services\Invitations\InvitationCodeGenerator;
+use App\Services\Invitations\InvitationLogService;
 use App\Services\Invitations\ModerateInvitationsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -162,8 +164,12 @@ class EventInvitationController extends Controller
         return view('admin.events.invitations.edit', compact('event', 'invitation', 'documentTypes', 'statuses'));
     }
 
-    public function update(UpdateInvitationRequest $request, Event $event, Invitation $invitation): RedirectResponse
-    {
+    public function update(
+        UpdateInvitationRequest $request,
+        Event $event,
+        Invitation $invitation,
+        InvitationLogService $logs
+    ): RedirectResponse {
         $this->ensureInvitationBelongsToEvent($event, $invitation);
 
         $data = $request->validated();
@@ -189,12 +195,21 @@ class EventInvitationController extends Controller
         ]);
 
         $status = InvitationStatus::from($data['status']);
+        $from = $invitation->status;
         $invitation->update([
             'status' => $status,
             'confirmed_at' => $status === InvitationStatus::Confirmed
                 ? ($invitation->confirmed_at ?? now())
                 : null,
         ]);
+
+        $logs->record(
+            $invitation,
+            InvitationLogAction::Edit,
+            $from,
+            $status,
+            $request->user()?->id
+        );
 
         return redirect()
             ->route('admin.events.invitations.index', $event)
@@ -245,11 +260,14 @@ class EventInvitationController extends Controller
             ->with('status', __('invitation.import.summary', $summary));
     }
 
-    public function export(Event $event): BinaryFileResponse
+    public function export(Request $request, Event $event): BinaryFileResponse
     {
         $filename = 'invitaciones-evento-'.$event->id.'-'.now()->format('Ymd-His').'.xlsx';
 
-        return Excel::download(new InvitationsExport($event), $filename);
+        return Excel::download(
+            new InvitationsExport($event, $request->user()?->isClient() ?? false),
+            $filename
+        );
     }
 
     private function ensureInvitationBelongsToEvent(Event $event, Invitation $invitation): void

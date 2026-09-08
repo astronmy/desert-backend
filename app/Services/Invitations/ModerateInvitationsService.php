@@ -3,6 +3,7 @@
 namespace App\Services\Invitations;
 
 use App\Contracts\GuestNotifier;
+use App\Enums\InvitationLogAction;
 use App\Enums\InvitationStatus;
 use App\Models\Event;
 use App\Models\Invitation;
@@ -12,7 +13,8 @@ use Illuminate\Support\Facades\DB;
 class ModerateInvitationsService
 {
     public function __construct(
-        private readonly GuestNotifier $notifier
+        private readonly GuestNotifier $notifier,
+        private readonly InvitationLogService $logs,
     ) {}
 
     /**
@@ -23,8 +25,9 @@ class ModerateInvitationsService
     {
         /** @var list<Invitation> $approved */
         $approved = [];
+        $userId = auth()->id();
 
-        $result = DB::transaction(function () use ($event, $ids, &$approved) {
+        $result = DB::transaction(function () use ($event, $ids, $userId, &$approved) {
             /** @var Collection<int, Invitation> $invitations */
             $invitations = Invitation::query()
                 ->where('event_id', $event->id)
@@ -38,10 +41,18 @@ class ModerateInvitationsService
                     continue;
                 }
 
+                $from = $invitation->status;
                 $invitation->update([
                     'status' => InvitationStatus::Confirmed,
                     'confirmed_at' => $invitation->confirmed_at ?? now(),
                 ]);
+                $this->logs->record(
+                    $invitation,
+                    InvitationLogAction::Approve,
+                    $from,
+                    InvitationStatus::Confirmed,
+                    $userId
+                );
                 $approved[] = $invitation->fresh(['guest', 'event']);
                 $updated++;
             }
@@ -62,15 +73,35 @@ class ModerateInvitationsService
      */
     public function reject(Event $event, array $ids): array
     {
-        $updated = Invitation::query()
-            ->where('event_id', $event->id)
-            ->whereIn('id', $ids)
-            ->where('status', '!=', InvitationStatus::Cancelled)
-            ->update([
-                'status' => InvitationStatus::Cancelled,
-                'confirmed_at' => null,
-            ]);
+        $userId = auth()->id();
 
-        return ['updated' => $updated];
+        return DB::transaction(function () use ($event, $ids, $userId) {
+            /** @var Collection<int, Invitation> $invitations */
+            $invitations = Invitation::query()
+                ->where('event_id', $event->id)
+                ->whereIn('id', $ids)
+                ->where('status', '!=', InvitationStatus::Cancelled)
+                ->lockForUpdate()
+                ->get();
+
+            $updated = 0;
+            foreach ($invitations as $invitation) {
+                $from = $invitation->status;
+                $invitation->update([
+                    'status' => InvitationStatus::Cancelled,
+                    'confirmed_at' => null,
+                ]);
+                $this->logs->record(
+                    $invitation,
+                    InvitationLogAction::Reject,
+                    $from,
+                    InvitationStatus::Cancelled,
+                    $userId
+                );
+                $updated++;
+            }
+
+            return ['updated' => $updated];
+        });
     }
 }

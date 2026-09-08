@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\EventInvitationController;
+use App\Http\Controllers\Admin\InvitationLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('events/{event}')->name('events.')->middleware('event.access')->group(function () {
@@ -21,6 +22,7 @@ Route::prefix('events/{event}')->name('events.')->middleware('event.access')->gr
     });
 
     Route::middleware('permission:invitaciones.ver')->group(function () {
+        Route::get('invitation-logs', [InvitationLogController::class, 'index'])->name('invitation-logs.index');
         Route::get('invitations', [EventInvitationController::class, 'index'])->name('invitations.index');
     });
 

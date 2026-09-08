@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 #[Fillable([
     'name',
@@ -50,6 +51,28 @@ class Event extends Model
     public function invitations(): HasMany
     {
         return $this->hasMany(Invitation::class);
+    }
+
+    public function invitationLogs(): HasMany
+    {
+        return $this->hasMany(InvitationLog::class);
+    }
+
+    public function confirmedSiteHostSlug(): string
+    {
+        $slug = Str::slug((string) $this->host);
+
+        return $slug !== '' ? $slug : 'evento';
+    }
+
+    public function confirmedSiteSlug(): string
+    {
+        return $this->id.'-'.$this->confirmedSiteHostSlug();
+    }
+
+    public function confirmedSiteUrl(): string
+    {
+        return route('events.confirmed', $this->confirmedSiteSlug());
     }
 
     public function eventNotifications(): HasMany

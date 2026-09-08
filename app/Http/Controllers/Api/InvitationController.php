@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\InvitationLogAction;
 use App\Enums\InvitationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ConfirmInvitationRequest;
 use App\Http\Resources\Api\EventResource;
 use App\Models\Invitation;
+use App\Services\Invitations\InvitationLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -86,7 +88,7 @@ class InvitationController extends Controller
         ]);
     }
 
-    public function confirm(ConfirmInvitationRequest $request, string $code): JsonResponse
+    public function confirm(ConfirmInvitationRequest $request, string $code, InvitationLogService $logs): JsonResponse
     {
         $invitation = Invitation::query()
             ->with('guest')
@@ -118,7 +120,7 @@ class InvitationController extends Controller
             ], 422);
         }
 
-        DB::transaction(function () use ($invitation, $data, $documentNumber, $request) {
+        DB::transaction(function () use ($invitation, $data, $documentNumber, $request, $logs) {
             $invitation->guest->update([
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
@@ -131,12 +133,21 @@ class InvitationController extends Controller
                 'public'
             );
 
+            $from = $invitation->status;
             $invitation->update([
                 'status' => InvitationStatus::Confirmed,
                 'selfie_path' => $path,
                 'confirmed_at' => now(),
                 'uuid_notification' => $data['uuid_notification'] ?? null,
             ]);
+
+            $logs->record(
+                $invitation,
+                InvitationLogAction::Confirm,
+                $from,
+                InvitationStatus::Confirmed,
+                $request->user()?->id
+            );
         });
 
         $invitation->refresh()->load(['event', 'guest']);

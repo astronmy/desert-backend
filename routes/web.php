@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivateLandingController;
 use App\Http\Controllers\ActivateStoreClickController;
+use App\Http\Controllers\ConfirmedGuestsController;
 use App\Http\Controllers\ShortRegistrationLinkController;
 use App\Http\Controllers\WellKnownController;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,10 @@ Route::post('/activar/store-click', ActivateStoreClickController::class)->name('
 Route::get('/r/{code}', ShortRegistrationLinkController::class)
     ->where('code', '[A-Za-z0-9]{8}')
     ->name('registration.short');
+
+Route::get('/event/{slug}', ConfirmedGuestsController::class)
+    ->where('slug', '[0-9]+-[A-Za-z0-9\-]+')
+    ->name('events.confirmed');
 
 Route::view('/terminos', 'legal.terminos')->name('legal.terminos');
 Route::view('/privacidad', 'legal.privacidad')->name('legal.privacidad');
