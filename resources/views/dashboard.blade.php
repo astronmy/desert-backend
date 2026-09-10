@@ -100,6 +100,10 @@
                                class="inline-flex items-center gap-2 rounded-md border border-emerald-700 bg-white px-3 py-2 text-sm font-semibold text-emerald-800 shadow-sm hover:bg-emerald-50">
                                 {{ __('invitation.index.export') }}
                             </a>
+                            <a href="{{ $event->confirmedSiteUrl() }}" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-2 rounded-md border border-[var(--desert-gold)] bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
+                                {{ __('invitation.index.confirmed_site') }}
+                            </a>
                         @endcan
                         @can('permission', 'invitaciones.crear')
                             <a href="{{ route('admin.events.invitations.create', $event) }}" wire:navigate

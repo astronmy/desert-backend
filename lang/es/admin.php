@@ -33,6 +33,7 @@ return [
     ],
 
     'user_menu' => [
+        'manual' => 'Manual de usuario',
         'logout' => 'Cerrar sesión',
     ],
 

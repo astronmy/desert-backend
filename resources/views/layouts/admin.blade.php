@@ -198,6 +198,11 @@
                          x-transition:leave-end="opacity-0 scale-95"
                          class="absolute right-0 top-full z-50 mt-2 w-48 origin-top-right rounded-md bg-[var(--desert-bg-elevated)] py-1 shadow-lg ring-1 ring-[var(--desert-border)]"
                          style="display: none;">
+                        <a href="{{ route('admin.manual.show') }}" target="_blank" rel="noopener"
+                           class="block px-4 py-2 text-sm text-white hover:bg-white/10">
+                            {{ __('admin.user_menu.manual') }}
+                        </a>
+                        <div class="my-1 border-t border-[var(--desert-border)]"></div>
                         <form method="POST" action="{{ route('logout') }}" class="block">
                             @csrf
                             <button type="submit" class="w-full px-4 py-2 text-left text-sm text-white hover:bg-white/10">
