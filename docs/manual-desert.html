@@ -669,9 +669,194 @@
     }
 
     .screenshot-row .screenshot { margin: 0; }
+
+    /* ——— Web shell (sidebar, search, download) ——— */
+    @media screen {
+      html, body { background: #d9d2c4; }
+
+      .site-shell {
+        display: flex;
+        align-items: flex-start;
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+
+      .site-sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        width: 258px;
+        flex-shrink: 0;
+        background: var(--bg);
+        color: var(--sand);
+        display: flex;
+        flex-direction: column;
+        padding: 7mm 6mm 6mm;
+        overflow-y: auto;
+      }
+
+      .site-sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 3mm;
+        margin-bottom: 6mm;
+      }
+
+      .site-sidebar-logo { width: 9mm; height: 9mm; object-fit: contain; }
+
+      .site-sidebar-title {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 13pt;
+        color: var(--surface);
+        line-height: 1.15;
+      }
+
+      .site-sidebar-title em { color: var(--gold); font-style: italic; }
+
+      .site-search { margin-bottom: 6mm; position: relative; }
+
+      .site-search input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 2.6mm 3mm;
+        border-radius: 3px;
+        border: 1px solid var(--border);
+        background: var(--bg-elevated);
+        color: var(--surface);
+        font-family: "Outfit", sans-serif;
+        font-size: 9pt;
+        outline: none;
+      }
+
+      .site-search input::placeholder { color: var(--muted); }
+      .site-search input:focus { border-color: var(--gold); }
+
+      .site-search-results {
+        margin-top: 2mm;
+        font-size: 7.5pt;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        min-height: 3mm;
+      }
+
+      .site-download {
+        display: block;
+        text-align: center;
+        margin-bottom: 6mm;
+        padding: 2.8mm 3mm;
+        border-radius: 3px;
+        background: var(--gold);
+        color: var(--bg);
+        font-size: 8.5pt;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-decoration: none;
+      }
+
+      .site-download:hover { background: var(--gold-dark); }
+
+      .site-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6mm;
+        font-size: 8.7pt;
+      }
+
+      .site-nav a {
+        display: block;
+        padding: 2mm 2.5mm;
+        border-radius: 3px;
+        color: var(--accent);
+        text-decoration: none;
+        letter-spacing: 0.01em;
+      }
+
+      .site-nav a:hover { background: rgba(220, 161, 91, 0.14); color: var(--gold); }
+
+      .site-nav a.toc-link { color: var(--gold-dark); font-weight: 600; margin-bottom: 1.5mm; }
+
+      .site-sidebar-foot {
+        margin-top: auto;
+        padding-top: 5mm;
+        font-size: 7pt;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .site-main {
+        flex: 1;
+        min-width: 0;
+        padding: 8mm 8mm 14mm;
+      }
+
+      .site-main .cover,
+      .site-main .page {
+        margin: 0 auto 8mm;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(24, 40, 40, 0.08), 0 12px 28px rgba(24, 40, 40, 0.12);
+      }
+
+      .site-main .cover { overflow: hidden; }
+
+      mark.manual-hit {
+        background: var(--gold);
+        color: var(--bg);
+        padding: 0 0.5px;
+        border-radius: 1px;
+      }
+    }
+
+    @media screen and (max-width: 900px) {
+      .site-shell { display: block; }
+      .site-sidebar { position: static; width: auto; height: auto; }
+      .site-main { padding: 5mm; }
+      .site-main .cover,
+      .site-main .page { width: 100%; min-height: 0; }
+    }
+
+    @media print {
+      .site-sidebar, .site-download { display: none !important; }
+      .site-shell { display: block !important; }
+      .site-main { padding: 0 !important; }
+      .site-main .cover,
+      .site-main .page { margin: 0 !important; box-shadow: none !important; border-radius: 0 !important; }
+      html, body { background: #fff !important; }
+    }
   </style>
 </head>
 <body>
+<div class="site-shell">
+  <aside class="site-sidebar no-print">
+    <div class="site-sidebar-brand">
+      <div class="site-sidebar-title">Desert <em>Eventos</em><br />Manual de Usuario</div>
+    </div>
+
+    <div class="site-search">
+      <input type="search" id="manualSearch" placeholder="Buscar en el manual…" autocomplete="off" />
+      <div class="site-search-results" id="manualSearchResults"></div>
+    </div>
+
+    <a class="site-download" href="manual-desert.pdf" download>⬇ Descargar PDF</a>
+
+    <nav class="site-nav">
+      <a class="toc-link" href="#toc">Índice</a>
+      <a href="#cap-01">01 · Introducción</a>
+      <a href="#cap-02">02 · Acceso al panel</a>
+      <a href="#cap-03">03 · Usuarios y roles</a>
+      <a href="#cap-04">04 · Eventos</a>
+      <a href="#cap-05">05 · Invitaciones</a>
+      <a href="#cap-06">06 · Accesos en puerta</a>
+      <a href="#cap-07">07 · Notificaciones</a>
+      <a href="#cap-08">08 · API — App mobile</a>
+      <a href="#cap-09">09 · API — Scanner</a>
+      <a href="#cap-10">10 · Glosario</a>
+    </nav>
+
+    <div class="site-sidebar-foot">deserteventos.com.ar</div>
+  </aside>
+
+  <main class="site-main">
 
   <!-- ===================== COVER ===================== -->
   <section class="cover">
@@ -692,7 +877,7 @@
   </section>
 
   <!-- ===================== TOC ===================== -->
-  <section class="page">
+  <section class="page" id="toc">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Índice</span>
@@ -774,7 +959,7 @@
   </section>
 
   <!-- ===================== 01 ===================== -->
-  <section class="page">
+  <section class="page" id="cap-01">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Capítulo 01</span>
@@ -862,7 +1047,7 @@
   </section>
 
   <!-- ===================== 02 ===================== -->
-  <section class="page">
+  <section class="page" id="cap-02">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Capítulo 02</span>
@@ -972,7 +1157,7 @@
   </section>
 
   <!-- ===================== 03 ===================== -->
-  <section class="page">
+  <section class="page" id="cap-03">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Capítulo 03</span>
@@ -1108,7 +1293,7 @@
   </section>
 
   <!-- ===================== 04 ===================== -->
-  <section class="page">
+  <section class="page" id="cap-04">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Capítulo 04</span>
@@ -1193,7 +1378,7 @@
   </section>
 
   <!-- ===================== 05 ===================== -->
-  <section class="page">
+  <section class="page" id="cap-05">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Capítulo 05</span>
@@ -1305,7 +1490,7 @@
   </section>
 
   <!-- ===================== 06 ===================== -->
-  <section class="page">
+  <section class="page" id="cap-06">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Capítulo 06</span>
@@ -1355,7 +1540,7 @@
   </section>
 
   <!-- ===================== 07 ===================== -->
-  <section class="page">
+  <section class="page" id="cap-07">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Capítulo 07</span>
@@ -1408,7 +1593,7 @@
   </section>
 
   <!-- ===================== 08 ===================== -->
-  <section class="page">
+  <section class="page" id="cap-08">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Capítulo 08</span>
@@ -1488,7 +1673,7 @@
   </section>
 
   <!-- ===================== 09 ===================== -->
-  <section class="page">
+  <section class="page" id="cap-09">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Capítulo 09</span>
@@ -1563,7 +1748,7 @@
   </section>
 
   <!-- ===================== 10 ===================== -->
-  <section class="page">
+  <section class="page" id="cap-10">
     <div class="page-header">
       <span class="brand">Desert Eventos</span>
       <span class="section-label">Capítulo 10</span>
@@ -1653,6 +1838,103 @@
       <span>10 · Glosario</span>
     </div>
   </section>
+
+  </main>
+</div>
+
+<script>
+  (function () {
+    var input = document.getElementById('manualSearch');
+    var resultsEl = document.getElementById('manualSearchResults');
+    if (!input) return;
+
+    var marks = [];
+
+    function clearMarks() {
+      marks.forEach(function (m) {
+        var parent = m.parentNode;
+        if (!parent) return;
+        parent.replaceChild(document.createTextNode(m.textContent), m);
+        parent.normalize();
+      });
+      marks = [];
+    }
+
+    function escapeRegExp(s) {
+      return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function runSearch(term) {
+      clearMarks();
+      if (!term || term.trim().length < 2) {
+        resultsEl.textContent = '';
+        return;
+      }
+      var re = new RegExp(escapeRegExp(term.trim()), 'ig');
+      var root = document.querySelector('.site-main');
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (node) {
+          if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          var el = node.parentElement;
+          if (!el || el.closest('script, style, mark.manual-hit')) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+
+      var nodes = [];
+      var n;
+      while ((n = walker.nextNode())) nodes.push(n);
+
+      var count = 0;
+      nodes.forEach(function (node) {
+        var text = node.nodeValue;
+        re.lastIndex = 0;
+        if (!re.test(text)) return;
+        re.lastIndex = 0;
+
+        var frag = document.createDocumentFragment();
+        var lastIndex = 0;
+        var match;
+        while ((match = re.exec(text))) {
+          frag.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+          var mark = document.createElement('mark');
+          mark.className = 'manual-hit';
+          mark.textContent = match[0];
+          frag.appendChild(mark);
+          marks.push(mark);
+          count++;
+          lastIndex = match.index + match[0].length;
+          if (match.index === re.lastIndex) re.lastIndex++;
+        }
+        frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+        node.parentNode.replaceChild(frag, node);
+      });
+
+      resultsEl.textContent = count === 0
+        ? 'Sin resultados'
+        : (count === 1 ? '1 resultado' : count + ' resultados');
+
+      if (marks.length) {
+        marks[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    var timer;
+    input.addEventListener('input', function (e) {
+      clearTimeout(timer);
+      var val = e.target.value;
+      timer = setTimeout(function () { runSearch(val); }, 200);
+    });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        input.value = '';
+        clearMarks();
+        resultsEl.textContent = '';
+        input.blur();
+      }
+    });
+  })();
+</script>
 
 </body>
 </html>
