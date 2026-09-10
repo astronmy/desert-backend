@@ -10,6 +10,7 @@ return [
         'notifications' => 'Notificaciones',
         'users' => 'Usuarios',
         'roles' => 'Roles',
+        'manual' => 'Manual de usuario',
     ],
 
     'actions' => [

@@ -652,6 +652,12 @@
       height: auto;
     }
 
+    @media screen {
+      .screenshot img {
+        cursor: zoom-in;
+      }
+    }
+
     .screenshot .cap {
       padding: 2mm 3.5mm;
       font-size: 8pt;
@@ -822,6 +828,48 @@
       .site-main .cover,
       .site-main .page { margin: 0 !important; box-shadow: none !important; border-radius: 0 !important; }
       html, body { background: #fff !important; }
+      .manual-lightbox { display: none !important; }
+    }
+
+    .manual-lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(24, 22, 18, 0.86);
+      align-items: center;
+      justify-content: center;
+      padding: 6vmin 4vmin;
+      cursor: zoom-out;
+    }
+    .manual-lightbox.is-open {
+      display: flex;
+    }
+    .manual-lightbox img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      border-radius: 3px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .manual-lightbox-close {
+      position: fixed;
+      top: 4vmin;
+      right: 4vmin;
+      width: 9mm;
+      height: 9mm;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--sand, #f4ecdd);
+      font-size: 14pt;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .manual-lightbox-close:hover {
+      background: rgba(255, 255, 255, 0.18);
     }
   </style>
 </head>
@@ -1842,6 +1890,11 @@
   </main>
 </div>
 
+<div class="manual-lightbox no-print" id="manualLightbox">
+  <button type="button" class="manual-lightbox-close" id="manualLightboxClose" aria-label="Cerrar">✕</button>
+  <img src="" alt="" id="manualLightboxImg" />
+</div>
+
 <script>
   (function () {
     var input = document.getElementById('manualSearch');
@@ -1932,6 +1985,41 @@
         resultsEl.textContent = '';
         input.blur();
       }
+    });
+  })();
+</script>
+
+<script>
+  (function () {
+    var lightbox = document.getElementById('manualLightbox');
+    var lightboxImg = document.getElementById('manualLightboxImg');
+    var closeBtn = document.getElementById('manualLightboxClose');
+    if (!lightbox || !lightboxImg) return;
+
+    function open(src, alt) {
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || '';
+      lightbox.classList.add('is-open');
+    }
+
+    function close() {
+      lightbox.classList.remove('is-open');
+      lightboxImg.src = '';
+    }
+
+    document.querySelectorAll('.screenshot img').forEach(function (img) {
+      img.addEventListener('click', function () {
+        open(img.currentSrc || img.src, img.alt);
+      });
+    });
+
+    lightbox.addEventListener('click', close);
+    closeBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      close();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && lightbox.classList.contains('is-open')) close();
     });
   })();
 </script>
