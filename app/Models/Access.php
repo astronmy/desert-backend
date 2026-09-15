@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'guest_last_name',
     'guest_document_number',
     'guest_id_type',
+    'entrada_at',
+    'salon_at',
     'accessed_at',
 ])]
 class Access extends Model
@@ -29,6 +31,8 @@ class Access extends Model
     protected function casts(): array
     {
         return [
+            'entrada_at' => 'datetime',
+            'salon_at' => 'datetime',
             'accessed_at' => 'datetime',
         ];
     }
@@ -46,5 +50,20 @@ class Access extends Model
     public function guestFullName(): string
     {
         return trim($this->guest_first_name.' '.$this->guest_last_name);
+    }
+
+    public function hasEntrada(): bool
+    {
+        return $this->entrada_at !== null;
+    }
+
+    public function hasSalon(): bool
+    {
+        return $this->salon_at !== null;
+    }
+
+    public function isComplete(): bool
+    {
+        return $this->hasEntrada() && $this->hasSalon();
     }
 }

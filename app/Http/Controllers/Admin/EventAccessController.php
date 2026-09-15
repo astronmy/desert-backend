@@ -25,6 +25,14 @@ class EventAccessController extends Controller
             ->when($request->filled('code'), fn ($q) => $q->where('invitation_code', 'like', '%'.$request->string('code').'%'))
             ->when($request->filled('date_from'), fn ($q) => $q->whereDate('accessed_at', '>=', $request->date('date_from')))
             ->when($request->filled('date_to'), fn ($q) => $q->whereDate('accessed_at', '<=', $request->date('date_to')))
+            ->when($request->string('completion')->toString() === 'complete', function ($q) {
+                $q->whereNotNull('entrada_at')->whereNotNull('salon_at');
+            })
+            ->when($request->string('completion')->toString() === 'partial', function ($q) {
+                $q->where(function ($inner) {
+                    $inner->whereNull('entrada_at')->orWhereNull('salon_at');
+                });
+            })
             ->orderByDesc('accessed_at')
             ->paginate(20)
             ->withQueryString();

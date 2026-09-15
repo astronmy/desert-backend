@@ -68,7 +68,8 @@ class InvitationController extends Controller
             return response()->json(['message' => 'La invitación aún no está aprobada.'], 422);
         }
 
-        $hasEntered = $invitation->access !== null;
+        $access = $invitation->access;
+        $isComplete = $access?->isComplete() ?? false;
 
         return response()->json([
             'code' => $invitation->code,
@@ -83,8 +84,13 @@ class InvitationController extends Controller
             'confirmed_at' => $invitation->confirmed_at?->toIso8601String(),
             'selfie_url' => $invitation->selfieUrl(),
             'access' => [
-                'has_entered' => $hasEntered,
-                'accessed_at' => $invitation->access?->accessed_at?->toIso8601String(),
+                'has_entered' => $isComplete,
+                'accessed_at' => $access?->accessed_at?->toIso8601String(),
+                'entrada_at' => $access?->entrada_at?->toIso8601String(),
+                'salon_at' => $access?->salon_at?->toIso8601String(),
+                'has_entrada' => $access?->hasEntrada() ?? false,
+                'has_salon' => $access?->hasSalon() ?? false,
+                'is_complete' => $isComplete,
             ],
         ]);
     }

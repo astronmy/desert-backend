@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\Access;
 use App\Models\Invitation;
 use App\Models\Role;
 use App\Models\User;
@@ -123,11 +124,13 @@ class AccessControlAuthTest extends TestCase
         $this->getJson('/api/invitations/'.$invitation->code.'/entry')
             ->assertUnauthorized();
 
-        $this->postJson('/api/accesses', ['code' => $invitation->code])
-            ->assertUnauthorized();
+        $this->postJson('/api/accesses', [
+            'code' => $invitation->code,
+            'checkpoint' => 'entrada',
+        ])->assertUnauthorized();
     }
 
-    public function test_access_control_can_query_entry_and_register_access(): void
+    public function test_access_control_can_query_entry_and_register_dual_checkpoints(): void
     {
         $user = User::factory()->accessControl()->create();
         $token = $user->createToken('access-control')->plainTextToken;
@@ -137,17 +140,74 @@ class AccessControlAuthTest extends TestCase
             ->getJson('/api/invitations/'.$invitation->code.'/entry')
             ->assertOk()
             ->assertJsonPath('code', $invitation->code)
-            ->assertJsonPath('access.has_entered', false);
+            ->assertJsonPath('access.has_entered', false)
+            ->assertJsonPath('access.has_entrada', false)
+            ->assertJsonPath('access.has_salon', false)
+            ->assertJsonPath('access.is_complete', false);
 
         $this->withToken($token)
-            ->postJson('/api/accesses', ['code' => $invitation->code])
+            ->postJson('/api/accesses', [
+                'code' => $invitation->code,
+                'checkpoint' => 'entrada',
+            ])
             ->assertCreated()
-            ->assertJsonPath('access.invitation_code', $invitation->code);
+            ->assertJsonPath('access.invitation_code', $invitation->code)
+            ->assertJsonPath('access.checkpoint', 'entrada')
+            ->assertJsonPath('access.is_complete', false);
+
+        $this->assertDatabaseHas('accesses', [
+            'invitation_id' => $invitation->id,
+        ]);
+
+        $access = Access::query()->where('invitation_id', $invitation->id)->first();
+        $this->assertNotNull($access->entrada_at);
+        $this->assertNull($access->salon_at);
+        $this->assertFalse($access->isComplete());
 
         $this->withToken($token)
             ->getJson('/api/invitations/'.$invitation->code.'/entry')
             ->assertOk()
+            ->assertJsonPath('access.has_entrada', true)
+            ->assertJsonPath('access.has_salon', false)
+            ->assertJsonPath('access.is_complete', false)
+            ->assertJsonPath('access.has_entered', false);
+
+        $this->withToken($token)
+            ->postJson('/api/accesses', [
+                'code' => $invitation->code,
+                'checkpoint' => 'entrada',
+            ])
+            ->assertStatus(409)
+            ->assertJsonPath('checkpoint', 'entrada');
+
+        $this->withToken($token)
+            ->postJson('/api/accesses', [
+                'code' => $invitation->code,
+                'checkpoint' => 'salon',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('access.checkpoint', 'salon')
+            ->assertJsonPath('access.is_complete', true);
+
+        $this->withToken($token)
+            ->getJson('/api/invitations/'.$invitation->code.'/entry')
+            ->assertOk()
+            ->assertJsonPath('access.has_entrada', true)
+            ->assertJsonPath('access.has_salon', true)
+            ->assertJsonPath('access.is_complete', true)
             ->assertJsonPath('access.has_entered', true);
+    }
+
+    public function test_checkpoint_is_required_when_registering_access(): void
+    {
+        $user = User::factory()->accessControl()->create();
+        $token = $user->createToken('access-control')->plainTextToken;
+        $invitation = Invitation::factory()->confirmed()->create();
+
+        $this->withToken($token)
+            ->postJson('/api/accesses', ['code' => $invitation->code])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['checkpoint']);
     }
 
     public function test_invitation_show_remains_public(): void

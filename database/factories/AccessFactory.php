@@ -32,7 +32,18 @@ class AccessFactory extends Factory
             'guest_last_name' => $invitation->guest->last_name,
             'guest_document_number' => $invitation->guest->document_number,
             'guest_id_type' => $invitation->guest->id_type?->value ?? DocumentType::Dni->value,
+            'entrada_at' => now(),
+            'salon_at' => null,
             'accessed_at' => now(),
         ];
+    }
+
+    public function complete(): static
+    {
+        return $this->state(fn () => [
+            'entrada_at' => now()->subMinutes(5),
+            'salon_at' => now(),
+            'accessed_at' => now()->subMinutes(5),
+        ]);
     }
 }

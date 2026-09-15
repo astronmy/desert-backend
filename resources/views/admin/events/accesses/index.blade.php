@@ -40,6 +40,14 @@
                        class="mt-1 block w-full rounded-md border border-gray-300 text-sm shadow-sm" />
             </div>
             <div class="min-w-[150px]">
+                <label for="filter_completion" class="block text-sm font-medium text-gray-700">{{ __('access.attributes.completion') }}</label>
+                <x-select-input id="filter_completion" name="completion" class="mt-1">
+                    <option value="">{{ __('access.completion.all') }}</option>
+                    <option value="partial" @selected(request('completion') === 'partial')>{{ __('access.completion.partial') }}</option>
+                    <option value="complete" @selected(request('completion') === 'complete')>{{ __('access.completion.complete') }}</option>
+                </x-select-input>
+            </div>
+            <div class="min-w-[150px]">
                 <label for="filter_date_from" class="block text-sm font-medium text-gray-700">{{ __('access.attributes.date_from') }}</label>
                 <input type="date" id="filter_date_from" name="date_from" value="{{ request('date_from') }}"
                        class="mt-1 block w-full rounded-md border border-gray-300 text-sm shadow-sm" />
@@ -68,7 +76,9 @@
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access.attributes.guest') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access.attributes.document_number') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access.attributes.invitation_code') }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access.attributes.accessed_at') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access.attributes.entrada_at') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access.attributes.salon_at') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access.attributes.is_complete') }}</th>
                     <th class="px-4 py-3 text-right text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('admin.table.actions') }}</th>
                 </tr>
             </thead>
@@ -78,7 +88,21 @@
                         <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">{{ $access->guestFullName() }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ strtoupper($access->guest_id_type) }} {{ $access->guest_document_number }}</td>
                         <td class="whitespace-nowrap px-4 py-3 font-mono text-sm text-gray-900">{{ $access->invitation_code }}</td>
-                        <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $access->accessed_at->format('d/m/Y H:i:s') }}</td>
+                        <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
+                            {{ $access->entrada_at?->format('d/m/Y H:i:s') ?? __('access.index.pending') }}
+                        </td>
+                        <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
+                            {{ $access->salon_at?->format('d/m/Y H:i:s') ?? __('access.index.pending') }}
+                        </td>
+                        <td class="whitespace-nowrap px-4 py-3 text-sm">
+                            <span @class([
+                                'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium',
+                                'bg-emerald-100 text-emerald-800' => $access->isComplete(),
+                                'bg-amber-100 text-amber-800' => ! $access->isComplete(),
+                            ])>
+                                {{ $access->isComplete() ? __('access.index.yes') : __('access.completion.partial') }}
+                            </span>
+                        </td>
                         <td class="px-4 py-3 text-right">
                             @if($access->invitation)
                                 <a href="{{ route('admin.events.invitations.show', [$event, $access->invitation]) }}?from=accesses"
@@ -91,7 +115,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-gray-500">{{ __('access.index.empty') }}</td>
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">{{ __('access.index.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>
