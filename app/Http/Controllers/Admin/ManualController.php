@@ -14,6 +14,8 @@ class ManualController extends Controller
      */
     public function show(): Response
     {
+        $this->denyClient();
+
         $path = resource_path('manual/manual-desert.html');
 
         abort_unless(is_file($path), 404);
@@ -30,6 +32,8 @@ class ManualController extends Controller
 
     public function pdf(): BinaryFileResponse
     {
+        $this->denyClient();
+
         $path = resource_path('manual/manual-desert.pdf');
 
         abort_unless(is_file($path), 404);
@@ -41,6 +45,8 @@ class ManualController extends Controller
 
     public function screenshot(string $file): Response
     {
+        $this->denyClient();
+
         // basename() strips any path traversal segments before we touch the disk.
         $safe = basename($file);
 
@@ -53,5 +59,10 @@ class ManualController extends Controller
         return response(file_get_contents($path))
             ->header('Content-Type', 'image/png')
             ->header('Cache-Control', 'private, max-age=86400');
+    }
+
+    private function denyClient(): void
+    {
+        abort_if(request()->user()?->isClient(), 403);
     }
 }

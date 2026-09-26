@@ -27,7 +27,7 @@ class EventResource extends JsonResource
             'id' => $event->id,
             'name' => $event->name,
             'event_date' => $event->end_date->toDateString(),
-            'init_date' => $event->init_date->toDateString(),
+            'init_date' => $event->end_date->toDateString(),
             'end_date' => $event->end_date->toDateString(),
             'type' => $event->type->value,
             'place' => $event->place->value,
