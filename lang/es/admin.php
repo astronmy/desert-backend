@@ -25,6 +25,8 @@ return [
         'save' => 'Guardar',
         'save_changes' => 'Guardar cambios',
         'create' => 'Crear',
+        'show_password' => 'Mostrar contraseña',
+        'hide_password' => 'Ocultar contraseña',
     ],
 
     'table' => [

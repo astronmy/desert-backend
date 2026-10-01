@@ -12,8 +12,7 @@
 
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" class="text-[var(--desert-bg)]" />
-            <x-text-input id="password" class="block mt-1 w-full bg-white text-gray-900 border-gray-300 focus:border-[var(--desert-bg)] focus:ring-[var(--desert-bg)]"
-                            type="password"
+            <x-password-input id="password" class="bg-white text-gray-900 border-gray-300 focus:border-[var(--desert-bg)] focus:ring-[var(--desert-bg)]"
                             name="password"
                             required autocomplete="current-password" />
             <x-input-error :messages="$errors->get('password')" class="mt-2 text-[var(--desert-bg)]" />

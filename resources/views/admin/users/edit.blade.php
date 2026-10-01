@@ -17,14 +17,14 @@
 
                 <div>
                     <x-input-label for="password" :value="__('user.attributes.new_password')" />
-                    <x-text-input id="password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
+                    <x-password-input id="password" name="password" autocomplete="new-password" />
                     <p class="mt-1 text-xs text-gray-500">{{ __('user.form.new_password_help') }}</p>
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
 
                 <div>
                     <x-input-label for="password_confirmation" :value="__('user.attributes.password_confirmation')" />
-                    <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
+                    <x-password-input id="password_confirmation" name="password_confirmation" autocomplete="new-password" />
                 </div>
 
                 <div class="flex gap-3">
