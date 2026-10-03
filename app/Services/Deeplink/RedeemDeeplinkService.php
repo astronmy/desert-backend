@@ -3,7 +3,6 @@
 namespace App\Services\Deeplink;
 
 use App\Models\Event;
-use Carbon\Carbon;
 
 class RedeemDeeplinkService
 {
@@ -12,7 +11,7 @@ class RedeemDeeplinkService
     ) {}
 
     /**
-     * Token de evento reutilizable: valida firma/exp/evento, no quema jti.
+     * Token de evento reutilizable: valida firma y la ventana del evento, no quema jti.
      *
      * @return array{ok: true, feature: string, event_id: int, jti: string, expires_at: string}|array{ok: false, reason: string, message: string}
      */
@@ -37,16 +36,6 @@ class RedeemDeeplinkService
             ];
         }
 
-        if ($payload['exp'] < now()->getTimestamp()) {
-            $expiresAt = Carbon::createFromTimestamp($payload['exp']);
-
-            return [
-                'ok' => false,
-                'reason' => 'expired',
-                'message' => 'El link venció el '.$expiresAt->timezone(config('app.timezone'))->format('d/m/Y'),
-            ];
-        }
-
         $event = Event::query()->find($payload['e']);
         if (! $event) {
             return [
@@ -56,12 +45,20 @@ class RedeemDeeplinkService
             ];
         }
 
+        if (! $event->isRegistrationOpen()) {
+            return [
+                'ok' => false,
+                'reason' => 'expired',
+                'message' => 'El link venció el '.$event->registrationClosesAt()->format('d/m/Y H:i'),
+            ];
+        }
+
         return [
             'ok' => true,
             'feature' => $payload['f'],
             'event_id' => $event->id,
             'jti' => $payload['jti'],
-            'expires_at' => Carbon::createFromTimestamp($payload['exp'])->utc()->toIso8601String(),
+            'expires_at' => $event->registrationClosesAt()->utc()->toIso8601String(),
         ];
     }
 }

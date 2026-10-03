@@ -36,7 +36,7 @@ v1.<base64url(payload)>.<base64url(hmac_sha256(payload_b64, secret))>
 { "f": "event_register", "e": 1, "exp": 1767225600, "jti": "<uuid>" }
 ```
 
-- `exp` = fin del día de `event.end_date`
+- `exp` = 03:00 (America/Argentina/Buenos_Aires) del día siguiente a `event.end_date`
 - El link es **reutilizable** (muchas personas); redeem no quema el `jti`
 
 ### Redeem

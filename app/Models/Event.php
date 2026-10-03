@@ -5,12 +5,15 @@ namespace App\Models;
 use App\Enums\EventPlace;
 use App\Enums\EventType;
 use App\Enums\InvitationStatus;
+use Carbon\CarbonInterface;
 use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -29,6 +32,9 @@ use Illuminate\Support\Str;
 ])]
 class Event extends Model
 {
+    /** Zona del corte de registro: 03:00 del día siguiente a end_date. */
+    public const REGISTRATION_TIMEZONE = 'America/Argentina/Buenos_Aires';
+
     /** @use HasFactory<EventFactory> */
     use HasFactory;
 
@@ -61,6 +67,34 @@ class Event extends Model
     public function canConfirmMore(int $count = 1): bool
     {
         return $this->remainingConfirmationSlots() >= $count;
+    }
+
+    /**
+     * El auto-registro y el link siguen abiertos hasta las 03:00 (Argentina)
+     * del día siguiente a end_date.
+     */
+    public function registrationClosesAt(): CarbonInterface
+    {
+        return Carbon::parse($this->end_date->format('Y-m-d'), self::REGISTRATION_TIMEZONE)
+            ->addDay()
+            ->setTime(3, 0);
+    }
+
+    public function isRegistrationOpen(?CarbonInterface $at = null): bool
+    {
+        $moment = $at ?? now();
+
+        return $moment->lt($this->registrationClosesAt());
+    }
+
+    public function scopeOpenForRegistration(Builder $query): Builder
+    {
+        $nowArt = now()->timezone(self::REGISTRATION_TIMEZONE);
+        $minEndDate = (int) $nowArt->format('G') < 3
+            ? $nowArt->copy()->subDay()->toDateString()
+            : $nowArt->toDateString();
+
+        return $query->whereDate('end_date', '>=', $minEndDate);
     }
 
     public function clients(): HasMany

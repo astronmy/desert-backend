@@ -58,7 +58,7 @@
                             </div>
                         </div>
                         <p class="text-xs text-gray-500">
-                            {{ __('dashboard.link.expires_at', ['date' => $registrationLink->expires_at->timezone(config('app.timezone'))->format('d/m/Y H:i')]) }}
+                            {{ __('dashboard.link.expires_at', ['date' => $registrationLink->closesAt()->format('d/m/Y H:i')]) }}
                         </p>
                         @can('permission', 'deeplink.generar')
                             <form method="POST" action="{{ route('admin.dashboard.registration-link') }}"

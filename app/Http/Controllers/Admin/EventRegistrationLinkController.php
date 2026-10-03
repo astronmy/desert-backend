@@ -23,8 +23,8 @@ class EventRegistrationLinkController extends Controller
         return response()->json([
             'short_url' => $link->shortUrl(),
             'long_url' => $link->longActivateUrl(),
-            'expires_at' => $link->expires_at->timezone(config('app.timezone'))->format('d/m/Y H:i'),
-            'expires_at_iso' => $link->expires_at->toIso8601String(),
+            'expires_at' => $link->closesAt()->format('d/m/Y H:i'),
+            'expires_at_iso' => $link->closesAt()->toIso8601String(),
             'has_link' => true,
             'short_code' => $link->short_code,
             'message' => __('event.deeplink.generated'),

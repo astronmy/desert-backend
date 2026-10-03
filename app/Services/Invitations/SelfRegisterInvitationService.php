@@ -25,7 +25,7 @@ class SelfRegisterInvitationService
      */
     public function register(Event $event, array $data, UploadedFile $selfie): array
     {
-        if ($event->end_date->lt(now()->startOfDay())) {
+        if (! $event->isRegistrationOpen()) {
             throw ValidationException::withMessages([
                 'event' => 'El evento ya finalizó.',
             ]);

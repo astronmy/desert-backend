@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -43,12 +44,25 @@ class EventRegistrationLink extends Model
     {
         return $query
             ->whereNull('revoked_at')
-            ->where('expires_at', '>=', now());
+            ->whereHas('event', fn (Builder $event) => $event->openForRegistration());
     }
 
     public function isUsable(): bool
     {
-        return $this->revoked_at === null && $this->expires_at->isFuture();
+        if ($this->revoked_at !== null) {
+            return false;
+        }
+
+        $this->loadMissing('event');
+
+        return $this->event?->isRegistrationOpen() ?? false;
+    }
+
+    public function closesAt(): CarbonInterface
+    {
+        $this->loadMissing('event');
+
+        return $this->event->registrationClosesAt();
     }
 
     public function shortUrl(): string

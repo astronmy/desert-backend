@@ -3,7 +3,6 @@
 namespace App\Services\Deeplink;
 
 use App\Models\Event;
-use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -34,12 +33,11 @@ class DeeplinkTokenService
     }
 
     /**
-     * Expiración del link = fin del día de end_date del evento (timezone de la app).
+     * Expiración del link = 03:00 (Argentina) del día siguiente a end_date.
      */
     public function expiresAtForEvent(Event $event): CarbonInterface
     {
-        return Carbon::parse($event->end_date->format('Y-m-d'), config('app.timezone'))
-            ->endOfDay();
+        return $event->registrationClosesAt();
     }
 
     /**

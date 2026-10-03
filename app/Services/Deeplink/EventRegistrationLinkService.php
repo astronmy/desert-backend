@@ -131,8 +131,7 @@ class EventRegistrationLinkService
 
         return EventRegistrationLink::query()
             ->where('token', $token)
-            ->whereNull('revoked_at')
-            ->where('expires_at', '>=', now())
+            ->active()
             ->latest('id')
             ->first();
     }
@@ -165,8 +164,8 @@ class EventRegistrationLinkService
         return [
             'short_url' => $link->shortUrl(),
             'long_url' => $link->longActivateUrl(),
-            'expires_at' => $link->expires_at->timezone(config('app.timezone'))->format('d/m/Y H:i'),
-            'expires_at_iso' => $link->expires_at->toIso8601String(),
+            'expires_at' => $link->closesAt()->format('d/m/Y H:i'),
+            'expires_at_iso' => $link->closesAt()->toIso8601String(),
             'has_link' => true,
             'short_code' => $link->short_code,
         ];

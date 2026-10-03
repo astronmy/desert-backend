@@ -123,6 +123,6 @@ class EventController extends Controller
             ->route('admin.events.edit', $event)
             ->with('status', __('event.deeplink.generated'))
             ->with('deeplink_url', $link->shortUrl())
-            ->with('deeplink_expires_at', $link->expires_at->timezone(config('app.timezone'))->format('d/m/Y H:i'));
+            ->with('deeplink_expires_at', $link->closesAt()->format('d/m/Y H:i'));
     }
 }

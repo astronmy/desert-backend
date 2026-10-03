@@ -53,7 +53,7 @@ class DeeplinkController extends Controller
             'token' => $link->token,
             'feature' => config('services.deeplink.feature'),
             'event_id' => $link->event_id,
-            'expires_at' => $link->expires_at->toIso8601String(),
+            'expires_at' => $link->closesAt()->toIso8601String(),
         ]);
     }
 }
