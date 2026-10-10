@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\EventNotificationController;
 use App\Http\Controllers\Api\EventRegistrationController;
 use App\Http\Controllers\Api\InvitationController;
+use App\Models\AccessControlLog;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:10,1')->group(function () {
@@ -30,9 +31,9 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::get('auth/me', [AuthController::class, 'me']);
     Route::get('invitations/{code}/entry', [InvitationController::class, 'entry'])
-        ->middleware('permission:accesos.registrar');
+        ->middleware(['access.log:'.AccessControlLog::SERVICE_ENTRY, 'permission:accesos.registrar']);
     Route::post('accesses', [AccessController::class, 'store'])
-        ->middleware('permission:accesos.registrar');
+        ->middleware(['access.log:'.AccessControlLog::SERVICE_REGISTER, 'permission:accesos.registrar']);
 });
 
 Route::middleware(['web', 'auth'])->group(function () {

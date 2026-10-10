@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureEventAccess;
 use App\Http\Middleware\EnsurePermission;
+use App\Http\Middleware\LogAccessControlRequest;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'permission' => EnsurePermission::class,
             'event.access' => EnsureEventAccess::class,
+            'access.log' => LogAccessControlRequest::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

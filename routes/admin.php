@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AccessControlLogController;
 use App\Http\Controllers\Admin\ClientEventController;
 use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('mi-evento', [ClientEventController::class, 'update'])
         ->middleware('permission:eventos.contenido')
         ->name('client-event.update');
+
+    Route::get('access-control-logs', [AccessControlLogController::class, 'index'])
+        ->name('access-control-logs.index');
 
     require __DIR__.'/admin/event_accesses.php';
     require __DIR__.'/admin/event_invitations.php';
