@@ -33,7 +33,7 @@ class DeeplinkTokenService
     }
 
     /**
-     * Expiración del link = 03:00 (Argentina) del día siguiente a end_date.
+     * Expiración del link = 21:00 (Argentina) del día de end_date.
      */
     public function expiresAtForEvent(Event $event): CarbonInterface
     {

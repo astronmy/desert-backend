@@ -32,7 +32,7 @@ use Illuminate\Support\Str;
 ])]
 class Event extends Model
 {
-    /** Zona del corte de registro: 03:00 del día siguiente a end_date. */
+    /** Zona del corte de registro: 21:00 del día de end_date. */
     public const REGISTRATION_TIMEZONE = 'America/Argentina/Buenos_Aires';
 
     /** @use HasFactory<EventFactory> */
@@ -77,14 +77,13 @@ class Event extends Model
     }
 
     /**
-     * El auto-registro y el link siguen abiertos hasta las 03:00 (Argentina)
-     * del día siguiente a end_date.
+     * El auto-registro y el link siguen abiertos hasta las 21:00 (Argentina)
+     * del día de end_date.
      */
     public function registrationClosesAt(): CarbonInterface
     {
         return Carbon::parse($this->end_date->format('Y-m-d'), self::REGISTRATION_TIMEZONE)
-            ->addDay()
-            ->setTime(3, 0);
+            ->setTime(21, 0);
     }
 
     public function isRegistrationOpen(?CarbonInterface $at = null): bool
@@ -97,9 +96,9 @@ class Event extends Model
     public function scopeOpenForRegistration(Builder $query): Builder
     {
         $nowArt = now()->timezone(self::REGISTRATION_TIMEZONE);
-        $minEndDate = (int) $nowArt->format('G') < 3
-            ? $nowArt->copy()->subDay()->toDateString()
-            : $nowArt->toDateString();
+        $minEndDate = (int) $nowArt->format('G') < 21
+            ? $nowArt->toDateString()
+            : $nowArt->copy()->addDay()->toDateString();
 
         return $query->whereDate('end_date', '>=', $minEndDate);
     }

@@ -78,7 +78,7 @@ return [
 
     'deeplink' => [
         'title' => 'Link Baile',
-        'help' => 'Un único link corto compartible. Vence el día de fin del evento. Regenerar invalida el link anterior.',
+        'help' => 'Un único link corto compartible. Vence a las 21:00 del día de fin del evento. Regenerar invalida el link anterior.',
         'generate' => 'Generar link',
         'regenerate' => 'Regenerar',
         'regenerate_hint' => 'Regenerar invalida el link anterior; quien tenga el viejo ya no podrá usarlo.',

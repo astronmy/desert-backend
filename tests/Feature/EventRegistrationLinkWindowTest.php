@@ -12,7 +12,7 @@ class EventRegistrationLinkWindowTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_link_issued_before_the_change_stays_usable_until_3am(): void
+    public function test_link_stays_usable_until_9pm_on_end_date(): void
     {
         $event = Event::factory()->create([
             'end_date' => '2026-10-03',
@@ -27,14 +27,14 @@ class EventRegistrationLinkWindowTest extends TestCase
         ]);
 
         try {
-            Carbon::setTestNow(Carbon::parse('2026-10-04 02:30:00', Event::REGISTRATION_TIMEZONE));
+            Carbon::setTestNow(Carbon::parse('2026-10-03 20:30:00', Event::REGISTRATION_TIMEZONE));
 
             $this->assertTrue($link->fresh()->isUsable());
             $this->assertNotNull(
                 EventRegistrationLink::query()->active()->whereKey($link->id)->first()
             );
 
-            Carbon::setTestNow(Carbon::parse('2026-10-04 03:00:00', Event::REGISTRATION_TIMEZONE));
+            Carbon::setTestNow(Carbon::parse('2026-10-03 21:00:00', Event::REGISTRATION_TIMEZONE));
 
             $this->assertFalse($link->fresh()->isUsable());
             $this->assertNull(
