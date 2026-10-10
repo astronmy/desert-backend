@@ -70,7 +70,7 @@
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{{ $log->serviceLabel() }}</td>
                         <td class="whitespace-nowrap px-4 py-3 font-mono text-sm text-gray-700">{{ $log->method }}</td>
                         <td class="px-4 py-3 font-mono text-sm text-gray-700">{{ $log->endpoint }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-900">{{ $log->event?->name ?: '—' }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">{{ $log->event?->host ?: '—' }}</td>
                         <td class="px-4 py-3 text-sm text-gray-900">{{ $log->user?->name ?: '—' }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{{ $log->response_code }}</td>
                     </tr>

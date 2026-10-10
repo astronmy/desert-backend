@@ -13,7 +13,7 @@ return [
         'method' => 'Método',
         'endpoint' => 'Endpoint',
         'response_code' => 'Código HTTP',
-        'event' => 'Evento',
+        'event' => 'Anfitrión',
         'user' => 'Usuario',
         'created_at' => 'Fecha',
         'date_from' => 'Desde',

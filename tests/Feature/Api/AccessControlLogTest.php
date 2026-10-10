@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Models\AccessControlLog;
+use App\Models\Event;
 use App\Models\Invitation;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
@@ -73,6 +74,11 @@ class AccessControlLogTest extends TestCase
 
     public function test_admin_can_filter_the_log_and_other_roles_cannot(): void
     {
+        $event = Event::factory()->create([
+            'name' => 'Fiesta de prueba',
+            'host' => 'Familia Koepp',
+        ]);
+
         AccessControlLog::query()->create([
             'service' => AccessControlLog::SERVICE_REGISTER,
             'method' => 'POST',
@@ -80,6 +86,7 @@ class AccessControlLogTest extends TestCase
             'request_body' => '{"code":"ABC"}',
             'response_body' => '{"message":"ok"}',
             'response_code' => 201,
+            'event_id' => $event->id,
         ]);
 
         $admin = User::factory()->admin()->create();
@@ -89,7 +96,9 @@ class AccessControlLogTest extends TestCase
             ->get(route('admin.access-control-logs.index', ['service' => AccessControlLog::SERVICE_REGISTER, 'response_code' => 201]))
             ->assertOk()
             ->assertSee('Registro de acceso')
-            ->assertSee('/api/accesses');
+            ->assertSee('/api/accesses')
+            ->assertSee('Familia Koepp')
+            ->assertDontSee('Fiesta de prueba');
 
         $this->actingAs($admin)
             ->get(route('admin.access-control-logs.index', ['service' => AccessControlLog::SERVICE_ENTRY]))
