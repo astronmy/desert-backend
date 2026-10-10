@@ -13,6 +13,8 @@ return [
         'method' => 'Método',
         'endpoint' => 'Endpoint',
         'response_code' => 'Código HTTP',
+        'event' => 'Evento',
+        'user' => 'Usuario',
         'created_at' => 'Fecha',
         'date_from' => 'Desde',
         'date_to' => 'Hasta',

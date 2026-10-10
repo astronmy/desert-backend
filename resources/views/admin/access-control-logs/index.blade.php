@@ -58,6 +58,8 @@
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access_control_log.attributes.service') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access_control_log.attributes.method') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access_control_log.attributes.endpoint') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access_control_log.attributes.event') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access_control_log.attributes.user') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('access_control_log.attributes.response_code') }}</th>
                 </tr>
             </thead>
@@ -68,10 +70,12 @@
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{{ $log->serviceLabel() }}</td>
                         <td class="whitespace-nowrap px-4 py-3 font-mono text-sm text-gray-700">{{ $log->method }}</td>
                         <td class="px-4 py-3 font-mono text-sm text-gray-700">{{ $log->endpoint }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">{{ $log->event?->name ?: '—' }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">{{ $log->user?->name ?: '—' }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{{ $log->response_code }}</td>
                     </tr>
                     <tr>
-                        <td colspan="5" class="bg-gray-50 px-4 py-2">
+                        <td colspan="7" class="bg-gray-50 px-4 py-2">
                             <details>
                                 <summary class="cursor-pointer text-sm font-medium text-[var(--desert-bg-elevated)]">{{ __('access_control_log.bodies') }}</summary>
                                 <div class="mt-3 grid gap-3 lg:grid-cols-2">
@@ -89,7 +93,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500">{{ __('access_control_log.empty') }}</td>
+                        <td colspan="7" class="px-4 py-8 text-center text-sm text-gray-500">{{ __('access_control_log.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>

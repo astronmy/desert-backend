@@ -43,6 +43,8 @@ class AccessControlLogTest extends TestCase
         $this->assertStringContainsString($invitation->code, (string) $log->request_body);
         $this->assertStringContainsString('entrada', (string) $log->request_body);
         $this->assertStringContainsString('Checkpoint registrado correctamente.', (string) $log->response_body);
+        $this->assertSame($user->id, $log->user_id);
+        $this->assertSame($invitation->event_id, $log->event_id);
     }
 
     public function test_entry_lookup_writes_a_log_row(): void
@@ -65,6 +67,8 @@ class AccessControlLogTest extends TestCase
         $this->assertSame('/api/invitations/'.$invitation->code.'/entry', $log->endpoint);
         $this->assertSame(200, $log->response_code);
         $this->assertNull($log->request_body);
+        $this->assertSame($user->id, $log->user_id);
+        $this->assertSame($invitation->event_id, $log->event_id);
     }
 
     public function test_admin_can_filter_the_log_and_other_roles_cannot(): void

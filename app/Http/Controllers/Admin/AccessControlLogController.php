@@ -14,6 +14,7 @@ class AccessControlLogController extends Controller
         abort_unless($request->user()?->isAdminRole(), 403);
 
         $logs = AccessControlLog::query()
+            ->with(['user', 'event'])
             ->when($request->filled('service'), fn ($q) => $q->where('service', $request->string('service')))
             ->when($request->filled('method'), fn ($q) => $q->where('method', strtoupper((string) $request->string('method'))))
             ->when($request->filled('response_code'), fn ($q) => $q->where('response_code', $request->integer('response_code')))
