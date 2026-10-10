@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'title' => 'Dashboard',
+    'title' => 'Inicio',
     'welcome' => 'Hola, :name',
     'subtitle' => 'Bienvenido al panel de administración de Desert Eventos.',
     'client_subtitle' => 'Gestioná las invitaciones de tu evento: :name',
@@ -17,7 +17,7 @@ return [
     ],
 
     'link' => [
-        'title' => 'Link de registro',
+        'title' => 'Link Baile',
         'help' => 'Compartí este link para que los invitados se registren en la app.',
         'url' => 'URL corta',
         'copy' => 'Copiar',
@@ -26,7 +26,7 @@ return [
         'generate' => 'Generar link',
         'regenerate' => 'Regenerar',
         'regenerate_confirm' => '¿Regenerar el link? El link actual dejará de funcionar.',
-        'generated' => 'Link de registro generado.',
+        'generated' => 'Link Baile generado.',
         'empty' => 'Todavía no hay un link activo para tu evento.',
     ],
 

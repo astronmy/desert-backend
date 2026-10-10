@@ -67,14 +67,22 @@
                 </x-select-input>
             </div>
             <div class="min-w-[160px]">
-                <label for="filter_date_from" class="block text-sm font-medium text-gray-700">{{ __('event.attributes.date_from') }}</label>
+                <label for="filter_date_from" class="block text-sm font-medium text-gray-700">{{ __('event.index.date_from') }}</label>
                 <input type="date" id="filter_date_from" name="date_from" value="{{ request('date_from') }}"
                        class="mt-1 block w-full rounded-md border border-gray-300 px-3.5 py-2.5 shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)] text-sm" />
             </div>
             <div class="min-w-[160px]">
-                <label for="filter_date_to" class="block text-sm font-medium text-gray-700">{{ __('event.attributes.date_to') }}</label>
+                <label for="filter_date_to" class="block text-sm font-medium text-gray-700">{{ __('event.index.date_to') }}</label>
                 <input type="date" id="filter_date_to" name="date_to" value="{{ request('date_to') }}"
                        class="mt-1 block w-full rounded-md border border-gray-300 px-3.5 py-2.5 shadow-sm focus:border-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)] text-sm" />
+            </div>
+            <div class="min-w-[160px]">
+                <label for="filter_timing" class="block text-sm font-medium text-gray-700">{{ __('event.index.timing') }}</label>
+                <x-select-input id="filter_timing" name="timing" class="mt-1">
+                    <option value="">{{ __('event.index.timing_all') }}</option>
+                    <option value="current" @selected(request('timing') === 'current')>{{ __('event.index.timing_current') }}</option>
+                    <option value="past" @selected(request('timing') === 'past')>{{ __('event.index.timing_past') }}</option>
+                </x-select-input>
             </div>
             <div class="flex gap-2">
                 <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-[var(--desert-bg)]">
@@ -110,7 +118,18 @@
             <tbody class="divide-y divide-gray-200 bg-white">
                 @forelse($events as $event)
                     <tr>
-                        <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">{{ $event->name }}</td>
+                        <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
+                            <span class="inline-flex items-center gap-2">
+                                {{ $event->name }}
+                                <span @class([
+                                    'inline-flex rounded-full px-2 py-0.5 text-xs font-medium',
+                                    'bg-emerald-100 text-emerald-800' => ! $event->hasEnded(),
+                                    'bg-gray-200 text-gray-600' => $event->hasEnded(),
+                                ])>
+                                    {{ $event->hasEnded() ? __('event.index.timing_past') : __('event.index.timing_current') }}
+                                </span>
+                            </span>
+                        </td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $event->host ?: '—' }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $event->init_date->format('d/m/Y') }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $event->end_date->format('d/m/Y') }}</td>

@@ -69,6 +69,13 @@ class Event extends Model
         return $this->remainingConfirmationSlots() >= $count;
     }
 
+    public function hasEnded(): bool
+    {
+        $today = now()->timezone(self::REGISTRATION_TIMEZONE)->toDateString();
+
+        return $this->end_date->toDateString() < $today;
+    }
+
     /**
      * El auto-registro y el link siguen abiertos hasta las 03:00 (Argentina)
      * del día siguiente a end_date.

@@ -121,7 +121,7 @@ return [
     ],
 
     'deeplink' => [
-        'use_event_link' => 'El link de registro es único por evento.',
+        'use_event_link' => 'El Link Baile es único por evento.',
         'go_to_event' => 'Ir a editar evento para generarlo.',
     ],
 ];

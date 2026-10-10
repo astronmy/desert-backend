@@ -33,13 +33,13 @@ return [
     ],
 
     'modules' => [
-        'dashboard' => 'Dashboard',
+        'dashboard' => 'Inicio',
         'usuarios' => 'Usuarios',
         'roles' => 'Roles',
         'eventos' => 'Eventos',
         'invitaciones' => 'Invitaciones',
         'accesos' => 'Accesos',
-        'deeplink' => 'Link de registro',
+        'deeplink' => 'Link Baile',
     ],
 
     'messages' => [

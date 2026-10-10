@@ -4,6 +4,9 @@
             <div>
                 <h1 class="text-xl font-semibold text-white">{{ __('invitation.index.title') }}</h1>
                 <p class="text-sm text-[var(--desert-sand)]">{{ __('invitation.index.subtitle', ['name' => $event->name]) }}</p>
+                @if ($event->host)
+                    <p class="text-xs font-normal text-white/60">{{ $event->host }}</p>
+                @endif
             </div>
             <div class="flex flex-wrap gap-2" x-data="registrationLinkModalState()">
                 @can('permission', 'deeplink.ver')

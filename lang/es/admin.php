@@ -4,7 +4,7 @@ return [
     'title' => 'Admin',
 
     'menu' => [
-        'dashboard' => 'Dashboard',
+        'dashboard' => 'Inicio',
         'my_event' => 'Mi evento',
         'events' => 'Eventos',
         'notifications' => 'Notificaciones',

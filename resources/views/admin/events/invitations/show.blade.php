@@ -108,26 +108,28 @@
             </dl>
         </div>
 
-        <div class="overflow-hidden rounded-xl border border-[var(--desert-sand)] bg-white shadow-sm lg:col-span-2">
-            <div class="border-b border-[var(--desert-sand)] bg-[var(--desert-bg)] px-5 py-3">
-                <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--desert-sand)]">{{ __('invitation.attributes.selfie') }}</h2>
+        @unless (auth()->user()?->isClient())
+            <div class="overflow-hidden rounded-xl border border-[var(--desert-sand)] bg-white shadow-sm lg:col-span-2">
+                <div class="border-b border-[var(--desert-sand)] bg-[var(--desert-bg)] px-5 py-3">
+                    <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--desert-sand)]">{{ __('invitation.attributes.selfie') }}</h2>
+                </div>
+                <div class="flex items-center justify-center p-6">
+                    @if($invitation->selfieUrl())
+                        <img src="{{ $invitation->selfieUrl() }}"
+                             alt="{{ __('invitation.attributes.selfie') }} — {{ $invitation->guest->fullName() }}"
+                             class="max-h-[28rem] w-auto max-w-full rounded-lg object-contain shadow-md ring-1 ring-gray-200" />
+                    @else
+                        <div class="flex w-full max-w-md flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-6 py-16 text-center">
+                            <svg class="mb-3 h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7a2 2 0 012-2h3l2-2h4l2 2h3a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                            </svg>
+                            <p class="text-sm font-medium text-gray-500">{{ __('invitation.show.no_selfie') }}</p>
+                        </div>
+                    @endif
+                </div>
             </div>
-            <div class="flex items-center justify-center p-6">
-                @if($invitation->selfieUrl())
-                    <img src="{{ $invitation->selfieUrl() }}"
-                         alt="{{ __('invitation.attributes.selfie') }} — {{ $invitation->guest->fullName() }}"
-                         class="max-h-[28rem] w-auto max-w-full rounded-lg object-contain shadow-md ring-1 ring-gray-200" />
-                @else
-                    <div class="flex w-full max-w-md flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-6 py-16 text-center">
-                        <svg class="mb-3 h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7a2 2 0 012-2h3l2-2h4l2 2h3a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                        </svg>
-                        <p class="text-sm font-medium text-gray-500">{{ __('invitation.show.no_selfie') }}</p>
-                    </div>
-                @endif
-            </div>
-        </div>
+        @endunless
 
         @can('permission', 'eventos.editar')
             <div class="rounded-xl border border-dashed border-gray-300 bg-white p-4 text-sm text-gray-600 lg:col-span-2">

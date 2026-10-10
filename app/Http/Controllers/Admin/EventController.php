@@ -22,6 +22,8 @@ class EventController extends Controller
 
     public function index(Request $request): View
     {
+        $today = now()->timezone(Event::REGISTRATION_TIMEZONE)->toDateString();
+
         $events = Event::query()
             ->when($request->filled('name'), fn ($q) => $q->where('name', 'like', '%'.$request->string('name').'%'))
             ->when($request->filled('host'), fn ($q) => $q->where('host', 'like', '%'.$request->string('host').'%'))
@@ -29,6 +31,8 @@ class EventController extends Controller
             ->when($request->filled('place'), fn ($q) => $q->where('place', $request->string('place')))
             ->when($request->filled('date_from'), fn ($q) => $q->whereDate('init_date', '>=', $request->date('date_from')))
             ->when($request->filled('date_to'), fn ($q) => $q->whereDate('init_date', '<=', $request->date('date_to')))
+            ->when($request->input('timing') === 'current', fn ($q) => $q->whereDate('end_date', '>=', $today))
+            ->when($request->input('timing') === 'past', fn ($q) => $q->whereDate('end_date', '<', $today))
             ->orderByDesc('init_date')
             ->paginate(15)
             ->withQueryString();

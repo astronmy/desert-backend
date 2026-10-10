@@ -14,7 +14,7 @@ class RolePermissionSeeder extends Seeder
      * @var list<array{module: string, action: string, label: string}>
      */
     private array $catalog = [
-        ['module' => 'dashboard', 'action' => 'ver', 'label' => 'Ver dashboard'],
+        ['module' => 'dashboard', 'action' => 'ver', 'label' => 'Ver inicio'],
         ['module' => 'usuarios', 'action' => 'ver', 'label' => 'Ver usuarios'],
         ['module' => 'usuarios', 'action' => 'crear', 'label' => 'Crear usuarios'],
         ['module' => 'usuarios', 'action' => 'editar', 'label' => 'Editar usuarios'],
@@ -37,8 +37,8 @@ class RolePermissionSeeder extends Seeder
         ['module' => 'invitaciones', 'action' => 'moderar', 'label' => 'Moderar invitaciones'],
         ['module' => 'accesos', 'action' => 'ver', 'label' => 'Ver accesos'],
         ['module' => 'accesos', 'action' => 'registrar', 'label' => 'Registrar acceso (API scanner)'],
-        ['module' => 'deeplink', 'action' => 'ver', 'label' => 'Ver link de registro / métricas'],
-        ['module' => 'deeplink', 'action' => 'generar', 'label' => 'Generar link de registro'],
+        ['module' => 'deeplink', 'action' => 'ver', 'label' => 'Ver Link Baile / métricas'],
+        ['module' => 'deeplink', 'action' => 'generar', 'label' => 'Generar Link Baile'],
         ['module' => 'notificaciones', 'action' => 'ver', 'label' => 'Ver notificaciones'],
         ['module' => 'notificaciones', 'action' => 'crear', 'label' => 'Crear notificaciones'],
         ['module' => 'notificaciones', 'action' => 'editar', 'label' => 'Editar notificaciones'],
