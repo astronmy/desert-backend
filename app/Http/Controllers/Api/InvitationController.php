@@ -6,10 +6,12 @@ use App\Enums\InvitationLogAction;
 use App\Enums\InvitationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ConfirmInvitationRequest;
+use App\Http\Requests\Api\UpdateInvitationFirebaseTokenRequest;
 use App\Http\Resources\Api\EventResource;
 use App\Models\Event;
 use App\Models\Invitation;
 use App\Services\Invitations\InvitationLogService;
+use App\Services\Invitations\UpdateInvitationFirebaseTokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -92,6 +94,19 @@ class InvitationController extends Controller
                 'has_salon' => $access?->hasSalon() ?? false,
                 'is_complete' => $isComplete,
             ],
+        ]);
+    }
+
+    public function updateFirebaseToken(
+        UpdateInvitationFirebaseTokenRequest $request,
+        string $code,
+        UpdateInvitationFirebaseTokenService $tokens
+    ): JsonResponse {
+        $invitation = $tokens->update($code, $request->validated('firebase_token'));
+
+        return response()->json([
+            'message' => 'Token de Firebase actualizado.',
+            'code' => $invitation->code,
         ]);
     }
 
