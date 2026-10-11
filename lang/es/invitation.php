@@ -6,6 +6,8 @@ return [
         'status' => 'Estado',
         'confirmed_at' => 'Confirmada',
         'uuid_notification' => 'UUID notificación',
+        'firebase' => 'Firebase',
+        'onesignal' => 'OneSignal',
         'selfie' => 'Selfie',
     ],
 
@@ -27,6 +29,8 @@ return [
         'search_code_placeholder' => 'Buscar por código',
         'all_statuses' => 'Todos los estados',
         'empty' => 'No hay invitaciones para este evento.',
+        'yes' => 'SI',
+        'no' => 'NO',
     ],
 
     'form' => [

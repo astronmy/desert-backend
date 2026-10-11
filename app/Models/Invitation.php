@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
     'status',
     'selfie_path',
     'uuid_notification',
+    'firebase_token',
     'confirmed_at',
 ])]
 class Invitation extends Model

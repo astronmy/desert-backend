@@ -4,6 +4,9 @@
             <div>
                 <h1 class="text-xl font-semibold text-white">{{ __('access.index.title') }}</h1>
                 <p class="text-sm text-[var(--desert-sand)]">{{ __('access.index.subtitle', ['name' => $event->name]) }}</p>
+                @if ($event->host)
+                    <p class="text-xs font-normal text-white/60">{{ $event->host }}</p>
+                @endif
             </div>
             <a href="{{ route('admin.events.invitations.index', $event) }}" wire:navigate
                class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-gold)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
@@ -89,10 +92,10 @@
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ strtoupper($access->guest_id_type) }} {{ $access->guest_document_number }}</td>
                         <td class="whitespace-nowrap px-4 py-3 font-mono text-sm text-gray-900">{{ $access->invitation_code }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
-                            {{ $access->entrada_at?->format('d/m/Y H:i:s') ?? __('access.index.pending') }}
+                            {{ $access->entrada_at?->timezone(\App\Models\Event::REGISTRATION_TIMEZONE)->format('d/m/Y H:i:s') ?? __('access.index.pending') }}
                         </td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
-                            {{ $access->salon_at?->format('d/m/Y H:i:s') ?? __('access.index.pending') }}
+                            {{ $access->salon_at?->timezone(\App\Models\Event::REGISTRATION_TIMEZONE)->format('d/m/Y H:i:s') ?? __('access.index.pending') }}
                         </td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm">
                             <span @class([

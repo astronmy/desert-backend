@@ -28,6 +28,7 @@ class InvitationFactory extends Factory
             'status' => InvitationStatus::Pending,
             'selfie_path' => null,
             'uuid_notification' => null,
+            'firebase_token' => null,
             'confirmed_at' => null,
         ];
     }
