@@ -19,6 +19,8 @@ class UpdateInvitationFirebaseTokenTest extends TestCase
 
         $this->patchJson('/api/invitations/codeaaaa/firebase-token', [
             'firebase_token' => 'nuevo-token',
+        ], [
+            'device-platform' => 'ios',
         ])
             ->assertOk()
             ->assertJsonPath('code', 'CODEAAAA')
@@ -31,6 +33,8 @@ class UpdateInvitationFirebaseTokenTest extends TestCase
     {
         $this->patchJson('/api/invitations/NOEXISTE/firebase-token', [
             'firebase_token' => 'nuevo-token',
+        ], [
+            'device-platform' => 'ios',
         ])->assertNotFound();
     }
 
@@ -42,6 +46,8 @@ class UpdateInvitationFirebaseTokenTest extends TestCase
 
         $this->patchJson('/api/invitations/CODEAAAA/firebase-token', [
             'firebase_token' => 'nuevo-token',
+        ], [
+            'device-platform' => 'android',
         ])->assertStatus(410);
     }
 

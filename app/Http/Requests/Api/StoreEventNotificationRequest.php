@@ -61,14 +61,15 @@ class StoreEventNotificationRequest extends FormRequest
 
             $validCount = Invitation::query()
                 ->where('event_id', (int) $this->input('event_id'))
-                ->whereNotNull('uuid_notification')
+                ->whereNotNull('firebase_token')
+                ->where('firebase_token', '!=', '')
                 ->whereIn('id', $ids)
                 ->count();
 
             if ($validCount !== count($ids)) {
                 $validator->errors()->add(
                     'invitation_ids',
-                    'Solo se pueden seleccionar invitaciones del evento con uuid_notification.'
+                    'Solo se pueden seleccionar invitaciones del evento con token de Firebase.'
                 );
             }
         });

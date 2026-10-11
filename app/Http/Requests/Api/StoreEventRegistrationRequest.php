@@ -25,6 +25,7 @@ class StoreEventRegistrationRequest extends FormRequest
             'id_type' => ['required', Rule::enum(DocumentType::class)],
             'selfie' => ['required', 'image', 'max:5120'],
             'uuid_notification' => ['nullable', 'string', 'max:255'],
+            'firebase_token' => ['nullable', 'string', 'max:4096'],
         ];
     }
 }

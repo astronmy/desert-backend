@@ -128,7 +128,6 @@
                                             <span x-show="inv.document"> · </span>
                                             <span x-text="inv.code"></span>
                                         </span>
-                                        <span class="block truncate font-mono text-xs text-gray-400" x-text="inv.uuid"></span>
                                     </span>
                                 </label>
                             </template>

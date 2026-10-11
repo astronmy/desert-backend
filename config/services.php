@@ -48,4 +48,9 @@ return [
         'api_key' => env('ONESIGNAL_API_KEY'),
     ],
 
+    'push' => [
+        'base_url' => env('PUSH_SERVICE_BASE_URL'),
+        'api_key' => env('PUSH_SERVICE_API_KEY'),
+    ],
+
 ];

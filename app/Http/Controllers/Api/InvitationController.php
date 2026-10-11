@@ -11,6 +11,7 @@ use App\Http\Resources\Api\EventResource;
 use App\Models\Event;
 use App\Models\Invitation;
 use App\Services\Invitations\InvitationLogService;
+use App\Services\Invitations\SyncInvitationPushUser;
 use App\Services\Invitations\UpdateInvitationFirebaseTokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -102,7 +103,12 @@ class InvitationController extends Controller
         string $code,
         UpdateInvitationFirebaseTokenService $tokens
     ): JsonResponse {
-        $invitation = $tokens->update($code, $request->validated('firebase_token'));
+        $invitation = $tokens->update(
+            $code,
+            $request->validated('firebase_token'),
+            $request->validated('device_platform'),
+            $request->validated('device_app_version'),
+        );
 
         return response()->json([
             'message' => 'Token de Firebase actualizado.',
@@ -110,8 +116,12 @@ class InvitationController extends Controller
         ]);
     }
 
-    public function confirm(ConfirmInvitationRequest $request, string $code, InvitationLogService $logs): JsonResponse
-    {
+    public function confirm(
+        ConfirmInvitationRequest $request,
+        string $code,
+        InvitationLogService $logs,
+        SyncInvitationPushUser $pushUsers,
+    ): JsonResponse {
         $invitation = Invitation::query()
             ->with('guest')
             ->where('code', Str::upper(trim($code)))
@@ -130,6 +140,8 @@ class InvitationController extends Controller
         }
 
         $data = $request->validated();
+        $hadToken = filled($invitation->firebase_token);
+        $firebaseToken = filled($data['firebase_token'] ?? null) ? $data['firebase_token'] : null;
 
         $documentNumber = preg_replace('/\D+/', '', $data['document_number']) ?: $data['document_number'];
 
@@ -142,7 +154,7 @@ class InvitationController extends Controller
             ], 422);
         }
 
-        $confirmed = DB::transaction(function () use ($invitation, $data, $documentNumber, $request, $logs) {
+        $confirmed = DB::transaction(function () use ($invitation, $data, $documentNumber, $request, $logs, $firebaseToken) {
             $lockedEvent = Event::query()
                 ->whereKey($invitation->event_id)
                 ->lockForUpdate()
@@ -174,12 +186,18 @@ class InvitationController extends Controller
             );
 
             $from = $lockedInvitation->status;
-            $lockedInvitation->update([
+            $attributes = [
                 'status' => InvitationStatus::Confirmed,
                 'selfie_path' => $path,
                 'confirmed_at' => now(),
                 'uuid_notification' => $data['uuid_notification'] ?? null,
-            ]);
+            ];
+
+            if ($firebaseToken !== null) {
+                $attributes['firebase_token'] = $firebaseToken;
+            }
+
+            $lockedInvitation->update($attributes);
 
             $logs->record(
                 $lockedInvitation,
@@ -203,6 +221,16 @@ class InvitationController extends Controller
         }
 
         $invitation->refresh()->load(['event', 'guest']);
+
+        if ($firebaseToken !== null) {
+            $pushUsers->sync(
+                $invitation,
+                $firebaseToken,
+                $request->header('device-platform'),
+                $request->header('device-app-version'),
+                $hadToken,
+            );
+        }
 
         return response()->json([
             'message' => 'Invitación confirmada correctamente.',

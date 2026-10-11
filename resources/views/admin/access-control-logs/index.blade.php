@@ -1,7 +1,9 @@
 <x-admin-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold text-white">{{ __('access_control_log.title') }}</h1>
+        <h1 class="text-xl font-semibold text-white">{{ __('system_log.title') }}</h1>
     </x-slot>
+
+    @include('admin.system-logs._tabs')
 
     <div class="mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
         <form method="GET" action="{{ route('admin.access-control-logs.index') }}" class="flex flex-wrap items-end gap-4">

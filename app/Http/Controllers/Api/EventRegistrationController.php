@@ -7,6 +7,7 @@ use App\Http\Requests\Api\StoreEventRegistrationRequest;
 use App\Http\Resources\Api\EventResource;
 use App\Models\Event;
 use App\Services\Invitations\SelfRegisterInvitationService;
+use App\Services\Invitations\SyncInvitationPushUser;
 use Illuminate\Http\JsonResponse;
 
 class EventRegistrationController extends Controller
@@ -14,11 +15,22 @@ class EventRegistrationController extends Controller
     public function store(
         StoreEventRegistrationRequest $request,
         Event $event,
-        SelfRegisterInvitationService $register
+        SelfRegisterInvitationService $register,
+        SyncInvitationPushUser $pushUsers,
     ): JsonResponse {
         $result = $register->register($event, $request->validated(), $request->file('selfie'));
         $invitation = $result['invitation'];
         $invitation->loadMissing(['event.images', 'guest']);
+        $firebaseToken = $request->validated('firebase_token');
+
+        if (filled($firebaseToken)) {
+            $pushUsers->sync(
+                $invitation,
+                $firebaseToken,
+                $request->header('device-platform'),
+                $request->header('device-app-version'),
+            );
+        }
 
         return response()->json([
             'message' => 'Registro recibido. Queda pendiente de aprobación.',

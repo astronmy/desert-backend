@@ -43,6 +43,7 @@ class RolePermissionSeeder extends Seeder
         ['module' => 'notificaciones', 'action' => 'crear', 'label' => 'Crear notificaciones'],
         ['module' => 'notificaciones', 'action' => 'editar', 'label' => 'Editar notificaciones'],
         ['module' => 'notificaciones', 'action' => 'eliminar', 'label' => 'Eliminar notificaciones'],
+        ['module' => 'logs', 'action' => 'ver', 'label' => 'Ver logs de sistema'],
     ];
 
     public function run(): void

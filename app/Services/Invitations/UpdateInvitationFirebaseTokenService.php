@@ -9,9 +9,14 @@ use Illuminate\Support\Str;
 
 class UpdateInvitationFirebaseTokenService
 {
-    public function update(string $code, string $firebaseToken): Invitation
+    public function __construct(
+        private readonly SyncInvitationPushUser $syncInvitationPushUser,
+    ) {}
+
+    public function update(string $code, string $firebaseToken, string $platform, ?string $appVersion = null): Invitation
     {
         $invitation = Invitation::query()
+            ->with('guest')
             ->where('code', Str::upper(trim($code)))
             ->first();
 
@@ -27,9 +32,13 @@ class UpdateInvitationFirebaseTokenService
             ], 410));
         }
 
+        $hadToken = filled($invitation->firebase_token);
+
         $invitation->update([
             'firebase_token' => $firebaseToken,
         ]);
+
+        $this->syncInvitationPushUser->sync($invitation, $firebaseToken, $platform, $appVersion, $hadToken);
 
         return $invitation->refresh();
     }

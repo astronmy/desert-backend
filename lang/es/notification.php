@@ -17,15 +17,15 @@ return [
         'no_events_found' => 'No hay eventos que coincidan.',
         'no_events' => 'No hay eventos cargados.',
         'clear_event' => 'Quitar selección',
-        'search_guest_placeholder' => 'Buscar por nombre, documento, código o UUID…',
-        'pick_event_first' => 'Elegí un evento para listar los invitados con UUID de notificación.',
+        'search_guest_placeholder' => 'Buscar por nombre, documento o código…',
+        'pick_event_first' => 'Elegí un evento para listar los invitados con token de Firebase.',
         'select_all_visible' => 'Seleccionar visibles',
         'clear_selection' => 'Quitar selección',
         'selected_label' => 'seleccionado(s)',
         'no_guests_found' => 'No hay invitados que coincidan.',
         'send_at_help' => 'Se enviará en esta fecha (timezone de la app). Requiere el worker de cola.',
-        'specific_help' => 'Solo aparecen invitados del evento que ya tienen UUID de notificación. Podés buscar y marcar uno o varios.',
-        'no_notifiable' => 'Este evento no tiene invitados con uuid de notificación.',
+        'specific_help' => 'Solo aparecen invitados del evento que ya tienen token de Firebase. Podés buscar y marcar uno o varios.',
+        'no_notifiable' => 'Este evento no tiene invitados con token de Firebase.',
         'loading_invitations' => 'Cargando invitados…',
         'load_error' => 'No se pudieron cargar los invitados.',
     ],
@@ -33,7 +33,7 @@ return [
     'show' => [
         'title' => 'Detalle de notificación',
         'recipients' => 'Destinatarios',
-        'no_recipients' => 'Alcance general: se enviará a todos los invitados del evento con uuid de notificación al momento del envío.',
+        'no_recipients' => 'Alcance general: se enviará a todos los invitados del evento con token de Firebase al momento del envío.',
     ],
 
     'attributes' => [
@@ -45,7 +45,7 @@ return [
         'status' => 'Estado',
         'send_at' => 'Enviar el',
         'sent_at' => 'Enviada el',
-        'external_id' => 'ID OneSignal',
+        'external_id' => 'ID del envío',
         'invitation_ids' => 'Invitados',
     ],
 

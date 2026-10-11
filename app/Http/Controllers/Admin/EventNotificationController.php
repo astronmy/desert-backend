@@ -131,8 +131,8 @@ class EventNotificationController extends Controller
         $invitations = Invitation::query()
             ->with('guest')
             ->where('event_id', $event->id)
-            ->whereNotNull('uuid_notification')
-            ->where('uuid_notification', '!=', '')
+            ->whereNotNull('firebase_token')
+            ->where('firebase_token', '!=', '')
             ->orderBy('id')
             ->get()
             ->sortBy(fn (Invitation $invitation) => mb_strtolower($invitation->guest?->fullName() ?? ''))
@@ -144,7 +144,7 @@ class EventNotificationController extends Controller
                 'code' => $invitation->code,
                 'guest' => $invitation->guest?->fullName() ?? '',
                 'document' => trim(($invitation->guest?->id_type?->label() ?? '').' '.($invitation->guest?->document_number ?? '')),
-                'uuid' => $invitation->uuid_notification,
+                'uuid' => null,
             ])->values(),
         ]);
     }

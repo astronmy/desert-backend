@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AccessControlLogController;
 use App\Http\Controllers\Admin\ClientEventController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MicroserviceLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
@@ -31,7 +32,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         ->name('client-event.update');
 
     Route::get('access-control-logs', [AccessControlLogController::class, 'index'])
+        ->middleware('permission:logs.ver')
         ->name('access-control-logs.index');
+
+    Route::get('microservice-logs', [MicroserviceLogController::class, 'index'])
+        ->middleware('permission:logs.ver')
+        ->name('microservice-logs.index');
 
     require __DIR__.'/admin/event_accesses.php';
     require __DIR__.'/admin/event_invitations.php';

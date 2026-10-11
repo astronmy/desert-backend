@@ -44,13 +44,7 @@ class EventNotificationService
             $notification->invitations()->sync($data['invitation_ids'] ?? []);
         }
 
-        $job = new SendEventNotificationJob($notification->id);
-
-        if ($type === NotificationType::Scheduled && $sendAt) {
-            dispatch($job)->delay($sendAt);
-        } else {
-            dispatch($job);
-        }
+        dispatch(new SendEventNotificationJob($notification->id, auth()->id()));
 
         return $notification->load('invitations');
     }

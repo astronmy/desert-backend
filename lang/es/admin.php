@@ -10,7 +10,7 @@ return [
         'notifications' => 'Notificaciones',
         'users' => 'Usuarios',
         'roles' => 'Roles',
-        'access_control_logs' => 'Logs de acceso',
+        'access_control_logs' => 'Logs de sistema',
         'manual' => 'Manual de usuario',
     ],
 

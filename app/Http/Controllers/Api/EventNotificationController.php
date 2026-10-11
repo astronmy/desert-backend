@@ -90,7 +90,8 @@ class EventNotificationController extends Controller
         $invitations = Invitation::query()
             ->with('guest')
             ->where('event_id', $event->id)
-            ->whereNotNull('uuid_notification')
+            ->whereNotNull('firebase_token')
+            ->where('firebase_token', '!=', '')
             ->orderBy('id')
             ->get();
 

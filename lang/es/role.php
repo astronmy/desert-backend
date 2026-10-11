@@ -40,6 +40,7 @@ return [
         'invitaciones' => 'Invitaciones',
         'accesos' => 'Accesos',
         'deeplink' => 'Link Baile',
+        'logs' => 'Logs de sistema',
     ],
 
     'messages' => [

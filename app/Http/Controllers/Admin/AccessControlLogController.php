@@ -11,8 +11,6 @@ class AccessControlLogController extends Controller
 {
     public function index(Request $request): View
     {
-        abort_unless($request->user()?->isAdminRole(), 403);
-
         $logs = AccessControlLog::query()
             ->with(['user', 'event'])
             ->when($request->filled('service'), fn ($q) => $q->where('service', $request->string('service')))
