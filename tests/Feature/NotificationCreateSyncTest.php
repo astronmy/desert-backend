@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\NotificationScope;
 use App\Enums\NotificationStatus;
 use App\Enums\NotificationType;
+use App\Models\Event;
 use App\Models\Invitation;
 use App\Models\Setting;
 use App\Models\User;
@@ -88,5 +89,38 @@ class NotificationCreateSyncTest extends TestCase
         $this->actingAs($client)
             ->get(route('admin.settings.edit'))
             ->assertForbidden();
+    }
+
+    public function test_event_selector_includes_the_host_and_specific_guests_include_the_name(): void
+    {
+        $this->seed(RolePermissionSeeder::class);
+
+        $admin = User::factory()->admin()->create();
+        $event = Event::factory()->create([
+            'name' => 'Fiesta de prueba',
+            'host' => 'Familia Koepp',
+        ]);
+        $invitation = Invitation::factory()->create([
+            'event_id' => $event->id,
+            'firebase_token' => 'fcm-token',
+        ]);
+        $invitation->guest->update([
+            'first_name' => 'Ana',
+            'last_name' => 'Perez',
+            'document_number' => '30111222',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.notifications.create'))
+            ->assertOk()
+            ->assertSee('Fiesta de prueba')
+            ->assertSee('Familia Koepp');
+
+        $this->actingAs($admin)
+            ->getJson(route('admin.events.notifiable-invitations', $event))
+            ->assertOk()
+            ->assertJsonPath('data.0.first_name', 'Ana')
+            ->assertJsonPath('data.0.last_name', 'Perez')
+            ->assertJsonPath('data.0.document', 'DNI 30111222');
     }
 }

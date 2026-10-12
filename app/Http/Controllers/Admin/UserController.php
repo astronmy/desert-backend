@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\User\UpdateUserRequest;
 use App\Models\Event;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -74,8 +75,8 @@ class UserController extends Controller
 
     /**
      * @return array{
-     *   roles: \Illuminate\Database\Eloquent\Collection<int, Role>,
-     *   eventsForSelect: list<array{id: int, name: string, dates: string, type_label: string}>,
+     *   roles: Collection<int, Role>,
+     *   eventsForSelect: list<array{id: int, name: string, host: ?string, dates: string, type_label: string}>,
      *   rolesMeta: array<int|string, array{name: string, requires_event: bool}>
      * }
      */
@@ -92,10 +93,11 @@ class UserController extends Controller
 
         $eventsForSelect = Event::query()
             ->orderByDesc('init_date')
-            ->get(['id', 'name', 'init_date', 'end_date', 'type'])
+            ->get(['id', 'name', 'host', 'init_date', 'end_date', 'type'])
             ->map(fn (Event $event) => [
                 'id' => $event->id,
                 'name' => $event->name,
+                'host' => $event->host,
                 'dates' => $event->init_date->format('d/m/Y').' – '.$event->end_date->format('d/m/Y'),
                 'type_label' => $event->type->label(),
             ])

@@ -85,7 +85,7 @@
                         @foreach($notification->invitations as $invitation)
                             <li class="py-2 text-sm text-gray-800">
                                 {{ $invitation->guest->first_name }} {{ $invitation->guest->last_name }}
-                                <span class="text-gray-500">({{ $invitation->code }})</span>
+                                <span class="text-gray-500">· {{ $invitation->guest->id_type->label() }} {{ $invitation->guest->document_number }}</span>
                             </li>
                         @endforeach
                     </ul>

@@ -51,8 +51,11 @@ class EventNotificationController extends Controller
         $lockedEventName = $user?->requiresEvent()
             ? ($eventsForSelect[0]['name'] ?? null)
             : null;
+        $lockedEventHost = $user?->requiresEvent()
+            ? ($eventsForSelect[0]['host'] ?? null)
+            : null;
 
-        return view('admin.notifications.create', compact('eventsForSelect', 'lockedEventId', 'lockedEventName'));
+        return view('admin.notifications.create', compact('eventsForSelect', 'lockedEventId', 'lockedEventName', 'lockedEventHost'));
     }
 
     public function store(
@@ -142,6 +145,8 @@ class EventNotificationController extends Controller
             'data' => $invitations->map(fn (Invitation $invitation) => [
                 'id' => $invitation->id,
                 'code' => $invitation->code,
+                'first_name' => $invitation->guest?->first_name ?? '',
+                'last_name' => $invitation->guest?->last_name ?? '',
                 'guest' => $invitation->guest?->fullName() ?? '',
                 'document' => trim(($invitation->guest?->id_type?->label() ?? '').' '.($invitation->guest?->document_number ?? '')),
                 'uuid' => null,
@@ -150,17 +155,18 @@ class EventNotificationController extends Controller
     }
 
     /**
-     * @return list<array{id: int, name: string, dates: string, type_label: string}>
+     * @return list<array{id: int, name: string, host: ?string, dates: string, type_label: string}>
      */
     private function eventsForSelect(?Builder $query = null): array
     {
         return ($query ?? Event::query())
             ->orderByDesc('init_date')
             ->orderBy('name')
-            ->get(['id', 'name', 'init_date', 'end_date', 'type'])
+            ->get(['id', 'name', 'host', 'init_date', 'end_date', 'type'])
             ->map(fn (Event $event) => [
                 'id' => $event->id,
                 'name' => $event->name,
+                'host' => $event->host,
                 'dates' => $event->init_date->format('d/m/Y').' – '.$event->end_date->format('d/m/Y'),
                 'type_label' => $event->type->label(),
             ])

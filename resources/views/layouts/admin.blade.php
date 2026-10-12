@@ -337,6 +337,7 @@
                     if (!q) return this.events;
                     return this.events.filter(e =>
                         e.name.toLowerCase().includes(q) ||
+                        (e.host && e.host.toLowerCase().includes(q)) ||
                         (e.type_label && e.type_label.toLowerCase().includes(q)) ||
                         (e.dates && e.dates.toLowerCase().includes(q))
                     );
@@ -378,6 +379,8 @@
                     const q = (this.invitationQuery || '').trim().toLowerCase();
                     if (!q) return this.invitations;
                     return this.invitations.filter(inv =>
+                        (inv.first_name && inv.first_name.toLowerCase().includes(q)) ||
+                        (inv.last_name && inv.last_name.toLowerCase().includes(q)) ||
                         (inv.guest && inv.guest.toLowerCase().includes(q)) ||
                         (inv.code && inv.code.toLowerCase().includes(q)) ||
                         (inv.document && inv.document.toLowerCase().includes(q)) ||

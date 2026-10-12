@@ -30,6 +30,9 @@
                     @if($lockedEventId)
                         <input type="hidden" name="event_id" value="{{ $lockedEventId }}" />
                         <p class="mt-1 text-sm font-medium text-gray-900">{{ $lockedEventName }}</p>
+                        @if ($lockedEventHost)
+                            <p class="text-xs text-gray-600">{{ $lockedEventHost }}</p>
+                        @endif
                     @else
                         <x-event-combobox
                             name="event_id"
@@ -122,12 +125,11 @@
                                     <input type="checkbox" :value="inv.id" x-model.number="selected"
                                            class="mt-1 rounded border-gray-300 text-[var(--desert-bg-elevated)] focus:ring-[var(--desert-bg-elevated)]" />
                                     <span class="min-w-0">
-                                        <span class="block text-sm font-medium text-gray-900" x-text="inv.guest"></span>
-                                        <span class="block text-xs text-gray-500">
-                                            <span x-text="inv.document"></span>
-                                            <span x-show="inv.document"> · </span>
-                                            <span x-text="inv.code"></span>
+                                        <span class="block text-sm font-medium text-gray-900">
+                                            <span x-text="inv.first_name"></span>
+                                            <span x-text="inv.last_name"></span>
                                         </span>
+                                        <span class="block text-xs text-gray-500" x-text="inv.document"></span>
                                     </span>
                                 </label>
                             </template>

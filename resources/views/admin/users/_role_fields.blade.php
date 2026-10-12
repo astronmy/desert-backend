@@ -27,6 +27,7 @@
             if (!q) return this.events;
             return this.events.filter(e =>
                 e.name.toLowerCase().includes(q) ||
+                (e.host && e.host.toLowerCase().includes(q)) ||
                 (e.type_label && e.type_label.toLowerCase().includes(q)) ||
                 (e.dates && e.dates.toLowerCase().includes(q))
             );
@@ -129,6 +130,7 @@
                 <template x-if="selectedEvent">
                     <span class="block">
                         <span class="block truncate text-sm font-medium text-gray-900" x-text="selectedEvent.name"></span>
+                        <span class="block truncate text-xs text-gray-600" x-show="selectedEvent.host" x-text="selectedEvent.host"></span>
                         <span class="block truncate text-xs text-gray-500">
                             <span x-text="selectedEvent.dates"></span>
                             <span x-show="selectedEvent.type_label"> · </span>
@@ -177,6 +179,7 @@
                             :class="eventId === event.id ? 'bg-[var(--desert-sand)]/40' : ''"
                         >
                             <span class="text-sm font-medium text-gray-900" x-text="event.name"></span>
+                            <span class="text-xs text-gray-600" x-show="event.host" x-text="event.host"></span>
                             <span class="text-xs text-gray-500">
                                 <span x-text="event.dates"></span>
                                 <span x-show="event.type_label"> · </span>
