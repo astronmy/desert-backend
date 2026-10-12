@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\GuestNotifier;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreEventRegistrationRequest;
 use App\Http\Resources\Api\EventResource;
@@ -17,6 +18,7 @@ class EventRegistrationController extends Controller
         Event $event,
         SelfRegisterInvitationService $register,
         SyncInvitationPushUser $pushUsers,
+        GuestNotifier $notifier,
     ): JsonResponse {
         $result = $register->register($event, $request->validated(), $request->file('selfie'));
         $invitation = $result['invitation'];
@@ -31,6 +33,8 @@ class EventRegistrationController extends Controller
                 $request->header('device-app-version'),
             );
         }
+
+        $notifier->registrationReceived($invitation);
 
         return response()->json([
             'message' => 'Registro recibido. Queda pendiente de aprobación.',

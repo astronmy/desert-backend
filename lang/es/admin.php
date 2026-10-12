@@ -11,6 +11,7 @@ return [
         'users' => 'Usuarios',
         'roles' => 'Roles',
         'access_control_logs' => 'Logs de sistema',
+        'settings' => 'Configuraciones',
         'manual' => 'Manual de usuario',
     ],
 

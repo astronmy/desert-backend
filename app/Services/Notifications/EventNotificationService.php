@@ -44,7 +44,7 @@ class EventNotificationService
             $notification->invitations()->sync($data['invitation_ids'] ?? []);
         }
 
-        dispatch(new SendEventNotificationJob($notification->id, auth()->id()));
+        SendEventNotificationJob::dispatchSync($notification->id, auth()->id());
 
         return $notification->load('invitations');
     }

@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use App\Models\Event;
 use App\Models\Invitation;
 use App\Models\MicroserviceLog;
+use App\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
@@ -154,6 +155,7 @@ class InvitationFirebaseTokenRegistrationTest extends TestCase
 
         Http::assertSent(function ($request) use ($invitation) {
             return $request->method() === 'POST'
+                && $request->url() === 'https://push.test/api/v1/users'
                 && $request['external_user_id'] === (string) $invitation->id
                 && $request['firebase_token'] === 'fcm-register'
                 && $request['platform'] === 'android'
@@ -186,6 +188,77 @@ class InvitationFirebaseTokenRegistrationTest extends TestCase
             ->assertJsonPath('message', 'Registro recibido. Queda pendiente de aprobación.');
 
         $this->assertSame('fcm-register', Invitation::query()->where('event_id', $event->id)->value('firebase_token'));
+    }
+
+    public function test_self_register_sends_the_registration_push_when_the_setting_is_on(): void
+    {
+        $event = Event::factory()->create([
+            'name' => 'Fiesta de prueba',
+            'end_date' => '2099-01-01',
+        ]);
+        Setting::current()->update(['texto_registro' => true]);
+
+        Http::fake([
+            'https://push.test/api/v1/users' => Http::response([
+                'success' => true,
+                'message' => 'Usuario registrado.',
+                'data' => ['id' => 1],
+            ], 201),
+            'https://push.test/api/v1/pushes' => Http::response([
+                'success' => true,
+                'message' => 'Notificación encolada.',
+                'data' => ['id' => 9, 'status' => 'pending'],
+            ], 202),
+        ]);
+
+        $this->post('/api/events/'.$event->id.'/register', [
+            'first_name' => 'Ana',
+            'last_name' => 'Perez',
+            'document_number' => '30111222',
+            'id_type' => 'dni',
+            'selfie' => UploadedFile::fake()->image('selfie.jpg'),
+            'firebase_token' => 'fcm-register',
+        ], [
+            'Accept' => 'application/json',
+            'device-platform' => 'android',
+        ])->assertCreated();
+
+        Http::assertSent(function ($request) {
+            return $request->url() === 'https://push.test/api/v1/pushes'
+                && $request['title'] === 'Registro recibido'
+                && $request['body'] === 'Recibimos tu registro para Fiesta de prueba. Queda pendiente de aprobación.';
+        });
+    }
+
+    public function test_self_register_skips_the_registration_push_when_the_setting_is_off(): void
+    {
+        $event = Event::factory()->create([
+            'end_date' => '2099-01-01',
+        ]);
+        Setting::current()->update(['texto_registro' => false]);
+
+        Http::fake([
+            'https://push.test/api/v1/users' => Http::response([
+                'success' => true,
+                'message' => 'Usuario registrado.',
+                'data' => ['id' => 1],
+            ], 201),
+        ]);
+
+        $this->post('/api/events/'.$event->id.'/register', [
+            'first_name' => 'Ana',
+            'last_name' => 'Perez',
+            'document_number' => '30111222',
+            'id_type' => 'dni',
+            'selfie' => UploadedFile::fake()->image('selfie.jpg'),
+            'firebase_token' => 'fcm-register',
+        ], [
+            'Accept' => 'application/json',
+            'device-platform' => 'android',
+        ])->assertCreated();
+
+        Http::assertNotSent(fn ($request) => $request->url() === 'https://push.test/api/v1/pushes');
+        Http::assertSent(fn ($request) => $request->url() === 'https://push.test/api/v1/users');
     }
 
     /**

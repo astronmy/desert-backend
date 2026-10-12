@@ -82,6 +82,8 @@ return [
     ],
 
     'push' => [
+        'registered_title' => 'Registro recibido',
+        'registered_message' => 'Recibimos tu registro para :event. Queda pendiente de aprobación.',
         'approved_title' => 'Invitación confirmada',
         'approved_message' => 'Hemos confirmado tu invitación a :event',
     ],

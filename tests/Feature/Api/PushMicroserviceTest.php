@@ -12,6 +12,7 @@ use App\Models\EventNotification;
 use App\Models\Invitation;
 use App\Models\MicroserviceLog;
 use App\Models\Permission;
+use App\Models\Setting;
 use App\Models\User;
 use App\Services\Push\EnqueuePush;
 use Database\Seeders\RolePermissionSeeder;
@@ -213,6 +214,39 @@ class PushMicroserviceTest extends TestCase
         app(GuestNotifier::class)->invitationApproved($invitation);
 
         Http::assertNothingSent();
+    }
+
+    public function test_the_confirmation_push_follows_the_setting(): void
+    {
+        $invitation = Invitation::factory()->confirmed()->create([
+            'firebase_token' => 'fcm-token',
+        ]);
+        $invitation->event->update(['name' => 'Fiesta de prueba']);
+        Setting::current()->update(['texto_confirmacion' => false]);
+
+        Http::fake();
+
+        app(GuestNotifier::class)->invitationApproved($invitation);
+
+        Http::assertNothingSent();
+
+        Setting::current()->update(['texto_confirmacion' => true]);
+
+        Http::fake([
+            'https://push.test/api/v1/pushes' => Http::response([
+                'success' => true,
+                'message' => 'Notificación encolada.',
+                'data' => ['id' => 11, 'status' => 'pending'],
+            ], 202),
+        ]);
+
+        app(GuestNotifier::class)->invitationApproved($invitation->fresh(['event']));
+
+        Http::assertSent(function ($request) {
+            return $request->url() === 'https://push.test/api/v1/pushes'
+                && $request['title'] === 'Invitación confirmada'
+                && $request['body'] === 'Hemos confirmado tu invitación a Fiesta de prueba';
+        });
     }
 
     public function test_logs_screen_requires_the_system_logs_permission(): void

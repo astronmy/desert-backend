@@ -4,6 +4,7 @@ namespace App\Services\Notifications;
 
 use App\Contracts\GuestNotifier;
 use App\Models\Invitation;
+use App\Models\Setting;
 use App\Services\Push\EnqueuePush;
 
 class PushGuestNotifier implements GuestNotifier
@@ -12,8 +13,29 @@ class PushGuestNotifier implements GuestNotifier
         private readonly EnqueuePush $pushes,
     ) {}
 
+    public function registrationReceived(Invitation $invitation): void
+    {
+        if (! Setting::current()->texto_registro) {
+            return;
+        }
+
+        $invitation->loadMissing('event');
+
+        $this->send(
+            $invitation,
+            __('invitation.push.registered_title'),
+            __('invitation.push.registered_message', [
+                'event' => $invitation->event?->name ?? '',
+            ]),
+        );
+    }
+
     public function invitationApproved(Invitation $invitation): void
     {
+        if (! Setting::current()->texto_confirmacion) {
+            return;
+        }
+
         $invitation->loadMissing('event');
 
         $this->send(

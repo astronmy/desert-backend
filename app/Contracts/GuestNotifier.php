@@ -7,6 +7,11 @@ use App\Models\Invitation;
 interface GuestNotifier
 {
     /**
+     * Push al registrarse en el evento. Sync; no debe lanzar.
+     */
+    public function registrationReceived(Invitation $invitation): void;
+
+    /**
      * Push al aprobar la invitación. Sync; no debe lanzar.
      */
     public function invitationApproved(Invitation $invitation): void;
