@@ -22,9 +22,9 @@
             ] as $toggle => $message)
                 <div class="py-4">
                     <div class="flex items-center justify-between gap-4">
-                        <label for="{{ $toggle }}" class="text-sm font-medium text-gray-900">{{ __('setting.attributes.'.$toggle) }}</label>
-                        <span class="relative inline-flex shrink-0">
-                            <input type="checkbox" id="{{ $toggle }}" name="{{ $toggle }}" value="1" class="peer sr-only" @checked(filter_var(old($toggle, $setting->{$toggle}), FILTER_VALIDATE_BOOLEAN)) />
+                        <span class="text-sm font-medium text-gray-900">{{ __('setting.attributes.'.$toggle) }}</span>
+                        <span class="relative inline-flex h-6 w-11 shrink-0">
+                            <input type="checkbox" id="{{ $toggle }}" name="{{ $toggle }}" value="1" aria-label="{{ __('setting.attributes.'.$toggle) }}" class="peer absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0" @checked(filter_var(old($toggle, $setting->{$toggle}), FILTER_VALIDATE_BOOLEAN)) />
                             <span class="h-6 w-11 rounded-full bg-gray-200 transition peer-checked:bg-[var(--desert-bg-elevated)] peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--desert-bg-elevated)] peer-focus-visible:ring-offset-2"></span>
                             <span class="pointer-events-none absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition peer-checked:translate-x-5"></span>
                         </span>
