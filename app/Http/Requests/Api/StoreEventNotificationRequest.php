@@ -4,7 +4,10 @@ namespace App\Http\Requests\Api;
 
 use App\Enums\NotificationScope;
 use App\Enums\NotificationType;
+use App\Models\Event;
 use App\Models\Invitation;
+use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -35,7 +38,6 @@ class StoreEventNotificationRequest extends FormRequest
                 'prohibited_if:type,'.NotificationType::Instant->value,
                 'nullable',
                 'date',
-                'after:now',
             ],
             'invitation_ids' => [
                 'required_if:scope,'.NotificationScope::Specific->value,
@@ -50,6 +52,8 @@ class StoreEventNotificationRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
+            $this->validateSendAt($validator);
+
             if ($this->input('scope') !== NotificationScope::Specific->value) {
                 return;
             }
@@ -73,5 +77,25 @@ class StoreEventNotificationRequest extends FormRequest
                 );
             }
         });
+    }
+
+    private function validateSendAt(Validator $validator): void
+    {
+        if ($this->input('type') !== NotificationType::Scheduled->value || ! filled($this->input('send_at'))) {
+            return;
+        }
+
+        try {
+            $sendAt = Carbon::parse($this->input('send_at'), Event::REGISTRATION_TIMEZONE);
+        } catch (InvalidFormatException) {
+            return;
+        }
+
+        if (! $sendAt->isFuture()) {
+            $validator->errors()->add(
+                'send_at',
+                'El campo enviar el debe ser una fecha posterior a ahora.'
+            );
+        }
     }
 }

@@ -54,11 +54,11 @@
                 </div>
                 <div class="flex justify-between gap-4 py-3">
                     <dt class="text-sm text-gray-500">{{ __('notification.attributes.send_at') }}</dt>
-                    <dd class="text-sm font-medium text-gray-900">{{ $notification->send_at?->timezone(config('app.timezone'))->format('d/m/Y H:i') ?? '—' }}</dd>
+                    <dd class="text-sm font-medium text-gray-900">{{ $notification->send_at?->timezone(\App\Models\Event::REGISTRATION_TIMEZONE)->format('d/m/Y H:i') ?? '—' }}</dd>
                 </div>
                 <div class="flex justify-between gap-4 py-3">
                     <dt class="text-sm text-gray-500">{{ __('notification.attributes.sent_at') }}</dt>
-                    <dd class="text-sm font-medium text-gray-900">{{ $notification->sent_at?->timezone(config('app.timezone'))->format('d/m/Y H:i') ?? '—' }}</dd>
+                    <dd class="text-sm font-medium text-gray-900">{{ $notification->sent_at?->timezone(\App\Models\Event::REGISTRATION_TIMEZONE)->format('d/m/Y H:i') ?? '—' }}</dd>
                 </div>
                 <div class="flex justify-between gap-4 py-3">
                     <dt class="text-sm text-gray-500">{{ __('notification.attributes.external_id') }}</dt>

@@ -6,6 +6,7 @@ use App\Enums\NotificationScope;
 use App\Enums\NotificationStatus;
 use App\Enums\NotificationType;
 use App\Jobs\SendEventNotificationJob;
+use App\Models\Event;
 use App\Models\EventNotification;
 use Carbon\Carbon;
 
@@ -27,7 +28,7 @@ class EventNotificationService
         $type = NotificationType::from($data['type']);
         $scope = NotificationScope::from($data['scope']);
         $sendAt = $type === NotificationType::Scheduled
-            ? Carbon::parse($data['send_at'])
+            ? Carbon::parse($data['send_at'], Event::REGISTRATION_TIMEZONE)->utc()
             : null;
 
         $notification = EventNotification::query()->create([

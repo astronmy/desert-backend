@@ -78,8 +78,8 @@
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ __('notification.types.'.$notification->type->value) }}</td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ __('notification.scopes.'.$notification->scope->value) }}</td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ __('notification.statuses.'.$notification->status->value) }}</td>
-                            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $notification->send_at?->timezone(config('app.timezone'))->format('d/m/Y H:i') ?? '—' }}</td>
-                            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $notification->sent_at?->timezone(config('app.timezone'))->format('d/m/Y H:i') ?? '—' }}</td>
+                            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $notification->send_at?->timezone(\App\Models\Event::REGISTRATION_TIMEZONE)->format('d/m/Y H:i') ?? '—' }}</td>
+                            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $notification->sent_at?->timezone(\App\Models\Event::REGISTRATION_TIMEZONE)->format('d/m/Y H:i') ?? '—' }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end gap-2">
                                     <a href="{{ route('admin.notifications.show', $notification) }}" wire:navigate

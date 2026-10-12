@@ -2,6 +2,7 @@
 
 return [
     'accepted' => 'El campo :attribute debe ser aceptado.',
+    'after' => 'El campo :attribute debe ser una fecha posterior a :date.',
     'confirmed' => 'La confirmación de :attribute no coincide.',
     'email' => 'El campo :attribute debe ser un email válido.',
     'max' => [
@@ -20,5 +21,6 @@ return [
         'name' => 'nombre',
         'email' => 'email',
         'password' => 'contraseña',
+        'send_at' => 'enviar el',
     ],
 ];

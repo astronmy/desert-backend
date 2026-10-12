@@ -6,10 +6,12 @@ use App\Enums\NotificationScope;
 use App\Enums\NotificationStatus;
 use App\Enums\NotificationType;
 use App\Models\Event;
+use App\Models\EventNotification;
 use App\Models\Invitation;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\Notifications\EventNotificationService;
+use Carbon\Carbon;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -122,5 +124,68 @@ class NotificationCreateSyncTest extends TestCase
             ->assertJsonPath('data.0.first_name', 'Ana')
             ->assertJsonPath('data.0.last_name', 'Perez')
             ->assertJsonPath('data.0.document', 'DNI 30111222');
+    }
+
+    public function test_a_scheduled_time_in_argentina_is_accepted_when_it_is_still_ahead(): void
+    {
+        $this->seed(RolePermissionSeeder::class);
+        config([
+            'services.push.base_url' => 'https://push.test',
+            'services.push.api_key' => 'pns_test',
+        ]);
+        Http::fake([
+            'https://push.test/api/v1/pushes' => Http::response([
+                'success' => true,
+                'message' => 'Notificación encolada.',
+                'data' => ['id' => 10, 'status' => 'pending'],
+            ], 202),
+        ]);
+
+        $admin = User::factory()->admin()->create();
+        $event = Event::factory()->create();
+        Invitation::factory()->create([
+            'event_id' => $event->id,
+            'firebase_token' => 'fcm-token',
+        ]);
+
+        Carbon::setTestNow(Carbon::parse('2026-10-12 16:31:00', Event::REGISTRATION_TIMEZONE));
+
+        try {
+            $payload = [
+                'event_id' => $event->id,
+                'type' => NotificationType::Scheduled->value,
+                'scope' => NotificationScope::General->value,
+                'title' => 'Recordatorio',
+                'message' => 'Nos vemos',
+            ];
+
+            $this->actingAs($admin)
+                ->from(route('admin.notifications.create'))
+                ->post(route('admin.notifications.store'), [
+                    ...$payload,
+                    'send_at' => '2026-10-12T16:30',
+                ])
+                ->assertRedirect(route('admin.notifications.create'))
+                ->assertSessionHasErrors([
+                    'send_at' => 'El campo enviar el debe ser una fecha posterior a ahora.',
+                ]);
+
+            $this->actingAs($admin)
+                ->post(route('admin.notifications.store'), [
+                    ...$payload,
+                    'send_at' => '2026-10-12T16:34',
+                ])
+                ->assertRedirect();
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        $notification = EventNotification::query()->where('title', 'Recordatorio')->first();
+
+        $this->assertNotNull($notification);
+        $this->assertSame(
+            '2026-10-12T19:34:00+00:00',
+            $notification->send_at->utc()->toIso8601String()
+        );
     }
 }

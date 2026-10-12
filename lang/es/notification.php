@@ -23,7 +23,7 @@ return [
         'clear_selection' => 'Quitar selección',
         'selected_label' => 'seleccionado(s)',
         'no_guests_found' => 'No hay invitados que coincidan.',
-        'send_at_help' => 'Se enviará en esta fecha (timezone de la app). Requiere el worker de cola.',
+        'send_at_help' => 'Se enviará en esta fecha y hora de Argentina.',
         'specific_help' => 'Solo aparecen invitados del evento que ya tienen token de Firebase. Podés buscar y marcar uno o varios.',
         'no_notifiable' => 'Este evento no tiene invitados con token de Firebase.',
         'loading_invitations' => 'Cargando invitados…',
