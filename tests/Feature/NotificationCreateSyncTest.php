@@ -64,11 +64,16 @@ class NotificationCreateSyncTest extends TestCase
             ->assertSee('Texto Notificaciones')
             ->assertSee('Texto Registro')
             ->assertSee('Texto Confirmación')
-            ->assertSee('Texto Recordatorio');
+            ->assertSee('Texto Recordatorio')
+            ->assertSee('Recibimos tu registro para :event. Queda pendiente de aprobación.')
+            ->assertSee('Hemos confirmado tu invitación a :event');
 
         $this->actingAs($admin)
             ->put(route('admin.settings.update'), [
                 'texto_confirmacion' => '1',
+                'mensaje_registro' => 'Tu registro en :event',
+                'mensaje_confirmacion' => 'Confirmado para :event',
+                'mensaje_recordatorio' => 'Te esperamos en :event',
             ])
             ->assertRedirect(route('admin.settings.edit'));
 
@@ -76,6 +81,9 @@ class NotificationCreateSyncTest extends TestCase
         $this->assertFalse($setting->texto_registro);
         $this->assertTrue($setting->texto_confirmacion);
         $this->assertFalse($setting->texto_recordatorio);
+        $this->assertSame('Tu registro en :event', $setting->mensaje_registro);
+        $this->assertSame('Confirmado para :event', $setting->mensaje_confirmacion);
+        $this->assertSame('Te esperamos en :event', $setting->mensaje_recordatorio);
 
         $this->actingAs($client)
             ->get(route('admin.settings.edit'))

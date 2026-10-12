@@ -22,13 +22,16 @@ class OneSignalGuestNotifier implements GuestNotifier
         }
 
         $invitation->loadMissing('event');
+        $setting = Setting::current();
 
         $this->send(
             $invitation,
             __('invitation.push.registered_title'),
-            __('invitation.push.registered_message', [
-                'event' => $invitation->event?->name ?? '',
-            ]),
+            $setting->notificationBody(
+                'mensaje_registro',
+                'invitation.push.registered_message',
+                $invitation->event?->name ?? '',
+            ),
         );
     }
 
@@ -39,13 +42,16 @@ class OneSignalGuestNotifier implements GuestNotifier
         }
 
         $invitation->loadMissing('event');
+        $setting = Setting::current();
 
         $this->send(
             $invitation,
             __('invitation.push.approved_title'),
-            __('invitation.push.approved_message', [
-                'event' => $invitation->event?->name ?? '',
-            ]),
+            $setting->notificationBody(
+                'mensaje_confirmacion',
+                'invitation.push.approved_message',
+                $invitation->event?->name ?? '',
+            ),
         );
     }
 

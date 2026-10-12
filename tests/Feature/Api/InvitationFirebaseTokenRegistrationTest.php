@@ -196,7 +196,10 @@ class InvitationFirebaseTokenRegistrationTest extends TestCase
             'name' => 'Fiesta de prueba',
             'end_date' => '2099-01-01',
         ]);
-        Setting::current()->update(['texto_registro' => true]);
+        Setting::current()->update([
+            'texto_registro' => true,
+            'mensaje_registro' => 'Listo tu registro en :event',
+        ]);
 
         Http::fake([
             'https://push.test/api/v1/users' => Http::response([
@@ -226,7 +229,7 @@ class InvitationFirebaseTokenRegistrationTest extends TestCase
         Http::assertSent(function ($request) {
             return $request->url() === 'https://push.test/api/v1/pushes'
                 && $request['title'] === 'Registro recibido'
-                && $request['body'] === 'Recibimos tu registro para Fiesta de prueba. Queda pendiente de aprobación.';
+                && $request['body'] === 'Listo tu registro en Fiesta de prueba';
         });
     }
 

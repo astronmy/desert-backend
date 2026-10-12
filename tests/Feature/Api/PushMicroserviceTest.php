@@ -230,7 +230,10 @@ class PushMicroserviceTest extends TestCase
 
         Http::assertNothingSent();
 
-        Setting::current()->update(['texto_confirmacion' => true]);
+        Setting::current()->update([
+            'texto_confirmacion' => true,
+            'mensaje_confirmacion' => 'Listo para :event',
+        ]);
 
         Http::fake([
             'https://push.test/api/v1/pushes' => Http::response([
@@ -245,7 +248,7 @@ class PushMicroserviceTest extends TestCase
         Http::assertSent(function ($request) {
             return $request->url() === 'https://push.test/api/v1/pushes'
                 && $request['title'] === 'Invitación confirmada'
-                && $request['body'] === 'Hemos confirmado tu invitación a Fiesta de prueba';
+                && $request['body'] === 'Listo para Fiesta de prueba';
         });
     }
 
