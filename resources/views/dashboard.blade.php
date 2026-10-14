@@ -228,7 +228,7 @@
                                                     </form>
                                                 @endif
                                                 @can('permission', 'invitaciones.ver')
-                                                    <a href="{{ route('admin.events.invitations.show', [$event, $invitation]) }}" wire:navigate
+                                                    <a href="{{ route('admin.events.invitations.show', array_merge(['event' => $event, 'invitation' => $invitation, 'from' => 'dashboard'], \App\Support\ListQuery::pull(['page', 'name', 'status']))) }}" wire:navigate
                                                        class="inline-flex items-center rounded-md bg-[var(--desert-bg-elevated)] px-2.5 py-1.5 text-xs font-medium text-white hover:bg-[var(--desert-bg)]">
                                                         {{ __('admin.actions.view') }}
                                                     </a>

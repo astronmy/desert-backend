@@ -1,11 +1,23 @@
 @php
     $fromAccesses = request('from') === 'accesses';
-    $backUrl = $fromAccesses
-        ? route('admin.events.accesses.index', $event)
-        : route('admin.events.invitations.index', $event);
-    $backLabel = $fromAccesses
-        ? __('access.index.title')
-        : __('invitation.index.title');
+    $fromDashboard = request('from') === 'dashboard';
+
+    if ($fromAccesses) {
+        $backUrl = route('admin.events.accesses.index', $event);
+        $backLabel = __('access.index.title');
+    } elseif ($fromDashboard) {
+        $backUrl = route('admin.dashboard', \App\Support\ListQuery::pull(['page', 'name', 'status']));
+        $backLabel = __('dashboard.title');
+    } elseif (request('from') === 'invitations') {
+        $backUrl = route('admin.events.invitations.index', array_merge(
+            ['event' => $event],
+            \App\Support\ListQuery::pull(['page', 'name', 'document_number', 'code', 'status']),
+        ));
+        $backLabel = __('invitation.index.title');
+    } else {
+        $backUrl = route('admin.events.invitations.index', $event);
+        $backLabel = __('invitation.index.title');
+    }
 @endphp
 <x-admin-layout>
     <x-slot name="header">

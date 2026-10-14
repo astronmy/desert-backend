@@ -213,7 +213,7 @@
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.events.invitations.show', [$event, $invitation]) }}" wire:navigate
+                                <a href="{{ route('admin.events.invitations.show', array_merge(['event' => $event, 'invitation' => $invitation, 'from' => 'invitations'], \App\Support\ListQuery::pull(['page', 'name', 'document_number', 'code', 'status']))) }}" wire:navigate
                                    class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-gold)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
                                     {{ __('admin.actions.view') }}
                                 </a>
