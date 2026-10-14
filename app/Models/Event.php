@@ -93,6 +93,13 @@ class Event extends Model
         return $moment->lt($this->registrationClosesAt());
     }
 
+    public function scopeCurrent(Builder $query): Builder
+    {
+        $today = now()->timezone(self::REGISTRATION_TIMEZONE)->toDateString();
+
+        return $query->whereDate('end_date', '>=', $today);
+    }
+
     public function scopeOpenForRegistration(Builder $query): Builder
     {
         $nowArt = now()->timezone(self::REGISTRATION_TIMEZONE);

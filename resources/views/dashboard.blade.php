@@ -19,6 +19,63 @@
         @endif
     </div>
 
+    @if ($currentEvents !== null)
+        <div class="mb-6 grid gap-4 sm:grid-cols-3">
+            <div class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wide text-[var(--desert-sand)]">{{ __('dashboard.stats.current_events') }}</p>
+                <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $eventStats['current'] }}</p>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wide text-[var(--desert-sand)]">{{ __('dashboard.stats.confirmed_invitations') }}</p>
+                <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $eventStats['confirmed'] }}</p>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wide text-[var(--desert-sand)]">{{ __('dashboard.stats.pending_invitations') }}</p>
+                <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $eventStats['pending'] }}</p>
+            </div>
+        </div>
+
+        <div class="mb-6 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div class="border-b border-gray-200 bg-[var(--desert-bg)] px-5 py-3">
+                <h3 class="text-sm font-semibold uppercase tracking-wide text-[var(--desert-sand)]">{{ __('dashboard.stats.current_events') }}</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-[var(--desert-bg-elevated)]">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.name') }}</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.host') }}</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('event.attributes.invitation_limit') }}</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('dashboard.stats.confirmed_quota') }}</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('dashboard.stats.pending_invitations') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        @forelse ($currentEvents as $currentEvent)
+                            <tr>
+                                <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
+                                    @can('permission', 'invitaciones.ver')
+                                        <a href="{{ route('admin.events.invitations.index', $currentEvent) }}" wire:navigate class="hover:underline">{{ $currentEvent->name }}</a>
+                                    @else
+                                        {{ $currentEvent->name }}
+                                    @endcan
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $currentEvent->host ?: '—' }}</td>
+                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">{{ $currentEvent->invitation_limit }}</td>
+                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">{{ $currentEvent->confirmed_count }}</td>
+                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">{{ $currentEvent->pending_count }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-4 py-8 text-center text-gray-500">{{ __('dashboard.stats.empty') }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
+
     @if (auth()->user()->requiresEvent())
         @if (! $event)
             <div class="rounded-md bg-amber-50 p-4 text-sm text-amber-900">{{ __('dashboard.no_event') }}</div>

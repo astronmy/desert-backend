@@ -10,6 +10,14 @@ return [
     'quota_full' => 'Se alcanzó el cupo de confirmaciones.',
     'no_event' => 'No tenés un evento asociado. Contactá al administrador.',
 
+    'stats' => [
+        'current_events' => 'Eventos vigentes',
+        'confirmed_invitations' => 'Invitaciones confirmadas',
+        'pending_invitations' => 'Invitaciones pendientes',
+        'confirmed_quota' => 'Cupo confirmado',
+        'empty' => 'No hay eventos vigentes.',
+    ],
+
     'event_content' => [
         'title' => 'Contenido del evento',
         'help' => 'Editá las descripciones y las fotos que se muestran en la app.',

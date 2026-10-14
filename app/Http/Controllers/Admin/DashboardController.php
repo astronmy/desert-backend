@@ -22,7 +22,27 @@ class DashboardController extends Controller
         $event = null;
         $invitations = null;
         $registrationLink = null;
+        $currentEvents = null;
+        $eventStats = null;
         $statuses = InvitationStatus::options();
+
+        if ($user && ! $user->requiresEvent()) {
+            $currentEvents = Event::query()
+                ->current()
+                ->withCount([
+                    'invitations as confirmed_count' => fn ($query) => $query->where('status', InvitationStatus::Confirmed),
+                    'invitations as pending_count' => fn ($query) => $query->where('status', InvitationStatus::Pending),
+                ])
+                ->orderBy('init_date')
+                ->orderBy('name')
+                ->get();
+
+            $eventStats = [
+                'current' => $currentEvents->count(),
+                'confirmed' => (int) $currentEvents->sum('confirmed_count'),
+                'pending' => (int) $currentEvents->sum('pending_count'),
+            ];
+        }
 
         if ($user && $user->requiresEvent() && $user->event_id) {
             $event = Event::query()->find($user->event_id);
@@ -47,7 +67,14 @@ class DashboardController extends Controller
             }
         }
 
-        return view('dashboard', compact('event', 'invitations', 'statuses', 'registrationLink'));
+        return view('dashboard', compact(
+            'event',
+            'invitations',
+            'statuses',
+            'registrationLink',
+            'currentEvents',
+            'eventStats',
+        ));
     }
 
     public function generateLink(Request $request, EventRegistrationLinkService $links): RedirectResponse
