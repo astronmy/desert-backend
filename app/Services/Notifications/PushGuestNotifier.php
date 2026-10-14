@@ -29,6 +29,7 @@ class PushGuestNotifier implements GuestNotifier
                 'mensaje_registro',
                 'invitation.push.registered_message',
                 $invitation->event?->name ?? '',
+                $invitation->event?->host ?? '',
             ),
         );
     }
@@ -49,6 +50,7 @@ class PushGuestNotifier implements GuestNotifier
                 'mensaje_confirmacion',
                 'invitation.push.approved_message',
                 $invitation->event?->name ?? '',
+                $invitation->event?->host ?? '',
             ),
         );
     }

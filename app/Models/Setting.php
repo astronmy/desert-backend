@@ -45,14 +45,21 @@ class Setting extends Model
         ]);
     }
 
-    public function notificationBody(string $messageColumn, string $langKey, string $eventName): string
+    public function notificationBody(string $messageColumn, string $langKey, string $eventName, string $host = ''): string
     {
         $template = $this->{$messageColumn};
+        $replacements = [
+            'event' => $eventName,
+            'host' => $host,
+        ];
 
         if (! filled($template)) {
-            return __($langKey, ['event' => $eventName]);
+            return __($langKey, $replacements);
         }
 
-        return str_replace(':event', $eventName, $template);
+        return strtr($template, [
+            ':event' => $eventName,
+            ':host' => $host,
+        ]);
     }
 }

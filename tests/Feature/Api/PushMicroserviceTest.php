@@ -221,7 +221,10 @@ class PushMicroserviceTest extends TestCase
         $invitation = Invitation::factory()->confirmed()->create([
             'firebase_token' => 'fcm-token',
         ]);
-        $invitation->event->update(['name' => 'Fiesta de prueba']);
+        $invitation->event->update([
+            'name' => 'Fiesta de prueba',
+            'host' => 'Familia Koepp',
+        ]);
         Setting::current()->update(['texto_confirmacion' => false]);
 
         Http::fake();
@@ -232,7 +235,7 @@ class PushMicroserviceTest extends TestCase
 
         Setting::current()->update([
             'texto_confirmacion' => true,
-            'mensaje_confirmacion' => 'Listo para :event',
+            'mensaje_confirmacion' => 'Listo para :event, host :host',
         ]);
 
         Http::fake([
@@ -248,7 +251,7 @@ class PushMicroserviceTest extends TestCase
         Http::assertSent(function ($request) {
             return $request->url() === 'https://push.test/api/v1/pushes'
                 && $request['title'] === 'Invitación confirmada'
-                && $request['body'] === 'Listo para Fiesta de prueba';
+                && $request['body'] === 'Listo para Fiesta de prueba, host Familia Koepp';
         });
     }
 
