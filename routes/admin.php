@@ -43,6 +43,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
 
+    require __DIR__.'/admin/tools.php';
     require __DIR__.'/admin/event_accesses.php';
     require __DIR__.'/admin/event_invitations.php';
     require __DIR__.'/admin/events.php';
