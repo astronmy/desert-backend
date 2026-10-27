@@ -33,15 +33,13 @@
         @else
             <div class="mb-4">
                 <label for="guest-search" class="sr-only">{{ __('invitation.confirmed_site.search_placeholder') }}</label>
-                <div class="relative">
-                    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--desert-muted)]">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
-                        </svg>
-                    </span>
-                    <input id="guest-search" type="search" autocomplete="off"
+                <div class="flex items-center gap-3 rounded-lg border border-[var(--desert-border)] bg-[var(--desert-surface)] px-3 shadow-sm focus-within:border-[var(--desert-gold)] focus-within:ring-2 focus-within:ring-[var(--desert-gold)]/40">
+                    <svg class="h-5 w-5 shrink-0 text-[var(--desert-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+                    </svg>
+                    <input id="guest-search" type="text" autocomplete="off"
                            placeholder="{{ __('invitation.confirmed_site.search_placeholder') }}"
-                           class="block w-full rounded-lg border border-[var(--desert-border)] bg-[var(--desert-surface)] py-3 pl-11 pr-4 text-sm text-[var(--desert-bg)] shadow-sm placeholder:text-[var(--desert-muted)] focus:border-[var(--desert-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--desert-gold)]/40" />
+                           class="min-w-0 flex-1 border-0 bg-transparent py-3 text-sm text-[var(--desert-bg)] placeholder:text-[var(--desert-muted)] focus:outline-none focus:ring-0" />
                 </div>
             </div>
 
