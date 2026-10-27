@@ -121,6 +121,8 @@ return [
     'confirmed_site' => [
         'host_label' => 'Anfitrión',
         'empty' => 'Todavía no hay invitados confirmados.',
+        'search_placeholder' => 'Buscar por nombre, apellido o DNI',
+        'no_results' => 'No hay coincidencias para esa búsqueda.',
         'first_name' => 'Nombre',
         'last_name' => 'Apellido',
         'document' => 'DNI',

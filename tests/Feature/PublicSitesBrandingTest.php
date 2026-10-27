@@ -47,6 +47,8 @@ class PublicSitesBrandingTest extends TestCase
             ->assertSee('Vinci')
             ->assertDontSee('RENZO')
             ->assertDontSee('>vinci<', false)
+            ->assertSee('Buscar por nombre, apellido o DNI')
+            ->assertSee('id="guest-search"', false)
             ->assertSee('Diseñado por')
             ->assertSee('https://rxstudio.dev', false)
             ->assertSee('RxStudio.dev');

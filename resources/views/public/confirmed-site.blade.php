@@ -31,6 +31,20 @@
         @if ($invitations->isEmpty())
             <p class="text-center text-[var(--desert-muted)]">{{ __('invitation.confirmed_site.empty') }}</p>
         @else
+            <div class="mb-4">
+                <label for="guest-search" class="sr-only">{{ __('invitation.confirmed_site.search_placeholder') }}</label>
+                <div class="relative">
+                    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--desert-muted)]">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+                        </svg>
+                    </span>
+                    <input id="guest-search" type="search" autocomplete="off"
+                           placeholder="{{ __('invitation.confirmed_site.search_placeholder') }}"
+                           class="block w-full rounded-lg border border-[var(--desert-border)] bg-[var(--desert-surface)] py-3 pl-11 pr-4 text-sm text-[var(--desert-bg)] shadow-sm placeholder:text-[var(--desert-muted)] focus:border-[var(--desert-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--desert-gold)]/40" />
+                </div>
+            </div>
+
             <div class="overflow-hidden rounded-xl border border-[var(--desert-border)] bg-[var(--desert-surface)] shadow-lg" style="color-scheme: light;">
                 <table class="min-w-full divide-y divide-[var(--desert-border)]/20">
                     <thead class="bg-[var(--desert-bg-elevated)]">
@@ -40,16 +54,25 @@
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--desert-sand)]">{{ __('invitation.confirmed_site.document') }}</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-black/5">
+                    <tbody id="guest-rows" class="divide-y divide-black/5">
                         @foreach ($invitations as $invitation)
-                            <tr class="text-[var(--desert-bg)]">
-                                <td class="px-4 py-3 text-sm font-medium">{{ $invitation->guest?->displayFirstName() }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $invitation->guest?->displayLastName() }}</td>
-                                <td class="px-4 py-3 font-mono text-sm">{{ $invitation->guest?->document_number }}</td>
+                            @php
+                                $firstName = $invitation->guest?->displayFirstName() ?? '';
+                                $lastName = $invitation->guest?->displayLastName() ?? '';
+                                $document = $invitation->guest?->document_number ?? '';
+                            @endphp
+                            <tr class="guest-row text-[var(--desert-bg)]"
+                                data-search="{{ mb_strtolower(trim($firstName.' '.$lastName.' '.$document)) }}">
+                                <td class="px-4 py-3 text-sm font-medium">{{ $firstName }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $lastName }}</td>
+                                <td class="px-4 py-3 font-mono text-sm">{{ $document }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+                <p id="guest-empty" class="hidden px-4 py-8 text-center text-sm text-[var(--desert-muted)]">
+                    {{ __('invitation.confirmed_site.no_results') }}
+                </p>
             </div>
         @endif
     </main>
@@ -57,5 +80,36 @@
     <footer class="px-4 pb-10 text-center text-xs text-[var(--desert-muted)] sm:px-6">
         Diseñado por <a href="https://rxstudio.dev" target="_blank" rel="noopener noreferrer" class="text-[var(--desert-sand)] underline decoration-[var(--desert-border)] underline-offset-2 hover:text-[var(--desert-gold)]">RxStudio.dev</a>
     </footer>
+
+    @unless ($invitations->isEmpty())
+        <script>
+            (function () {
+                const input = document.getElementById('guest-search');
+                const rows = Array.from(document.querySelectorAll('.guest-row'));
+                const empty = document.getElementById('guest-empty');
+                const table = document.querySelector('#guest-rows')?.closest('table');
+
+                if (! input || rows.length === 0) {
+                    return;
+                }
+
+                input.addEventListener('input', function () {
+                    const query = input.value.trim().toLowerCase();
+                    let visible = 0;
+
+                    rows.forEach(function (row) {
+                        const match = query === '' || (row.dataset.search || '').includes(query);
+                        row.classList.toggle('hidden', ! match);
+                        if (match) {
+                            visible += 1;
+                        }
+                    });
+
+                    empty?.classList.toggle('hidden', visible > 0);
+                    table?.classList.toggle('hidden', visible === 0);
+                });
+            })();
+        </script>
+    @endunless
 </body>
 </html>
