@@ -34,4 +34,25 @@ class Guest extends Model
     {
         return trim($this->first_name.' '.$this->last_name);
     }
+
+    public function displayFirstName(): string
+    {
+        return self::formatDisplayName($this->first_name);
+    }
+
+    public function displayLastName(): string
+    {
+        return self::formatDisplayName($this->last_name);
+    }
+
+    public static function formatDisplayName(?string $name): string
+    {
+        $name = trim((string) $name);
+
+        if ($name === '') {
+            return '';
+        }
+
+        return mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
+    }
 }

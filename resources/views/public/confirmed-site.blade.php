@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="author" content="RXStudio.dev">
     <title>{{ $event->name }} — {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
@@ -42,8 +43,8 @@
                     <tbody class="divide-y divide-black/5">
                         @foreach ($invitations as $invitation)
                             <tr class="text-[var(--desert-bg)]">
-                                <td class="px-4 py-3 text-sm font-medium">{{ $invitation->guest?->first_name }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $invitation->guest?->last_name }}</td>
+                                <td class="px-4 py-3 text-sm font-medium">{{ $invitation->guest?->displayFirstName() }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $invitation->guest?->displayLastName() }}</td>
                                 <td class="px-4 py-3 font-mono text-sm">{{ $invitation->guest?->document_number }}</td>
                             </tr>
                         @endforeach
@@ -52,5 +53,9 @@
             </div>
         @endif
     </main>
+
+    <footer class="px-4 pb-10 text-center text-xs text-[var(--desert-muted)] sm:px-6">
+        Diseñado por <a href="https://rxstudio.dev" target="_blank" rel="noopener noreferrer" class="text-[var(--desert-sand)] underline decoration-[var(--desert-border)] underline-offset-2 hover:text-[var(--desert-gold)]">RxStudio.dev</a>
+    </footer>
 </body>
 </html>

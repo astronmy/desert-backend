@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="RXStudio.dev">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Activar invitación — Desert Eventos</title>
     <style>
@@ -23,9 +24,14 @@
                 linear-gradient(165deg, #1c3231 0%, var(--bg) 50%, #122020 100%);
             color: var(--surface);
             display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+        .page {
+            flex: 1;
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 24px;
         }
         .card {
             width: 100%;
@@ -86,22 +92,42 @@
             color: var(--muted);
             letter-spacing: 0.04em;
         }
+        .credit {
+            flex-shrink: 0;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+        .credit a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .credit a:hover {
+            color: var(--gold);
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <main class="card">
-        <img class="logo" src="{{ asset('assets/logo-desert.png') }}" alt="Desert Eventos">
-        <h1>Abrí la app para confirmar tu invitación</h1>
-        <p>
-            Si tenés Desert Eventos instalada, tocá <strong>Abrir Desert Eventos</strong>.
-        </p>
-        <div class="actions">
-            <a class="btn btn-primary" id="open-app" href="{{ $customSchemeUrl }}">Abrir Desert Eventos</a>
-            <a class="btn btn-secondary" href="{{ $playStoreUrl }}" data-store="play">Descargar en Google Play</a>
-            <a class="btn btn-secondary" href="{{ $appStoreUrl }}" data-store="app_store">Descargar en App Store</a>
-        </div>
-        <p class="hint">deserteventos.com.ar</p>
-    </main>
+    <div class="page">
+        <main class="card">
+            <img class="logo" src="{{ asset('assets/logo-desert.png') }}" alt="Desert Eventos">
+            <h1>Abrí la app para confirmar tu invitación</h1>
+            <p>
+                Si tenés Desert Eventos instalada, tocá <strong>Abrir Desert Eventos</strong>.
+            </p>
+            <div class="actions">
+                <a class="btn btn-primary" id="open-app" href="{{ $customSchemeUrl }}">Abrir Desert Eventos</a>
+                <a class="btn btn-secondary" href="{{ $playStoreUrl }}" data-store="play">Descargar en Google Play</a>
+                <a class="btn btn-secondary" href="{{ $appStoreUrl }}" data-store="app_store">Descargar en App Store</a>
+            </div>
+            <p class="hint">deserteventos.com.ar</p>
+        </main>
+    </div>
+    <footer class="credit">
+        Diseñado por <a href="https://rxstudio.dev" target="_blank" rel="noopener noreferrer">RxStudio.dev</a>
+    </footer>
     <script>
         (function () {
             const token = @json($token);
