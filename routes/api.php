@@ -14,9 +14,12 @@ Route::middleware('throttle:10,1')->group(function () {
     Route::post('auth/login', [AuthController::class, 'login']);
 });
 
+Route::middleware('throttle:4,1')->group(function () {
+    Route::get('invitations/{code}', [InvitationController::class, 'show']);
+});
+
 Route::middleware('throttle:30,1')->group(function () {
     Route::get('events', [EventController::class, 'index']);
-    Route::get('invitations/{code}', [InvitationController::class, 'show']);
     Route::patch('invitations/{code}/firebase-token', [InvitationController::class, 'updateFirebaseToken']);
     Route::post('invitations/{code}/confirm', [InvitationController::class, 'confirm']);
     Route::post('events/{event}/register', [EventRegistrationController::class, 'store']);
