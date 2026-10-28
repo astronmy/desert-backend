@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AccessControlLogController;
+use App\Http\Controllers\Admin\ApiLogController;
 use App\Http\Controllers\Admin\ClientEventController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MicroserviceLogController;
@@ -39,6 +40,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('microservice-logs', [MicroserviceLogController::class, 'index'])
         ->middleware('permission:logs.ver')
         ->name('microservice-logs.index');
+
+    Route::get('api-logs', [ApiLogController::class, 'index'])
+        ->middleware('permission:logs.ver')
+        ->name('api-logs.index');
 
     Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');

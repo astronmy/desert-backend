@@ -6,5 +6,6 @@ return [
     'tabs' => [
         'access' => 'Control de acceso',
         'microservice' => 'Microservicio',
+        'app' => 'APP LOGS',
     ],
 ];

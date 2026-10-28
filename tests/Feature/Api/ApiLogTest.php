@@ -4,6 +4,8 @@ namespace Tests\Feature\Api;
 
 use App\Models\ApiLog;
 use App\Models\Invitation;
+use App\Models\User;
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -57,5 +59,44 @@ class ApiLogTest extends TestCase
         $this->assertSame(403, $confirmLog->response_code);
         $this->assertStringContainsString('Forbidden.', (string) $confirmLog->response_body);
         $this->assertSame('CODEAAAA', $invitation->fresh()->code);
+    }
+
+    public function test_admin_can_see_app_logs_and_other_roles_cannot(): void
+    {
+        $this->seed(RolePermissionSeeder::class);
+
+        ApiLog::query()->create([
+            'service' => ApiLog::SERVICE_CONFIRM,
+            'method' => 'POST',
+            'endpoint' => '/api/invitations/CODEAAAA/confirm',
+            'ip' => '203.0.113.10',
+            'request_body' => '{"first_name":"Ana"}',
+            'response_body' => '{"message":"Forbidden."}',
+            'response_code' => 403,
+        ]);
+
+        $admin = User::factory()->admin()->create();
+        $client = User::factory()->client()->create();
+
+        $this->actingAs($admin)
+            ->get(route('admin.api-logs.index', [
+                'service' => ApiLog::SERVICE_CONFIRM,
+                'response_code' => 403,
+            ]))
+            ->assertOk()
+            ->assertSee('APP LOGS')
+            ->assertSee('Confirmar invitación')
+            ->assertSee('/api/invitations/CODEAAAA/confirm')
+            ->assertSee('203.0.113.10')
+            ->assertSee('Forbidden.');
+
+        $this->actingAs($admin)
+            ->get(route('admin.api-logs.index', ['service' => ApiLog::SERVICE_EVENTS]))
+            ->assertOk()
+            ->assertDontSee('/api/invitations/CODEAAAA/confirm');
+
+        $this->actingAs($client)
+            ->get(route('admin.api-logs.index'))
+            ->assertForbidden();
     }
 }

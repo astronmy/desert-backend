@@ -116,7 +116,7 @@
                             [
                                 'label' => __('admin.menu.access_control_logs'),
                                 'route' => 'admin.access-control-logs.index',
-                                'active' => request()->routeIs('admin.access-control-logs.*', 'admin.microservice-logs.*'),
+                                'active' => request()->routeIs('admin.access-control-logs.*', 'admin.microservice-logs.*', 'admin.api-logs.*'),
                                 'icon' => 'access_logs',
                                 'permission' => 'logs.ver',
                             ],

@@ -33,4 +33,22 @@ class ApiLog extends Model
             'response_code' => 'integer',
         ];
     }
+
+    public function serviceLabel(): string
+    {
+        return __('api_log.services.'.$this->service);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function services(): array
+    {
+        return [
+            self::SERVICE_EVENTS,
+            self::SERVICE_FIREBASE_TOKEN,
+            self::SERVICE_CONFIRM,
+            self::SERVICE_REGISTER,
+        ];
+    }
 }
