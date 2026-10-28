@@ -2,19 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\InvitationLogAction;
 use App\Enums\InvitationStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\ConfirmInvitationRequest;
 use App\Http\Requests\Api\UpdateInvitationFirebaseTokenRequest;
 use App\Http\Resources\Api\EventResource;
-use App\Models\Event;
 use App\Models\Invitation;
-use App\Services\Invitations\InvitationLogService;
-use App\Services\Invitations\SyncInvitationPushUser;
 use App\Services\Invitations\UpdateInvitationFirebaseTokenService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class InvitationController extends Controller
@@ -116,128 +110,8 @@ class InvitationController extends Controller
         ]);
     }
 
-    public function confirm(
-        ConfirmInvitationRequest $request,
-        string $code,
-        InvitationLogService $logs,
-        SyncInvitationPushUser $pushUsers,
-    ): JsonResponse {
-        $invitation = Invitation::query()
-            ->with('guest')
-            ->where('code', Str::upper(trim($code)))
-            ->first();
-
-        if (! $invitation) {
-            return response()->json(['message' => 'Invitación no encontrada.'], 404);
-        }
-
-        if ($invitation->status === InvitationStatus::Cancelled) {
-            return response()->json(['message' => 'La invitación está cancelada.'], 410);
-        }
-
-        if ($invitation->status === InvitationStatus::Confirmed) {
-            return response()->json(['message' => 'La invitación ya fue confirmada.'], 409);
-        }
-
-        $data = $request->validated();
-        $hadToken = filled($invitation->firebase_token);
-        $firebaseToken = filled($data['firebase_token'] ?? null) ? $data['firebase_token'] : null;
-
-        $documentNumber = preg_replace('/\D+/', '', $data['document_number']) ?: $data['document_number'];
-
-        if (
-            $invitation->guest->document_number !== $documentNumber
-            || $invitation->guest->id_type->value !== $data['id_type']
-        ) {
-            return response()->json([
-                'message' => 'El documento no coincide con la invitación.',
-            ], 422);
-        }
-
-        $confirmed = DB::transaction(function () use ($invitation, $data, $documentNumber, $request, $logs, $firebaseToken) {
-            $lockedEvent = Event::query()
-                ->whereKey($invitation->event_id)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            $lockedInvitation = Invitation::query()
-                ->whereKey($invitation->id)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            if ($lockedInvitation->status === InvitationStatus::Confirmed) {
-                return 'already';
-            }
-
-            if (! $lockedEvent->canConfirmMore()) {
-                return 'full';
-            }
-
-            $lockedInvitation->guest->update([
-                'first_name' => $data['first_name'],
-                'last_name' => $data['last_name'],
-                'document_number' => $documentNumber,
-                'id_type' => $data['id_type'],
-            ]);
-
-            $path = $request->file('selfie')->store(
-                'invitations/'.$lockedInvitation->id,
-                'public'
-            );
-
-            $from = $lockedInvitation->status;
-            $attributes = [
-                'status' => InvitationStatus::Confirmed,
-                'selfie_path' => $path,
-                'confirmed_at' => now(),
-                'uuid_notification' => $data['uuid_notification'] ?? null,
-            ];
-
-            if ($firebaseToken !== null) {
-                $attributes['firebase_token'] = $firebaseToken;
-            }
-
-            $lockedInvitation->update($attributes);
-
-            $logs->record(
-                $lockedInvitation,
-                InvitationLogAction::Confirm,
-                $from,
-                InvitationStatus::Confirmed,
-                $request->user()?->id
-            );
-
-            return 'ok';
-        });
-
-        if ($confirmed === 'already') {
-            return response()->json(['message' => 'La invitación ya fue confirmada.'], 409);
-        }
-
-        if ($confirmed === 'full') {
-            return response()->json([
-                'message' => 'Se alcanzó el cupo de invitaciones confirmadas.',
-            ], 422);
-        }
-
-        $invitation->refresh()->load(['event', 'guest']);
-
-        if ($firebaseToken !== null) {
-            $pushUsers->sync(
-                $invitation,
-                $firebaseToken,
-                $request->header('device-platform'),
-                $request->header('device-app-version'),
-                $hadToken,
-            );
-        }
-
-        return response()->json([
-            'message' => 'Invitación confirmada correctamente.',
-            'code' => $invitation->code,
-            'status' => $invitation->status->value,
-            'confirmed_at' => $invitation->confirmed_at?->toIso8601String(),
-            'selfie_url' => $invitation->selfieUrl(),
-        ]);
+    public function confirm(string $code): JsonResponse
+    {
+        return response()->json(['message' => 'Forbidden.'], 403);
     }
 }

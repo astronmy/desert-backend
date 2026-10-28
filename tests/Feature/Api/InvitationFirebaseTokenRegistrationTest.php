@@ -4,7 +4,6 @@ namespace Tests\Feature\Api;
 
 use App\Models\Event;
 use App\Models\Invitation;
-use App\Models\MicroserviceLog;
 use App\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -28,65 +27,7 @@ class InvitationFirebaseTokenRegistrationTest extends TestCase
         ]);
     }
 
-    public function test_confirm_saves_the_token_and_registers_the_user(): void
-    {
-        $invitation = Invitation::factory()->create([
-            'code' => 'CODEAAAA',
-            'firebase_token' => null,
-        ]);
-
-        Http::fake([
-            'https://push.test/api/v1/users' => Http::response([
-                'success' => true,
-                'message' => 'Usuario registrado.',
-                'data' => ['id' => 1],
-            ], 201),
-        ]);
-
-        $this->post('/api/invitations/CODEAAAA/confirm', $this->confirmPayload($invitation, 'fcm-confirm'), [
-            'Accept' => 'application/json',
-            'device-platform' => 'ios',
-            'device-app-version' => '1.4.0',
-        ])->assertOk();
-
-        $this->assertSame('fcm-confirm', $invitation->fresh()->firebase_token);
-
-        Http::assertSent(function ($request) use ($invitation) {
-            return $request->method() === 'POST'
-                && $request->url() === 'https://push.test/api/v1/users'
-                && $request['external_user_id'] === (string) $invitation->id
-                && $request['firebase_token'] === 'fcm-confirm'
-                && $request['platform'] === 'ios'
-                && $request['meta']['app_version'] === '1.4.0';
-        });
-    }
-
-    public function test_confirm_keeps_the_response_when_the_push_service_fails(): void
-    {
-        $invitation = Invitation::factory()->create([
-            'code' => 'CODEAAAA',
-            'firebase_token' => null,
-        ]);
-
-        Http::fake([
-            'https://push.test/api/v1/users' => Http::response([
-                'success' => false,
-                'message' => 'Error',
-                'errors' => [],
-            ], 500),
-        ]);
-
-        $this->post('/api/invitations/CODEAAAA/confirm', $this->confirmPayload($invitation, 'fcm-confirm'), [
-            'Accept' => 'application/json',
-            'device-platform' => 'android',
-        ])->assertOk()
-            ->assertJsonPath('message', 'Invitación confirmada correctamente.');
-
-        $this->assertSame('fcm-confirm', $invitation->fresh()->firebase_token);
-        $this->assertSame(500, MicroserviceLog::query()->value('response_code'));
-    }
-
-    public function test_confirm_without_a_platform_saves_the_token_and_skips_the_push_service(): void
+    public function test_confirm_is_blocked(): void
     {
         $invitation = Invitation::factory()->create([
             'code' => 'CODEAAAA',
@@ -97,28 +38,12 @@ class InvitationFirebaseTokenRegistrationTest extends TestCase
 
         $this->post('/api/invitations/CODEAAAA/confirm', $this->confirmPayload($invitation, 'fcm-confirm'), [
             'Accept' => 'application/json',
-        ])->assertOk();
-
-        Http::assertNothingSent();
-        $this->assertSame('fcm-confirm', $invitation->fresh()->firebase_token);
-    }
-
-    public function test_confirm_without_a_token_does_not_clear_the_stored_one(): void
-    {
-        $invitation = Invitation::factory()->create([
-            'code' => 'CODEAAAA',
-            'firebase_token' => 'token-previo',
-        ]);
-
-        Http::fake();
-
-        $this->post('/api/invitations/CODEAAAA/confirm', $this->confirmPayload($invitation), [
-            'Accept' => 'application/json',
             'device-platform' => 'ios',
-        ])->assertOk();
+        ])->assertForbidden()
+            ->assertJsonPath('message', 'Forbidden.');
 
+        $this->assertNull($invitation->fresh()->firebase_token);
         Http::assertNothingSent();
-        $this->assertSame('token-previo', $invitation->fresh()->firebase_token);
     }
 
     public function test_self_register_saves_the_token_and_registers_the_user(): void
