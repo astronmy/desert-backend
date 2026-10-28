@@ -3,6 +3,7 @@
 use App\Http\Middleware\EnsureEventAccess;
 use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\LogAccessControlRequest;
+use App\Http\Middleware\LogApiRequest;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => EnsurePermission::class,
             'event.access' => EnsureEventAccess::class,
             'access.log' => LogAccessControlRequest::class,
+            'api.log' => LogApiRequest::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

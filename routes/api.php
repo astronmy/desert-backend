@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\EventNotificationController;
 use App\Http\Controllers\Api\EventRegistrationController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Models\AccessControlLog;
+use App\Models\ApiLog;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:10,1')->group(function () {
@@ -19,10 +20,14 @@ Route::middleware('throttle:4,1')->group(function () {
 });
 
 Route::middleware('throttle:30,1')->group(function () {
-    Route::get('events', [EventController::class, 'index']);
-    Route::patch('invitations/{code}/firebase-token', [InvitationController::class, 'updateFirebaseToken']);
-    Route::post('invitations/{code}/confirm', [InvitationController::class, 'confirm']);
-    Route::post('events/{event}/register', [EventRegistrationController::class, 'store']);
+    Route::get('events', [EventController::class, 'index'])
+        ->middleware('api.log:'.ApiLog::SERVICE_EVENTS);
+    Route::patch('invitations/{code}/firebase-token', [InvitationController::class, 'updateFirebaseToken'])
+        ->middleware('api.log:'.ApiLog::SERVICE_FIREBASE_TOKEN);
+    Route::post('invitations/{code}/confirm', [InvitationController::class, 'confirm'])
+        ->middleware('api.log:'.ApiLog::SERVICE_CONFIRM);
+    Route::post('events/{event}/register', [EventRegistrationController::class, 'store'])
+        ->middleware('api.log:'.ApiLog::SERVICE_REGISTER);
 });
 
 Route::middleware('throttle:60,1')->group(function () {
