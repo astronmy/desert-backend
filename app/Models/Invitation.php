@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InvitationOrigin;
 use App\Enums\InvitationStatus;
 use Database\Factories\InvitationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
     'guest_id',
     'code',
     'status',
+    'origin',
     'selfie_path',
     'uuid_notification',
     'firebase_token',
@@ -35,6 +37,7 @@ class Invitation extends Model
     {
         return [
             'status' => InvitationStatus::class,
+            'origin' => InvitationOrigin::class,
             'confirmed_at' => 'datetime',
         ];
     }

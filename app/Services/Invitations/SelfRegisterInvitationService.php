@@ -3,6 +3,7 @@
 namespace App\Services\Invitations;
 
 use App\Enums\DocumentType;
+use App\Enums\InvitationOrigin;
 use App\Enums\InvitationStatus;
 use App\Models\Event;
 use App\Models\Guest;
@@ -72,6 +73,7 @@ class SelfRegisterInvitationService
                 'guest_id' => $guest->id,
                 'code' => $this->codeGenerator->generate(),
                 'status' => InvitationStatus::Pending,
+                'origin' => InvitationOrigin::Api,
                 'confirmed_at' => null,
                 'uuid_notification' => $data['uuid_notification'] ?? null,
                 'firebase_token' => filled($data['firebase_token'] ?? null) ? $data['firebase_token'] : null,

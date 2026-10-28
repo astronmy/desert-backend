@@ -191,6 +191,15 @@
                                 @endforeach
                             </x-select-input>
                         </div>
+                        <div class="min-w-[160px]">
+                            <label for="filter_origin" class="block text-sm font-medium text-gray-700">{{ __('invitation.attributes.origin') }}</label>
+                            <x-select-input id="filter_origin" name="origin" class="mt-1">
+                                <option value="">{{ __('invitation.index.all_origins') }}</option>
+                                @foreach ($origins as $value => $label)
+                                    <option value="{{ $value }}" @selected(request('origin') === $value)>{{ $label }}</option>
+                                @endforeach
+                            </x-select-input>
+                        </div>
                         <div class="flex gap-2">
                             <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-[var(--desert-bg)]">
                                 {{ __('admin.actions.filter') }}
@@ -244,6 +253,7 @@
                                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.code') }}</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">Nombre</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">Documento</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.origin') }}</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.status') }}</th>
                                     <th class="px-4 py-3 text-right text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('admin.table.actions') }}</th>
                                 </tr>
@@ -266,6 +276,16 @@
                                         <td class="whitespace-nowrap px-4 py-3 text-sm">
                                             <span @class([
                                                 'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium',
+                                                'bg-sky-100 text-sky-800' => $invitation->origin?->value === 'api',
+                                                'bg-slate-100 text-slate-800' => $invitation->origin?->value === 'manual',
+                                                'bg-amber-100 text-amber-800' => $invitation->origin?->value === 'import',
+                                            ])>
+                                                {{ $invitation->origin?->label() ?? '—' }}
+                                            </span>
+                                        </td>
+                                        <td class="whitespace-nowrap px-4 py-3 text-sm">
+                                            <span @class([
+                                                'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium',
                                                 'bg-amber-100 text-amber-800' => $invitation->status->value === 'pending',
                                                 'bg-emerald-100 text-emerald-800' => $invitation->status->value === 'confirmed',
                                                 'bg-red-100 text-red-800' => $invitation->status->value === 'cancelled',
@@ -285,7 +305,7 @@
                                                     </form>
                                                 @endif
                                                 @can('permission', 'invitaciones.ver')
-                                                    <a href="{{ route('admin.events.invitations.show', array_merge(['event' => $event, 'invitation' => $invitation, 'from' => 'dashboard'], \App\Support\ListQuery::pull(['page', 'name', 'status']))) }}" wire:navigate
+                                                    <a href="{{ route('admin.events.invitations.show', array_merge(['event' => $event, 'invitation' => $invitation, 'from' => 'dashboard'], \App\Support\ListQuery::pull(['page', 'name', 'status', 'origin']))) }}" wire:navigate
                                                        class="inline-flex items-center rounded-md bg-[var(--desert-bg-elevated)] px-2.5 py-1.5 text-xs font-medium text-white hover:bg-[var(--desert-bg)]">
                                                         {{ __('admin.actions.view') }}
                                                     </a>
@@ -295,7 +315,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="{{ $canModerate && $canConfirmMore ? 6 : 5 }}" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
+                                        <td colspan="{{ $canModerate && $canConfirmMore ? 7 : 6 }}" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

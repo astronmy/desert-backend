@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\DocumentType;
 use App\Enums\InvitationLogAction;
+use App\Enums\InvitationOrigin;
 use App\Enums\InvitationStatus;
 use App\Exports\InvitationsExport;
 use App\Http\Controllers\Controller;
@@ -43,13 +44,15 @@ class EventInvitationController extends Controller
             })
             ->when($request->filled('code'), fn ($q) => $q->where('code', 'like', '%'.$request->string('code').'%'))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
+            ->when($request->filled('origin'), fn ($q) => $q->where('origin', $request->string('origin')))
             ->latest()
             ->paginate(15)
             ->withQueryString();
 
         $statuses = InvitationStatus::options();
+        $origins = InvitationOrigin::options();
 
-        return view('admin.events.invitations.index', compact('event', 'invitations', 'statuses'));
+        return view('admin.events.invitations.index', compact('event', 'invitations', 'statuses', 'origins'));
     }
 
     public function create(Event $event): View
@@ -93,6 +96,7 @@ class EventInvitationController extends Controller
             'guest_id' => $guest->id,
             'code' => $codeGenerator->generate(),
             'status' => InvitationStatus::Pending,
+            'origin' => InvitationOrigin::Manual,
         ]);
 
         return redirect()

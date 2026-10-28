@@ -6,12 +6,12 @@
         $backUrl = route('admin.events.accesses.index', $event);
         $backLabel = __('access.index.title');
     } elseif ($fromDashboard) {
-        $backUrl = route('admin.dashboard', \App\Support\ListQuery::pull(['page', 'name', 'status']));
+        $backUrl = route('admin.dashboard', \App\Support\ListQuery::pull(['page', 'name', 'status', 'origin']));
         $backLabel = __('dashboard.title');
     } elseif (request('from') === 'invitations') {
         $backUrl = route('admin.events.invitations.index', array_merge(
             ['event' => $event],
-            \App\Support\ListQuery::pull(['page', 'name', 'document_number', 'code', 'status']),
+            \App\Support\ListQuery::pull(['page', 'name', 'document_number', 'code', 'status', 'origin']),
         ));
         $backLabel = __('invitation.index.title');
     } else {
@@ -106,6 +106,19 @@
                     <dd>
                         <span class="inline-flex rounded-full bg-[var(--desert-sand)] px-2.5 py-0.5 text-xs font-medium text-[var(--desert-bg)]">
                             {{ $invitation->status->label() }}
+                        </span>
+                    </dd>
+                </div>
+                <div class="flex justify-between gap-4 py-3">
+                    <dt class="text-sm text-gray-500">{{ __('invitation.attributes.origin') }}</dt>
+                    <dd>
+                        <span @class([
+                            'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium',
+                            'bg-sky-100 text-sky-800' => $invitation->origin?->value === 'api',
+                            'bg-slate-100 text-slate-800' => $invitation->origin?->value === 'manual',
+                            'bg-amber-100 text-amber-800' => $invitation->origin?->value === 'import',
+                        ])>
+                            {{ $invitation->origin?->label() ?? '—' }}
                         </span>
                     </dd>
                 </div>

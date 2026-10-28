@@ -125,6 +125,15 @@
                     @endforeach
                 </x-select-input>
             </div>
+            <div class="min-w-[150px]">
+                <label for="filter_origin" class="block text-sm font-medium text-gray-700">{{ __('invitation.attributes.origin') }}</label>
+                <x-select-input id="filter_origin" name="origin" class="mt-1">
+                    <option value="">{{ __('invitation.index.all_origins') }}</option>
+                    @foreach($origins as $value => $label)
+                        <option value="{{ $value }}" @selected(request('origin') === $value)>{{ $label }}</option>
+                    @endforeach
+                </x-select-input>
+            </div>
             <div class="flex gap-2">
                 <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-[var(--desert-bg-elevated)] px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-[var(--desert-bg)]">
                     {{ __('admin.actions.filter') }}
@@ -174,6 +183,7 @@
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('guest.attributes.full_name') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('guest.attributes.document_number') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.code') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.origin') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.firebase') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.onesignal') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase text-[var(--desert-sand)]">{{ __('invitation.attributes.status') }}</th>
@@ -196,6 +206,16 @@
                             {{ $invitation->guest->id_type->label() }} {{ $invitation->guest->document_number }}
                         </td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm font-mono text-gray-900">{{ $invitation->code }}</td>
+                        <td class="whitespace-nowrap px-4 py-3 text-sm">
+                            <span @class([
+                                'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium',
+                                'bg-sky-100 text-sky-800' => $invitation->origin?->value === 'api',
+                                'bg-slate-100 text-slate-800' => $invitation->origin?->value === 'manual',
+                                'bg-amber-100 text-amber-800' => $invitation->origin?->value === 'import',
+                            ])>
+                                {{ $invitation->origin?->label() ?? '—' }}
+                            </span>
+                        </td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{{ filled($invitation->firebase_token) ? __('invitation.index.yes') : __('invitation.index.no') }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{{ filled($invitation->uuid_notification) ? __('invitation.index.yes') : __('invitation.index.no') }}</td>
                         <td class="whitespace-nowrap px-4 py-3 text-sm">
@@ -213,7 +233,7 @@
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.events.invitations.show', array_merge(['event' => $event, 'invitation' => $invitation, 'from' => 'invitations'], \App\Support\ListQuery::pull(['page', 'name', 'document_number', 'code', 'status']))) }}" wire:navigate
+                                <a href="{{ route('admin.events.invitations.show', array_merge(['event' => $event, 'invitation' => $invitation, 'from' => 'invitations'], \App\Support\ListQuery::pull(['page', 'name', 'document_number', 'code', 'status', 'origin']))) }}" wire:navigate
                                    class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--desert-gold)] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[var(--desert-gold-dark)]">
                                     {{ __('admin.actions.view') }}
                                 </a>
@@ -243,7 +263,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="{{ $canModerate ? 9 : 8 }}" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
+                        <td colspan="{{ $canModerate ? 10 : 9 }}" class="px-4 py-8 text-center text-gray-500">{{ __('invitation.index.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\InvitationOrigin;
 use App\Enums\InvitationStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
@@ -25,6 +26,7 @@ class DashboardController extends Controller
         $currentEvents = null;
         $eventStats = null;
         $statuses = InvitationStatus::options();
+        $origins = InvitationOrigin::options();
 
         if ($user && ! $user->requiresEvent()) {
             $currentEvents = Event::query()
@@ -60,6 +62,7 @@ class DashboardController extends Controller
                                 ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [$name]));
                         })
                         ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
+                        ->when($request->filled('origin'), fn ($q) => $q->where('origin', $request->string('origin')))
                         ->latest()
                         ->paginate(15)
                         ->withQueryString();
@@ -71,6 +74,7 @@ class DashboardController extends Controller
             'event',
             'invitations',
             'statuses',
+            'origins',
             'registrationLink',
             'currentEvents',
             'eventStats',

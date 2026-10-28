@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\InvitationOrigin;
 use App\Enums\InvitationStatus;
 use App\Models\Event;
 use App\Models\Guest;
@@ -26,6 +27,7 @@ class InvitationFactory extends Factory
             'guest_id' => Guest::factory(),
             'code' => app(InvitationCodeGenerator::class)->generate(),
             'status' => InvitationStatus::Pending,
+            'origin' => InvitationOrigin::Api,
             'selfie_path' => null,
             'uuid_notification' => null,
             'firebase_token' => null,

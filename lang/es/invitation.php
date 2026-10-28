@@ -4,6 +4,7 @@ return [
     'attributes' => [
         'code' => 'Código',
         'status' => 'Estado',
+        'origin' => 'Origen',
         'confirmed_at' => 'Confirmada',
         'uuid_notification' => 'UUID notificación',
         'firebase' => 'Firebase',
@@ -17,6 +18,12 @@ return [
         'cancelled' => 'Cancelada',
     ],
 
+    'origins' => [
+        'api' => 'API',
+        'manual' => 'Manual',
+        'import' => 'Importación',
+    ],
+
     'index' => [
         'title' => 'Invitaciones',
         'subtitle' => 'Evento: :name',
@@ -28,6 +35,7 @@ return [
         'search_document_placeholder' => 'Buscar por documento',
         'search_code_placeholder' => 'Buscar por código',
         'all_statuses' => 'Todos los estados',
+        'all_origins' => 'Todos los orígenes',
         'empty' => 'No hay invitaciones para este evento.',
         'yes' => 'SI',
         'no' => 'NO',

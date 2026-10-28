@@ -3,6 +3,7 @@
 namespace App\Services\Invitations;
 
 use App\Enums\DocumentType;
+use App\Enums\InvitationOrigin;
 use App\Enums\InvitationStatus;
 use App\Models\Event;
 use App\Models\Guest;
@@ -93,6 +94,7 @@ class ImportEventInvitationsService
                     'guest_id' => $guest->id,
                     'code' => $this->codeGenerator->generate(),
                     'status' => InvitationStatus::Pending,
+                    'origin' => InvitationOrigin::Import,
                 ]);
 
                 $summary['created']++;
