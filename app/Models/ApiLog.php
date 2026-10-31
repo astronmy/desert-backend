@@ -24,6 +24,8 @@ class ApiLog extends Model
 
     public const SERVICE_REGISTER = 'registro_evento';
 
+    public const SERVICE_QUERY = 'consultar_invitacion';
+
     /**
      * @return array<string, string>
      */

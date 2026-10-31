@@ -16,7 +16,8 @@ Route::middleware('throttle:10,1')->group(function () {
 });
 
 Route::middleware('throttle:4,1')->group(function () {
-    Route::get('invitations/{code}', [InvitationController::class, 'show']);
+    Route::get('invitations/{code}', [InvitationController::class, 'show'])
+    ->middleware('api.log:'.ApiLog::SERVICE_REGISTER);
 });
 
 Route::middleware('throttle:30,1')->group(function () {
