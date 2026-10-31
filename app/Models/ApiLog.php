@@ -51,6 +51,7 @@ class ApiLog extends Model
             self::SERVICE_FIREBASE_TOKEN,
             self::SERVICE_CONFIRM,
             self::SERVICE_REGISTER,
+            self::SERVICE_QUERY,
         ];
     }
 }

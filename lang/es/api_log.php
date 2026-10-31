@@ -23,6 +23,7 @@ return [
         'actualizar_firebase_token' => 'Actualizar firebase token',
         'confirmar_invitacion' => 'Confirmar invitación',
         'registro_evento' => 'Registro a evento',
+        'consultar_invitacion' => 'Consulta',
     ],
 
     'all_services' => 'Todos los servicios',
