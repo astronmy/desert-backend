@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\EventType;
 use App\Enums\InvitationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UpdateInvitationFirebaseTokenRequest;
@@ -15,13 +16,15 @@ class InvitationController extends Controller
 {
     public function show(string $code): JsonResponse
     {
+        $code = Str::upper(trim($code));
+
         $invitation = Invitation::query()
             ->with(['event.images', 'guest'])
-            ->where('code', Str::upper(trim($code)))
+            ->where('code', $code)
             ->first();
 
         if (! $invitation) {
-            return response()->json(['message' => 'Invitación no encontrada.'], 404);
+            return response()->json($this->mockInvitation($code));
         }
 
         if ($invitation->status === InvitationStatus::Cancelled) {
@@ -90,6 +93,29 @@ class InvitationController extends Controller
                 'is_complete' => $isComplete,
             ],
         ]);
+    }
+
+    /**
+     * Respuesta simulada cuando el código no existe (en lugar de un 404).
+     *
+     * @return array<string, mixed>
+     */
+    private function mockInvitation(string $code): array
+    {
+        return [
+            'code' => $code,
+            'status' => InvitationStatus::Pending->value,
+            'event' => [
+                'id' => 12,
+                'name' => 'Cumpleaños de 15',
+                'init_date' => now()->toDateString(),
+                'type' => EventType::Birthday->value,
+            ],
+            'guest' => [
+                'first_name' => '***',
+                'last_name' => '***',
+            ],
+        ];
     }
 
     public function updateFirebaseToken(
