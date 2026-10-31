@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\ApiLog;
 use Closure;
+use Illuminate\Contracts\Routing\UrlRoutable;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
@@ -40,6 +41,10 @@ class LogApiRequest
 
     private function requestBody(Request $request): ?string
     {
+        if ($request->isMethod('GET') || $request->isMethod('HEAD')) {
+            return $this->queryBody($request);
+        }
+
         $content = $request->getContent();
 
         if (is_string($content) && $content !== '') {
@@ -51,6 +56,22 @@ class LogApiRequest
         foreach ($request->allFiles() as $key => $file) {
             $payload[$key] = $this->fileMeta($file);
         }
+
+        if ($payload === []) {
+            return null;
+        }
+
+        return json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: null;
+    }
+
+    private function queryBody(Request $request): ?string
+    {
+        $routeParams = array_map(
+            fn (mixed $value) => $value instanceof UrlRoutable ? $value->getRouteKey() : $value,
+            $request->route()?->parameters() ?? [],
+        );
+
+        $payload = array_merge($routeParams, $request->query());
 
         if ($payload === []) {
             return null;
