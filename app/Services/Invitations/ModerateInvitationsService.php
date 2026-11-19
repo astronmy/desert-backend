@@ -88,9 +88,11 @@ class ModerateInvitationsService
      */
     public function reject(Event $event, array $ids): array
     {
+        /** @var list<Invitation> $wasConfirmed */
+        $wasConfirmed = [];
         $userId = auth()->id();
 
-        return DB::transaction(function () use ($event, $ids, $userId) {
+        $result = DB::transaction(function () use ($event, $ids, $userId, &$wasConfirmed) {
             /** @var Collection<int, Invitation> $invitations */
             $invitations = Invitation::query()
                 ->where('event_id', $event->id)
@@ -113,10 +115,21 @@ class ModerateInvitationsService
                     InvitationStatus::Cancelled,
                     $userId
                 );
+
+                if ($from === InvitationStatus::Confirmed) {
+                    $wasConfirmed[] = $invitation->fresh(['guest', 'event']);
+                }
+
                 $updated++;
             }
 
             return ['updated' => $updated];
         });
+
+        foreach ($wasConfirmed as $invitation) {
+            $this->notifier->invitationPendingAgain($invitation);
+        }
+
+        return $result;
     }
 }

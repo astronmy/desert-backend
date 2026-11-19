@@ -14,6 +14,7 @@ use App\Models\MicroserviceLog;
 use App\Models\Permission;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\Invitations\ModerateInvitationsService;
 use App\Services\Push\EnqueuePush;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -253,6 +254,59 @@ class PushMicroserviceTest extends TestCase
                 && $request['title'] === 'Invitación confirmada'
                 && $request['body'] === 'Listo para Fiesta de prueba, host Familia Koepp';
         });
+    }
+
+    public function test_rejecting_a_confirmed_invitation_sends_pending_again_push(): void
+    {
+        $invitation = Invitation::factory()->confirmed()->create([
+            'firebase_token' => 'fcm-token',
+        ]);
+        $invitation->event->update(['host' => 'Familia Koepp']);
+
+        Http::fake([
+            'https://push.test/api/v1/pushes' => Http::response([
+                'success' => true,
+                'message' => 'Notificación encolada.',
+                'data' => ['id' => 12, 'status' => 'pending'],
+            ], 202),
+        ]);
+
+        app(ModerateInvitationsService::class)->reject($invitation->event, [$invitation->id]);
+
+        Http::assertSent(function ($request) use ($invitation) {
+            return $request->url() === 'https://push.test/api/v1/pushes'
+                && $request['title'] === 'Invitación pendiente'
+                && $request['body'] === 'Tu Invitación al evento de Familia Koepp se encuentra pendiente de confirmación'
+                && $request['external_user_ids'] === [(string) $invitation->id];
+        });
+    }
+
+    public function test_rejecting_a_pending_invitation_does_not_send_pending_again_push(): void
+    {
+        $invitation = Invitation::factory()->create([
+            'firebase_token' => 'fcm-token',
+        ]);
+
+        Http::fake();
+
+        app(ModerateInvitationsService::class)->reject($invitation->event, [$invitation->id]);
+
+        Http::assertNothingSent();
+    }
+
+    public function test_pending_again_push_skips_invitations_without_a_firebase_token(): void
+    {
+        $invitation = Invitation::factory()->confirmed()->create([
+            'firebase_token' => null,
+        ]);
+        $invitation->event->update(['host' => 'Familia Koepp']);
+
+        Http::fake();
+
+        app(ModerateInvitationsService::class)->reject($invitation->event, [$invitation->id]);
+
+        Http::assertNothingSent();
+        $this->assertSame('cancelled', $invitation->fresh()->status->value);
     }
 
     public function test_logs_screen_requires_the_system_logs_permission(): void

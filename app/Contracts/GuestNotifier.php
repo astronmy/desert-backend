@@ -17,6 +17,11 @@ interface GuestNotifier
     public function invitationApproved(Invitation $invitation): void;
 
     /**
+     * Push al pasar de confirmada a cancelada (APP ve pending). Sync; no debe lanzar.
+     */
+    public function invitationPendingAgain(Invitation $invitation): void;
+
+    /**
      * Push de bienvenida al registrar el ingreso. Sync; no debe lanzar.
      */
     public function welcomeToEvent(Invitation $invitation): void;

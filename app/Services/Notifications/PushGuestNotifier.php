@@ -55,6 +55,19 @@ class PushGuestNotifier implements GuestNotifier
         );
     }
 
+    public function invitationPendingAgain(Invitation $invitation): void
+    {
+        $invitation->loadMissing('event');
+
+        $this->send(
+            $invitation,
+            __('invitation.push.pending_again_title'),
+            __('invitation.push.pending_again_message', [
+                'host' => $invitation->event?->host ?? '',
+            ]),
+        );
+    }
+
     public function welcomeToEvent(Invitation $invitation): void
     {
         $invitation->loadMissing('event');

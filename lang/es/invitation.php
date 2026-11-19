@@ -94,6 +94,8 @@ return [
         'registered_message' => 'Recibimos tu registro para :event. Queda pendiente de aprobación.',
         'approved_title' => 'Invitación confirmada',
         'approved_message' => 'Hemos confirmado tu invitación a :event',
+        'pending_again_title' => 'Invitación pendiente',
+        'pending_again_message' => 'Tu Invitación al evento de :host se encuentra pendiente de confirmación',
     ],
 
     'moderation' => [

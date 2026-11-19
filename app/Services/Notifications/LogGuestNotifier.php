@@ -36,6 +36,16 @@ class LogGuestNotifier implements GuestNotifier
         ]);
     }
 
+    public function invitationPendingAgain(Invitation $invitation): void
+    {
+        Log::info('onesignal.stub.invitation_pending_again', [
+            'invitation_id' => $invitation->id,
+            'code' => $invitation->code,
+            'event_id' => $invitation->event_id,
+            'guest_id' => $invitation->guest_id,
+        ]);
+    }
+
     public function welcomeToEvent(Invitation $invitation): void
     {
         Log::info('onesignal.stub.welcome_to_event', [
