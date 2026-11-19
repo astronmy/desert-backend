@@ -27,13 +27,14 @@ class InvitationController extends Controller
             return response()->json($this->mockInvitation($code));
         }
 
-        if ($invitation->status === InvitationStatus::Cancelled) {
-            return response()->json(['message' => 'La invitación está cancelada.'], 410);
-        }
+        // Canceladas se exponen como pending para que la APP limpie/actualice estado local.
+        $status = $invitation->status === InvitationStatus::Cancelled
+            ? InvitationStatus::Pending
+            : $invitation->status;
 
         return response()->json([
             'code' => $invitation->code,
-            'status' => $invitation->status->value,
+            'status' => $status->value,
             'event' => EventResource::make($invitation->event)->resolve(),
             'guest' => [
                 'first_name' => $invitation->guest->first_name,
@@ -41,7 +42,9 @@ class InvitationController extends Controller
                 'document_number' => $invitation->guest->document_number,
                 'id_type' => $invitation->guest->id_type->value,
             ],
-            'confirmed_at' => $invitation->confirmed_at?->toIso8601String(),
+            'confirmed_at' => $status === InvitationStatus::Pending
+                ? null
+                : $invitation->confirmed_at?->toIso8601String(),
             'selfie_url' => $invitation->selfieUrl(),
         ]);
     }
